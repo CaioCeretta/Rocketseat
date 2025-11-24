@@ -26,7 +26,17 @@ that is going to be, essentially the app basis that load all the component — t
 
 ### app folder
 
-This folder contains the code of our app component, the base component of the app. It contains the stylesheet which refers
-the **scope** of the component 
+### app folder
+
+This folder holds the code for our **AppComponent**, the root component of the application.  
+It includes:
+
+- **app.component.ts**: the TypeScript class that defines the component’s behavior, including its selector, logic, and
+interaction with other parts of the app.  
+- **app.component.html**: the template of the component, defining what will be rendered on the screen.  
+- **app.component.css / .scss**: the styles for this component, scoped only to it.  
+
+Think of this component as the **entry point** of your app — like the main module, it orchestrates the initial structure
+and layout of the application. 
 
   
