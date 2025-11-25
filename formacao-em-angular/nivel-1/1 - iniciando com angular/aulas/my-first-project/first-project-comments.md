@@ -84,3 +84,127 @@ Then, in case we are debugging variables, the same approach is taken, and so on
 
 Let's say it is showing a wrong value on a certain variable, and making this point to point trail, the whole flow until it
 reaches the divergence point
+
+## Angular Components
+
+### What is an angular component? 
+
+#### Each component is divided in
+
+. Template (HTML)
+  - Is what gives form to the component, for example, assume we the component is a button. Therefore, it will be a <button>
+  tag with all its stylings, or it is a items list, then we assume that the component is a div, which may have a child div
+  and so on, a normal HTML
+. Class (TypeScript)
+  - The TS class is where can have methods, properties, and the whole component logic. 
+   method executed on click, and more.
+. Styles (CSS)
+  - Normal stylings (css, scss, sass, and so on)
+
+#### Why to use components? 
+
+Components are used to facilitate reuse, modularity and organizing, encapsulation, and state management. Think of the state
+management of each attribute inside the class being a state
+
+#### How they interact?
+
+. From parent to child via @Input
+. From child to parent via @Output
+. Services
+
+## File Structuring
+
+We will make use of a `meu-botao` component for this example
+
+  1 - Create a new component named `meu-botao` and it will automatically be created in the app folder with all its base
+  files.
+  2 - To understand the communication between our typescript and our template. Assume we create a click event and this 
+  button html will have `(click)` property that references that click, and in this way, we can execute some method inside
+  our ts, such as a method `limpar`
+  3 - By writing `(click)="limpar()"`, it will execute the method limpar() inside our ts, the same thing for the filtrar
+  method
+
+### ts file structure
+
+  Every ts file will define the structure of every component, we will notice the @Component annotation, which tells us
+  and angular that it consists of a **component**, and inside each @Component annotation constructor we must inform what
+  the selector (which is the selector we will use when referencing that component inside another one), imports (where we
+  import modules, pipes, directives, other components, and more), templateUrl and the styleUrl of that component.
+
+  In older angular versions, the imports would'nt even be defined inside the component, because every import would be inside
+  the module where this component is on, similar to nest. However, in newer angular versions, every component is standalone.
+
+## Referencing a component inside other component
+
+On the previous lesson, we saw that we have a meu-botao component which has two buttons inside of it, and we will start by
+referencing it inside our app component by using the selector
+
+But we will notice that inside `app.html` when we try to use it, we will see a warning saying that `app-meu-botao` is not
+a known element, which means that every component that wants to communicate with another, needs to specify that component
+in the imports
+
+## Angular style encapsulation
+
+The idea that angular ensures styles for one component instance don't leak to another instance or to the rest of the application
+is achieved through the view encapsulation
+
+**1. The Encapsulation Attributes**
+
+Angular, by default, uses the `ViewEncapsulation.Emulated` strategy to achieve its isolation. This module **emulates** the
+behavior of the native shadow DOM by adding unique, generated attributes to the component's HTML elements.
+
+• It adds a unique host attribute, such as _ngcontent-cXXX (where XXX is a generated ID), to the component's host element
+(the `<meu-botao>` itself in our example).
+
+• It adds a corresponding **content attribute**, such as `_nghost-cXXX`, to all the elements inside the component's template
+
+**2. How the CSS is Scoped**
+
+Angular automatically rewrites the component's CSS styles to include these unique attributes as part of the selector.
+
+**Example**
+
+If our component's style sheet contains this CSS
+```css
+.title {
+  color: blue;
+}
+```
+Angular modifies it in the browser's DOM to something like this
+```css
+.title[_nghost-c123] {
+  color: blue;
+}
+```
+This ensures the `.title` style only applies to elements that have the `_nghost-c123` attribute, which are **only** the
+elements within that specific component instance.
+
+**3. Different Instances, Isolated Styles**
+
+When we have two instances of the same component (e.g. two instances of `<meu-botao>`)
+
+• Instance 1: Get's a unique attribute, e.g. `_ngcontent-c123`. The component's styles are scoped with `_ngcontent-c123`
+• Instance 2: Get's a different unique attribute, e.g. `_ngcontent-c456`. The same styles are scoped with `_ngcontent-c456`
+
+This makes each instance's styling unique and isolated from the others, even though they are share the same component class
+and stylesheet.
+
+
+One thing to note is, on every angular component, even though it is two different instances of the same tag, angular adds
+a random ng-content-* attribute to maintain the encapsulation of this class and making that component unique.
+Which means that if we modify the component styling in its selector, the style won't change for every instance of the
+selector class but only on that given one.
+
+## Inline HTML/CSS 
+
+In case we want to create small components, we can add the inline html and styling on the ts class itself.
+
+For this example we can create a new component with the flags --inline-style and --inline-template. What these flags do,
+is prevent angular default behavior of creating the .html and .css along with the component, and initializes the template
+and css with different attributes: `template` in place of `templateUrl` where we would inform the path to the template
+element and `styles` in place of `styleUrl`.
+
+In these attributes, we can place our inline styling which will work just as if we would 
+
+  
+  
