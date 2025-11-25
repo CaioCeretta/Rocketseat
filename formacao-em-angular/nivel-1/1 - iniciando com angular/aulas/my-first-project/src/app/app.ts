@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from "@angular/core";
+import { BotaoFlat } from "./botao-flat/botao-flat";
+import { MeuBotao } from "./meu-botao/meu-botao";
 
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+	selector: "app-root",
+	imports: [MeuBotao, BotaoFlat],
+	templateUrl: "./app.html",
+	styleUrl: "./app.css",
 })
-export class App {
-  protected readonly title = signal('my-first-project');
-}
+export class App {}

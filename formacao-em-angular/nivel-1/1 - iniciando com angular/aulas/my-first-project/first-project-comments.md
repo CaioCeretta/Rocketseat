@@ -201,10 +201,10 @@ In case we want to create small components, we can add the inline html and styli
 
 For this example we can create a new component with the flags --inline-style and --inline-template. What these flags do,
 is prevent angular default behavior of creating the .html and .css along with the component, and initializes the template
-and css with different attributes: `template` in place of `templateUrl` where we would inform the path to the template
+and css with different attributes: `template` in place of `templateUrl` where we would reference a file path to the template
 element and `styles` in place of `styleUrl`.
 
-In these attributes, we can place our inline styling which will work just as if we would 
+In these attributes, we can place our inline styling which will work just as if we would inform a separate file
 
   
   
