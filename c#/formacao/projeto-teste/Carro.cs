@@ -14,6 +14,16 @@ class Carro
     Console.WriteLine("Carro desligado!");
   }
 
+  public void Teste1()
+  {
+    Console.WriteLine("Carro desligado!");
+  }
+
+  public void Teste2()
+  {
+    Console.WriteLine("Carro desligado!");
+  }
+
 
 
 

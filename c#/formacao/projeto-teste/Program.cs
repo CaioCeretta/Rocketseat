@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HelloWorld.Teste;
 
 namespace HelloWorld;
 
@@ -15,6 +16,10 @@ class Program
     meuCarro.Ligar();
 
     meuCarro.Desligar();
+
+    Biscoito meuBiscoito = new Biscoito();
+
+    meuBiscoito.Temperatura();
 
 
 
