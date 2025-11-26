@@ -197,7 +197,6 @@ And classes can only be public or internal.
 
 But with an empty access modifier for a class, it is defaulted as  `internal`
 
-## Lesson 8 - Public classes without `using`
 
 
 
