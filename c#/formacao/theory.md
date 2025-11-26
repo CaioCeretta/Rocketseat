@@ -158,6 +158,9 @@ Different from other languages, if we omit the access modifier, and simply use v
 assumes the more restrict level as default, which is private. Therefore, we need to inform that it is public in case we
 want to use it outside the class. 
 
+However, files that are outside this endpoint, or inside any other nested endpoint mas but be "imported" with `using`
+keyword
+
   ### Main() is the official entry point of a C# program.
 
   Main() is the first method that .NET's runtime executes when the application starts.
@@ -180,13 +183,21 @@ normally instantiate a `new Carro()` without the need of exporting Carro and imp
 
 ### Variables 
 
-
-
 To define new variables inside C# we need to inform the variable type and then the variable name.
 
 
+## Lesson 7 - Access Modifiers
 
+The only different access modifier is the "internal" one, what it does is creating a different access level.
 
+Who can access this internal method? Only classes that are inside the same project, since more than one project can exist
+in the same solution. 
+
+And classes can only be public or internal.
+
+But with an empty access modifier for a class, it is defaulted as  `internal`
+
+## Lesson 8 - Public classes without `using`
 
 
 
