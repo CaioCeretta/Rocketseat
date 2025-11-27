@@ -206,5 +206,159 @@ element and `styles` in place of `styleUrl`.
 
 In these attributes, we can place our inline styling which will work just as if we would inform a separate file
 
+## Lesson 1 -   What is possible to do inside a component's class
+
+1 - Dependency Injection
+
+  Getting the instance of a service and inject inside the class. This way, we able to consume the properties, methods and
+  the state of that service inside the class.
+
+  There are two ways of injecting dependencies
+
+  1 - Via constructor
+  2 - Using angular's inject method
+
+2 - Creating properties / methods
+
+  Classes can create either private, public, or readonly properties.
+
+  When a property is readonly it says that it can only be read and not modified, nor by the class itself or externally.
+
+  methods, in other hand, can either be public or private, they aren't able to be modified because they are already part
+  of the class's definition, meaning that we can't reassign a method
+
+3 - Utilizing life cycle methods
+
+  Like ngOnInit and ngOnDestroy and along with it, we have to implement these methods 
+
+  ngOnInit is called when we create that component or when we reference it
+
+4 - We can access public attributes from the template using their name inside {{ }}
+
+## Lesson 2 - Passing values to the template
+
+For example, we can use the `counter` attribute from the class via {{ counter }}
+
+But there are somethings we can do inside interpolations.
+
+• 1: Display component's properties: {{counter}} 
+
+• 2: Simple mathematical operations: 
+  . <p>. Total: {{ unitPrice * quantity }}</p>
+  . <p>. Sum: {{ 10 + 5 }}</p>
+  . <p>. Result: {{ 10 / 2 + 3 }}</p>
   
-  
+• 3: String Operations:
+  ```ts
+    import { UpperCasePipe } from '@angular/common';
+    import { Component } from '@angular/core';
+
+    @Component({
+      selector: 'app-comp-3',
+      imports: [UpperCasePipe],
+      template: `
+        <p> Full Name: [{ firstName + ' ' surname }] </p>
+        <p> Uppercase: [{ 'angular' | uppercase}]
+      `
+    })
+
+    export class Comp3Component {
+      firstName = 'Caio',
+      surname = 'Ceretta'
+    }
+  ```
+
+
+• 4: Access properties of objects and arrays
+
+  ```ts
+    import { Component } from '@angular/core';
+
+    @Component({
+      selector: 'app-comp-3',
+      imports: [],
+      template: `
+        <p>Email: {{ user.email }}</p>
+        <p>First fruit {{ fruits[0] }}
+      `
+    })
+
+    export class Comp3Component {
+      user = { name: 'Caio', email: 'caioceretta@gmail.com' }
+      fruits = ['Apple', 'Banana', 'Grape']
+    }
+  ```
+
+  We should not access an entire object inside an interpolation, we have to access the direct property of the object, since
+  the interpolation isn't able to convert an object instance into a string. 
+
+• 5. Ternary operator
+
+```ts
+  template: `<p>Status: {{ loggedIn ? 'Online' : 'Offline}}</p>`
+```
+
+• 6. Use of pipes
+
+    ```ts
+
+    @Component({
+      selector: 'app-comp-3',
+      imports: [DatePipe, CurrencyPipe, UpperCasePipe],
+      template: `
+        <p>Formatted date:  {{ eventDate | date : 'shortDate' }} </p>
+        <p>Formatted Value:  {{ orderValue | currency : 'BRL' : 'symbol' : '1.2-2 }} </p>
+        <p>Uppercase text:  {{ 'Hello, World' | uppercase }} </p>
+      `
+    })
+
+    export class Comp3Component {
+      eventDate = new Date();
+      orderValue = 123.456
+    }
+  ```
+
+• 7. Getter calls (Computed Properties)
+
+  Assume we create a class with the attributes name and surname, and then we create a `get` 'fullName' that returns 
+  name + surname, and simply call that getter inside the interpolation
+    
+• 8. Async operator with observables/promises
+
+```ts
+  // imports
+
+  @Component({
+    selector: 'app-comp-3',
+    imports: [AsyncPipe]
+    template: ` <p>{{ data$ | async }}</p> `
+  })
+
+  export class Comp3Component {
+    data$: Observable<string> = of('Loaded Data!');
+  }
+```
+
+AsyncPipe handles subscribing to `Observables` (or `Promises`) and returning the latest emitted value. It automatically
+performs the subscription and "unsubscription" when the component is destroyed, preventing memory leaks
+
+And if by any reason, the value of a property being displayed on the screen changes during the component's lifecycle, and
+we have a method that updates the quantity. If the value of the quantity change this value will automatically be reflected
+on the template and the expression will be recalculated — This is something called change detection, when angular detects
+changes on the properties that are being called on the template and automatically updates it.
+
+### What we should avoid
+
+• 1. Unnecessary calls
+
+Assume that we have a counter attribute and a method that sets this count + 1, but instead of simply interpolating the
+counter value, we utilize this function invoking, and this will generate a collateral effect.
+
+Because since angular makes use of its change detection, and it will end up executing the function over and over again to
+update the value, in a cyclic operation. Therefore, it is not recommended to execute methods inside the interpolations 
+
+• 2. Complex business logics
+• 3. Assigning values
+  - Such as trying to {{ counter = 2 }}
+
+
