@@ -5,7 +5,7 @@ import { Component } from "@angular/core";
 	imports: [],
 	template: `
     <p>
-      <button class="btn btn-flat" (click)="limpar()">Clean Filters</button>
+      <button class="btn btn-flat" (click)="limpar()">Clean Filters {{ myCounter() }}</button>
     </p>
   `,
 	styles: `
@@ -26,13 +26,20 @@ import { Component } from "@angular/core";
 
     .btn-flat {
       background-color: var(--white);
-      border: var(--primary-orange);
+      border: 1px solid var(--primary-orange);
       color: var(--primary-orange);
     }
   `,
 })
 export class BotaoFlat {
+	counter = 0;
+
+	myCounter() {
+		this.counter += 1;
+	}
+
 	limpar() {
 		console.log("limpar method");
+		this.counter += 1;
 	}
 }
