@@ -440,17 +440,20 @@ A way to link both of them in a way the inputted text modify the property is usi
 
 
 
-
-
-
-
-
-
-
-
 ## Lesson 5 - Using Two-Way Data Binding
 
 
+Now that we've already seen event binding and property binding. We are going to see how we use two-way data binding to
+keep in sync a property of the class with an element of our template.
+
+First we have to import `FormsModule` inside the component's ts.
+
+Two-way data bindinding uses [(ngModel)]="property", and with this, we keep the property in sync with the input, meaning
+that we would have to separately make the data capturing and the data sending
+
+With this other approach, we don't have to do all that property binding stuff like [value]="texto" to bind the texto property
+to the input value (input)="updateText($event), so we create a function to modify the internal texto property and create
+a single call to   make both these calls using [(ngModule)]="property"
 
 
 
