@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "KMX4dqaezGc=",
+  "dgSpecHash": "dMSpwMyGYTo=",
   "success": true,
   "projectFilePath": "/home/caiocer/Estudos/Rocketseat/c#/formacao/projeto-teste/projeto-teste.csproj",
-  "expectedPackageFiles": [
-    "/home/caiocer/.nuget/packages/microsoft.netcore.app.ref/9.0.11/microsoft.netcore.app.ref.9.0.11.nupkg.sha512",
-    "/home/caiocer/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.11/microsoft.aspnetcore.app.ref.9.0.11.nupkg.sha512",
-    "/home/caiocer/.nuget/packages/microsoft.netcore.app.host.linux-x64/9.0.11/microsoft.netcore.app.host.linux-x64.9.0.11.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

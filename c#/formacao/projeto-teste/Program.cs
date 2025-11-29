@@ -1,28 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelloWorld.Teste;
-
 namespace HelloWorld;
 
 class Program
 {
   static void Main()
   {
-    Carro meuCarro = new Carro();
+    int number = 7;
+    long number2 = 7;
 
-    meuCarro.Ligar();
+    uint number3 = 7;
+    sbyte number4 = 7;
 
-    meuCarro.Desligar();
-
-    Biscoito meuBiscoito = new Biscoito();
-
-    meuBiscoito.Temperatura();
-
-
-
+    Console.WriteLine(number3);
   }
-
 }
