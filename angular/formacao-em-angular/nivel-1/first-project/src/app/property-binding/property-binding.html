@@ -1,5 +1,6 @@
-<input id="meu-input" [value]="texto" [type]="inputType" [disabled]="inputDisabled" />
+<input id="meu-input" (input)="updateText($event)" [value]="texto" [type]="inputType" [disabled]="inputDisabled" />
 
+<br><br>
 <button (click)="enableInput()">Disabled true</button>
-<br>
 <button (click)="disableInput()">Disabled false</button>
+<button (click)="logText()">Logar Texto</button>

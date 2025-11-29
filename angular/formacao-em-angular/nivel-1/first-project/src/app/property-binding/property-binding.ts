@@ -18,4 +18,14 @@ export class PropertyBinding {
 	disableInput() {
 		this.inputDisabled = false;
 	}
+
+	logText() {
+		console.log(this.texto);
+	}
+
+	updateText(event: Event) {
+		const value = (event.target as HTMLInputElement).value;
+
+		this.texto = value;
+	}
 }
