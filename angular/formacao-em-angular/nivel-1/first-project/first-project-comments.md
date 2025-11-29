@@ -433,7 +433,10 @@ Now, assume we have a property texto inside the class and we want to bind this p
 We wrap the value around brackets, and we are starting to create the property binding of that instance, and assign to this
 a property of our class around quotes, and with this, we will see that the input value is binded to our class property
 
-property binding does not modify the property value, only "repost" it
+property binding does not modify the property value, only reference it. However, if we reference a text property inside
+an input value and we modify the value of the input, it won't update its current value with the value being typed.
+
+A way to link both of them in a way the inputted text modify the property is using **two-way data binding**
 
 
 
