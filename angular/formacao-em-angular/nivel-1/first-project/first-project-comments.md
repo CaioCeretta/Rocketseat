@@ -418,8 +418,6 @@ However, some things in angular we have a different way of capturing form elemen
 This means that we don't have to manually retrieve these values, and use two-way data binding, reactive events, etc.
 
  
-
-
 ## Lesson 4 - Using Property Binding
 
 The **property bindings** is essentially the link between the component's class with the template.
@@ -430,7 +428,16 @@ Every HTML element have an instance inside JS where we can access its properties
 attributes, attributes are the html we use, such as class, id, style, and more. Properties, in other hand, when acessing
 the instance of that element inside JS and altering it, we are dealing with properties.
 
-Now, assume we have a property texto inside the class 
+Now, assume we have a property texto inside the class and we want to bind this property to the input's value attribute.
+
+We wrap the value around brackets, and we are starting to create the property binding of that instance, and assign to this
+a property of our class around quotes, and with this, we will see that the input value is binded to our class property
+
+property binding does not modify the property value, only "repost" it
+
+
+
+
 
 
 
