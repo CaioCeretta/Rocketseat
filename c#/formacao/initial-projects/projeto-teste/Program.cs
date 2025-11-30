@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace HelloWorld;
 
 class Program
@@ -5,26 +7,11 @@ class Program
   static void Main()
   {
 
-    char letter = 'a';
-    char number = '1';
-    char character = '@';
-    char space = ' ';
+    string text = "The user {0} enjoys studying {1}";
 
-    string text = "Testing";
+    string result = string.Format(text, "Caio", "C#");
 
-    char firstLetter = text[0];
-
-    bool startsWithLetterT = text.StartsWith("T");
-
-    bool endsWithIng = text.EndsWith("ing");
-
-    Console.WriteLine(text);
-    Console.WriteLine(firstLetter);
-    Console.WriteLine(startsWithLetterT);
-    Console.WriteLine(endsWithIng);
-
-
-
+    Console.WriteLine(result);
 
   }
 }
