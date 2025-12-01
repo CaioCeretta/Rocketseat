@@ -110,3 +110,7 @@ Now we define a string.Format passing as first argument the text variable, and a
 the {0}, {1}, {2} and so on. **We have to fill all the dynamic variables we definedd, otherwise it will throw an error
 
 Format returns us a new string, which is the result of the formatting
+
+
+## Dates types
+
