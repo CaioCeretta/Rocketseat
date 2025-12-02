@@ -72,7 +72,8 @@ that is the reason for the life cycle rule in the container
 
 Create a project with `pnpm create vite@latest web`, but now, with the latest tailwindcss, we need to make some new configs
 
-### Tailwind V4
+
+## Tailwind Changes
 
 Tailwind had some major changes with the new version v4, which are:
 
@@ -119,21 +120,6 @@ But only for things that truly need it, like:
 • Theme presets
 • Plugin registration
 
-Ex:
-
-```ts
-
-  import defaultTheme from 'tailwindcss/defaulltTheme"
-
-  export default {
-    theme: {
-      extend: {
-         fontFamily: {
-          sans: ["Inter", ...defaultTheme.fontFamily.sams],
-         }
-      }
-    }
-  }
 
 ```
 #### 5. New CSS first-theming
@@ -157,7 +143,7 @@ Example:
 
 ### • 6 - Rewritten Engine (faster, smaller, smarter)
 
-Tailwindv4 rebuilt the engine in rust
+Tailwind v4 rebuilt the engine in rust
 
 • builds ~10x faster
 • smaller CSS output
@@ -169,74 +155,114 @@ We don't need to configure anything, it just works
 In summary, v4 removes the config file requirements, moves customization into CSS using layers, eliminates content scanning,
 and ships a faster, simpler, zero-config engine.
 
-### Tailwind Layers Recap
+### What about the layers?
 
-Tailwind organizes its CSS in 3 internal layers
+In tailwind v4, the @layer patterns and the specific directives like @base, @components, @utilities aren't necessary
+in most cases.
 
-#### @base:
-  • Redefines browser default styling
-  • Adds global styling
-  • To use @apply in HTML tags
-  • To define gglobal variables like themes
+Every structure is condensed inside @import "tailwindcss";
 
-  ```ts
-    @layer base {
-    h1 {
-    @apply text-4xl font-bold;
-    }
+### Tailwind v3 vs Tailwind v4
 
-    :root {
-    --brand: #ff4d4d;
-    }
-   } 
-  ```
+The main difference is the change of a nested JS object to a plain list of CSS variables inside a @theme block
 
-#### @layer components
+#### Tailwind v3
 
-Used for creating reusable components
-They are not individual utilities, but UI blocks
-
-ex:
+Tailwind used to create a `tailwind.config.ts` files with something like
 
 ```ts
-  @layer components {
-    .card {
-      @apply p-4 rounded-xl shadow bg-white
-    }
-  }
+  import defaultTheme from 'tailwindcss/defaultTheme'; 
+
+module.exports = {
+  theme: {
+    extend: {
+      // 1. Spacing
+      spacing: {
+        '128': '32rem', // Create the classes p-128, m-128, etc
+      },
+      
+      // 2. Cores
+      colors: {
+        'navy-blue': '#000080', // Create the classes 'bg-navy-blue', 'text-navy-blue', etc.
+      },
+
+      // 3. Fontes
+      fontFamily: {
+        // extends 'sans' adding 'Inter' as the main one, maintaining the default fallbacks
+        sans: ['Inter', ...defaultTheme.fontFamily.sans], 
+        serif: ['Georgia', 'serif'], // Creates the class serif
+      },
+    },
+  },
+  plugins: [],
+}
 ```
 
-@layer utilities
+#### Tailwind v4
 
-For creating new utilities
-works as tailwind classes like flex p-4, font-stretch-extra-condensed
-
-ex:
+In this version, we make the configuration directly inside the main CSS file (ex. globals.css, index.css), using the
+directive @theme and plain CSS variables, like:
 
 ```ts
+/* Imports all the Tailwind v4's core */
+@import "tailwindcss"; 
 
-  @layer utilities
-    .text-outline {
-      -webkit-text-area: 1px black;
-    }
+/* Uses the block @theme to add or overwrite the theme */
+@theme {
+  /* 1. Spacing - Prefix --spacing- */
+  --spacing-128: 32rem; 
+
+  /* 2. Cores - Prefix --color- */
+  --color-navy-blue: #000080; 
+
+  /* 3. Fontes - Prefix --font- */
+  /* Uses var(--default-font-sans) as tailwind's native fallback */
+  --font-sans: Inter, var(--default-font-sans);
+  --font-serif: Georgia, serif;
+}
+
+/* 
+* We can still use the classes the same way as before
+* <div class="p-128 bg-navy-blue font-sans">Ciao, mondo</div>
+*/
 ```
 
-##### Why does it exists?
 
-Because tailwind organizes the CSS In a predictablep pattern
+## Lesson 4 - Structuring the widget
 
-- First base, then components, then utillities that may overwrite everything. This way, we don't have unnecessary conflicts.
+Start by creating a upload-widget component
 
-which means that
+Get from figma the custom shadows we are using
 
-`@layer base;` is the global layer used to
+### Tailwind note
 
-• Global tipografy
-• Resets
-• Themes
-• Default element styling
+When creating the variable --shadow-shape inside our css, this shadow isn't using tailwind's default utilities, but "arbitrary
+values" 
 
-and tailwind automatically takes care of the order.
+Arbitrary values are a feature inside Tailwind CSS that allow us to use any custom CSS value directly within our HTML
+classes, bypassing the pre defined design system.
+
+When using [] to enclose the custom CSS value after a standard tailwind utility prefix.
+
+It is ideal for unique situations where creating a reusable utility class in the config file would be overkill and we can
+still use any valid CSS unit, including px, rem, em, var, etc
+
+#### Our example
+
+The reason of the way we called the class was needed because the name of our CSS variables (--shadow-shape) did not fit
+the default tailwind's nomenclature
+
+And the new way to access these values is going to be a little different, where would use something as
+
+opacity: {
+  2: 0.02
+}
+
+what would make us able to utilize something as bg/2, where 2 would be the value of this variable, we will have a little more
+workaround:
+
+`<div class="bg-white/[var(--opacity-2)]">`
+
 
 
 
