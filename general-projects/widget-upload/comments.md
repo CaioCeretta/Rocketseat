@@ -73,30 +73,101 @@ that is the reason for the life cycle rule in the container
 Create a project with `pnpm create vite@latest web`, but now, with the latest tailwindcss, we need to make some new configs
 
 
-## Tailwind Changes
+## Lesson 4 - Structuring the widget
 
-Tailwind had some major changes with the new version v4, which are:
+Start by creating a upload-widget component
 
-#### • 1.  Zero-Config by default 
+Get from figma the custom shadows we are using
 
-In v3 you needed a tailwind.config.js for most things.
-In v4, the config file is optional.
-Tailwind works out of the box with just:
 
-@import "tailwindcss"
+## Tailwind CSS v4: Core Changes and New Paradigm 
 
-####  • 2. No more content scanning
+Tailwind CSS v4 introduces major architectural and configuration shifts, simplifying the setup while enhancing performance
+and customization via native CSS features.
 
-v3 required a content: [] array to tell Tailwind where to look.
-v4 has a new “keyword scanning engine” that automatically detects all utilities.
+### ● Key Architectural Changes 
 
-it has no more config or file paths.
+The new version focuses on a Zero-Config approach powered by a rewritten, high-performance engine
 
-#### • 3. Many customizations moved from JS config → CSS
+#### 1. Zero-Config by Default
 
-For example, instead of extending themes in `tailwind.config.js`, we can now use `@layer` directly in CSS
+The configuration file (tailwind.config.js or .ts) is now optional for basic usage. Tailwind
+works out of the box with only the CSS import `@import "tailwindcss";`
 
-our index.css can have
+#### 2. Elimination of Content Scanning
+
+Tailwind v4 replaces the manual content: [] array with a new "keyword scanning engine."
+
+• It automatically detects all required utility classes. 
+
+• Manual configuration of file paths is no longer necessary, drastically simplifying the build process.
+
+#### **3. Rewritten Engine (Rust-Based)**
+
+The core engine has been rebuilt in Rust, resulting in significant performance gains and quality-of-life improvements:
+
+**• Speed**: Builds are approximately 10x faster.
+**• Size:** Smaller final CSS output.
+• **Developer Experience:** Improved IntelliSense and JIT (Just-In-Time) behavior.
+
+### ● New Approach to Customization and Theming
+
+Customization shifts from nested JavaScript objects to plain CSS, aligning with standard web development practices.
+
+#### 4. CSS-First Theming (@theme Directive)
+
+Tailwind v4 introduces the @theme directive, which is the new mechanism for extending the design tokens (colors, spacing,
+fonts)
+
+• Purpose: The @theme block instructs Tailwind to generate corresponding utility classes (e.g. defining `--color-navy-blue`
+generates `bg-navy-blue`, `text-navy-blue`, etc)
+
+• Replacement: This entirely replaces the use of `theme.extend` inside `tailwind.config.ts` for most properties.
+
+However, `@theme` replaces it, but isn't used to create classes, only tokens
+
+#### Tailwind v3 vs v4 Theming Syntax:
+
+**Spacing**:
+    
+**v3:**  spacing: { '128': '32rem' } 
+**v4**:  @theme { --spacing-128: 32rem; }
+
+
+**Colors**:
+    
+**v3:**  colors: { 'navy-blue': '#000080´ } 
+**v4**:  @theme { --colors-navy-blue: #000080; }
+
+**Fonts**:
+    
+**v3:**  fonts: { sans: ['Inter', ...defaultTheme.fontFamily.sans] } 
+**v4**:  @theme { --font-sans: ['Inter', ...defaultTheme.fontFamily.sans]; }
+
+```ts
+  /* Imports all the Tailwind v4's core utilities */
+@import "tailwindcss"; 
+
+/* Uses the @theme block to add or overwrite the theme */
+@theme {
+  --spacing-128: 32rem; 
+  --color-navy-blue: #000080; 
+  --font-sans: Inter, var(--default-font-sans);
+}
+```
+
+
+#### 5. Custom Utility and Component Creation (`@layer`)
+The `@layer` directive is used for a different purpose than `@theme`: it handles the organization and creation of custom
+CSS rules or components that use the @apply directive.
+
+##### Why @layer utilities is used instead of @theme:
+`@theme` **creates tokens** (variables) that generate a large set of classes (e.g., bg-, text-, border-).
+
+`@layer utilities` **creates a single class** (.btn, .card) by combining existing Tailwind utilities using @apply. This
+class is placed in the correct cascade order, making it easier to override later.
+
+##### Example: Creating a Custom Component Utility
 
 ```ts
 @layer utilities {
@@ -105,168 +176,66 @@ our index.css can have
   }
 }
 ```
-This replace many uses of theme.extend
+This pattern replaces many traditional uses of the `theme.extend` object for creating component shortcuts.
 
-#### • 4. Configuration still exists — but simpler
+#### 6. Minimal JavaScript Configuration
 
-If we want, we can still use:
+The tailwind.config.ts file still exists, but is now reserved for things that truly require a JavaScript context, such as:
 
-`tailwind.config.ts`
-
-But only for things that truly need it, like:
-
-• Custom colors
-• Custom fonts
+• Custom colors (if complex logic is needed)
 • Theme presets
 • Plugin registration
 
+### Working with Custom & Arbitrary Values
+
+**Handling Complex CSS Properties (like `boxShadow`)**
+
+For highly complex CSS properties that use a list of values (like our `boxShadow` example), the best practice is to combine
+native CSS variables with the `@layer` directive:
+
+1. **Define the CSS Variable**: Define our complex value as a variable (e.g., `--shadow-shape`) within `@theme` block:
+
+--shadow-shape: 0px 8px 8px rgba(0, 0, 0, 0.1), /* ... rest of your complex value */
+
+Create the Utility Class: Create a custom class that reference our theme variable like
 
 ```
-#### 5. New CSS first-theming
-
-Tailwind v4 encourages **CSS variables** for theming (colors, dark mode, multi-themed apps).
-
-Example:
-
-```ts
-
-:root {
-  --brand: #ff4d4d;
-}
-
-.bg-brand {
-  background: var(--brand);
-}
-
-  <div class="bg-var(--brand)> />
-```
-
-### • 6 - Rewritten Engine (faster, smaller, smarter)
-
-Tailwind v4 rebuilt the engine in rust
-
-• builds ~10x faster
-• smaller CSS output
-• better IntelliSense
-• improved JIT behavior
-
-We don't need to configure anything, it just works
-
-In summary, v4 removes the config file requirements, moves customization into CSS using layers, eliminates content scanning,
-and ships a faster, simpler, zero-config engine.
-
-### What about the layers?
-
-In tailwind v4, the @layer patterns and the specific directives like @base, @components, @utilities aren't necessary
-in most cases.
-
-Every structure is condensed inside @import "tailwindcss";
-
-### Tailwind v3 vs Tailwind v4
-
-The main difference is the change of a nested JS object to a plain list of CSS variables inside a @theme block
-
-#### Tailwind v3
-
-Tailwind used to create a `tailwind.config.ts` files with something like
-
-```ts
-  import defaultTheme from 'tailwindcss/defaultTheme'; 
-
-module.exports = {
-  theme: {
-    extend: {
-      // 1. Spacing
-      spacing: {
-        '128': '32rem', // Create the classes p-128, m-128, etc
-      },
-      
-      // 2. Cores
-      colors: {
-        'navy-blue': '#000080', // Create the classes 'bg-navy-blue', 'text-navy-blue', etc.
-      },
-
-      // 3. Fontes
-      fontFamily: {
-        // extends 'sans' adding 'Inter' as the main one, maintaining the default fallbacks
-        sans: ['Inter', ...defaultTheme.fontFamily.sans], 
-        serif: ['Georgia', 'serif'], // Creates the class serif
-      },
-    },
-  },
-  plugins: [],
+.shadow-shape {
+  box-shadow: var(--shadow-shape);
 }
 ```
 
-#### Tailwind v4
+#### Understanding Arbitrary Values
+Arbitrary Values ([]) are still supported and ideal for unique, one-off situations where creating a reusable theme utility
+would be overkill. They allow using any custom CSS value directly within the HTML class, such as:
 
-In this version, we make the configuration directly inside the main CSS file (ex. globals.css, index.css), using the
-directive @theme and plain CSS variables, like:
+`bg-[url('/custom-image.jpg')]`
 
+`w-[300px]`
+
+Current Limitation (v4 Note): Currently, Tailwind v4 does not fully support mapping opacity values via CSS variables within
+utility classes (e.g., bg-white/[var(--opacity-2)]). You must still rely on explicit arbitrary values like bg-white/[0.02].
+
+### v4 Practical Example
+
+#### 1. Complex shadows
+   
 ```ts
-/* Imports all the Tailwind v4's core */
-@import "tailwindcss"; 
-
-/* Uses the block @theme to add or overwrite the theme */
 @theme {
-  /* 1. Spacing - Prefix --spacing- */
-  --spacing-128: 32rem; 
-
-  /* 2. Cores - Prefix --color- */
-  --color-navy-blue: #000080; 
-
-  /* 3. Fontes - Prefix --font- */
-  /* Uses var(--default-font-sans) as tailwind's native fallback */
-  --font-sans: Inter, var(--default-font-sans);
-  --font-serif: Georgia, serif;
+  --shadow-card: 0px 8px 8px rgba(0,0,0,0.1), inset 0px 2px 4px rgba(0,0,0,0.05);
 }
 
-/* 
-* We can still use the classes the same way as before
-* <div class="p-128 bg-navy-blue font-sans">Ciao, mondo</div>
-*/
+@layer utilities {
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+}
 ```
 
+2. Custom components with @apply
 
-## Lesson 4 - Structuring the widget
-
-Start by creating a upload-widget component
-
-Get from figma the custom shadows we are using
-
-### Tailwind note
-
-When creating the variable --shadow-shape inside our css, this shadow isn't using tailwind's default utilities, but "arbitrary
-values" 
-
-Arbitrary values are a feature inside Tailwind CSS that allow us to use any custom CSS value directly within our HTML
-classes, bypassing the pre defined design system.
-
-When using [] to enclose the custom CSS value after a standard tailwind utility prefix.
-
-It is ideal for unique situations where creating a reusable utility class in the config file would be overkill and we can
-still use any valid CSS unit, including px, rem, em, var, etc
-
-#### Our example
-
-The reason of the way we called the class was needed because the name of our CSS variables (--shadow-shape) did not fit
-the default tailwind's nomenclature
-
-And the new way to access these values is going to be a little different, where would use something as
-
-opacity: {
-  2: 0.02
-}
-
-what would make us able to utilize something as bg/2, where 2 would be the value of this variable, we will have a little more
-workaround:
-
-`<div class="bg-white/[var(--opacity-2)]">`
-
-
-
-
-
-
-
-
+`@layer components {
+  .btn {
+    @apply px-4 py-2 bg-blue-600 text-white;
+  }
+}`
