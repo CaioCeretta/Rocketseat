@@ -77,13 +77,115 @@ Create a project with `pnpm create vite@latest web`, but now, with the latest ta
 
 Start by creating a upload-widget component
 
-Get from figma the custom shadows we are using
+Get from figma the custom shadow and create a tailwind boxShadow @theme token with this shadow
 
+Create four components, the upload-widget, which will contain the other three inner components that are the list, the dropzone
+and the header
+
+For the structure, add a div between the dropzone and the upload list, which will have a height of one unit and the box
+sizing of content box. 
+
+### Content box explanation
+
+The reason why box-content is necessary to show the line, is crucial because it ensures  that the
+border and the padding are added outside of the width and height defined in the element.
+
+We've defined the height as 1px, and we are using the top border to create the line.
+
+When we use the box-sizing of content-box
+
+the height is 1px, the border is 1px and the total height is going to be equal to 2px.
+
+Tailwind's default is the scenario with border-box, which would make the border be included inside the height of 1px, so
+
+height: 1px, top border: 1px, content height 0px. Because in this case, the border would consume all the height of 1px and
+the content would have 0px height
+
+
+## Lesson 5 - Button and Collapsible Widget
+
+### Dynamic Component Breakdown
+
+#### 1. Imports
+
+In this example. we first make use of the **ComponentProps** utility from react
+
+**ComponentProps**: It accepts a generic which is the type being dealt with, in this case ComponentProps<'button'>.
+It extracts the full set of props that a normal HTML <button> supports, such as `onClick`, `disabled`, `type`, `className`,
+etc.
+This ensures that our component supports everything a native button can do.
+
+**tv**: imported from tailwind-variants.
+This function creates a variant-aware utility that returns Tailwind classes based
+on "variant props"
+
+**VariantProps<typeof buttonVariants>**:
+This type tells React that the component also accepts the variant props defined inside `buttonVariants` (such as `size`)
+
+#### 2. Create the buttonVariants utility
+
+A `buttonVariant` definition consists of three properties: `base`, `variants`, and `defaultVariants`
+
+**base:** These are classed shared by all buttons, regardless of which variant was selected.
+
+**variants**: In this example we have: 
+  ```ts
+  variants: {
+    size: {
+      default: 'px-3 py-2',
+      icon: 'p-2',
+      small: 'p-1'
+    }
+  }
+  ```
+
+`size` is a variant group.
+I t contains three possible values: default, icon, or small.
+
+**defaultVariants**: If the user does NOT pass a `size` prop, it uses "default"
+
+#### 3. The Button Component
+
+The component props are a combination of
+
+• Everything a native button can have
+• All variant props we defined in our variant.
+
+This is possible because the `tv` function merges
+
+• the base classes
+• the selected variant classes
+• any custom className passed by the user
+
+### Widget
+
+Our widget is going to be a collapsible rather than a modal, our focus will be to expand it. Therefore, we won't use a
+dialog for it, but a `Collapsible` component
+
+Start by installing radix's `Collapsible`, import it with `* as Collapsible` and wrap the whole widget inside this
+component
+
+Wrap the whole whole widget div in a Collapsible.Root, which openOnChange and if it is open will be handled by an internal
+state, and create another button component for when we the collapsible is not open.
+
+This button will serve as a trigger for the collapsible.
+
+Inside the upload widget header component, we are also going to have to add a Trigger button, with a button inside of it
+for handling the collapsing, however, since a button cannot be nested inside other button, use asChild
 
 ## Tailwind CSS v4: Core Changes and New Paradigm 
 
 Tailwind CSS v4 introduces major architectural and configuration shifts, simplifying the setup while enhancing performance
 and customization via native CSS features.
+
+For the button, install the tailwind-variants library, since it will make the generic button more customizable with it.
+
+Inside the button function, utilize the ComponentProps from react and use the 'button' as a generic.
+
+
+
+
+
 
 ### ● Key Architectural Changes 
 
@@ -215,6 +317,18 @@ would be overkill. They allow using any custom CSS value directly within the HTM
 
 Current Limitation (v4 Note): Currently, Tailwind v4 does not fully support mapping opacity values via CSS variables within
 utility classes (e.g., bg-white/[var(--opacity-2)]). You must still rely on explicit arbitrary values like bg-white/[0.02].
+
+### Utility Values Limitations
+
+The problem wasn't about where we define the `--opacity-2` variable, yet, how tailwind interprets that utility syntax
+
+The opacity part inside a utility class like bg-white/[value] expects
+
+1. A direct numerical value, such as 0.02
+2. Or an arbitrary css value that it can resolve.
+
+Tailwind's parser is not able to resolve a css variable reference inside that opacity slot and convert it to a valid class
+that calculates the final color.
 
 ### v4 Practical Example
 
