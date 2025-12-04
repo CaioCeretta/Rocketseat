@@ -173,6 +173,19 @@ This button will serve as a trigger for the collapsible.
 Inside the upload widget header component, we are also going to have to add a Trigger button, with a button inside of it
 for handling the collapsing, however, since a button cannot be nested inside other button, use asChild
 
+## Lesson 6 - Dropzone & Title Components
+
+Create a component for the title, and reuse it on the other components with the same text
+
+Install the react-dropzone library
+
+### Finishing Setup
+
+Inside the `useDropzone` hook options add a new property onDrop(acceptedFiles, fileRejections, event) that display which
+file was accepted, rejected (based on some rule, such as types, or if other condition failed).
+
+## Lesson 7 - List uploads Component
+
 ## Tailwind CSS v4: Core Changes and New Paradigm 
 
 Tailwind CSS v4 introduces major architectural and configuration shifts, simplifying the setup while enhancing performance
@@ -182,7 +195,24 @@ For the button, install the tailwind-variants library, since it will make the ge
 
 Inside the button function, utilize the ComponentProps from react and use the 'button' as a generic.
 
+#### useDropzone explanation
 
+Inside the `UploadWidgetDropzone` component, import `useDropzone` hook from `react-dropzone`
+
+Assign the hook call to a `getRootProps`, `getInputProps`, `isDragActive` constants.
+
+The hook accepts an object with some properties like the accepted file types and if it allows multiple uploads.
+
+Create a nested div and pass `getRootProps` as an attribute of it along with the classes.
+
+inside that div create an input with the `...getInPutProps()` as properties, and spans for the file to be dragged to.
+
+### Styling based on a boolean
+
+Inside the element, add a new attribute named `data-active` equal to the boolean value we want to style, and add a new class
+named `data-[active=true]:stylewewant` what comes after the dash is dynamic.
+
+and with this, by modifying the color when something is being dragged to the dropzone, it will modify the color.
 
 
 
