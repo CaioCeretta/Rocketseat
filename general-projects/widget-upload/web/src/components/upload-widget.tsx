@@ -19,7 +19,7 @@ export function UploadWidget() {
           <div className="flex flex-col gap-4 py-3">
             <UploadWidgetDropzone />
 
-            <div className="h-px bg-zinc-800 border-t border-black/50">
+            <div className="h-px bg-zinc-800 border-t border-black/10">
 
             </div>
 

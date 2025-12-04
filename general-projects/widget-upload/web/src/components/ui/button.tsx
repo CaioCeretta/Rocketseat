@@ -9,7 +9,8 @@ const buttonVariants = tv({
     size: {
       default: 'px-3 py-2',
       icon: 'p-2',
-      small: 'p-1'
+      small: 'p-1',
+
     }
   },
 
