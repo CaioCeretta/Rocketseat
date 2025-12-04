@@ -179,29 +179,68 @@ Create a component for the title, and reuse it on the other components with the 
 
 Install the react-dropzone library
 
-### Finishing Setup
-
-Inside the `useDropzone` hook options add a new property onDrop(acceptedFiles, fileRejections, event) that display which
-file was accepted, rejected (based on some rule, such as types, or if other condition failed).
-
-## Lesson 7 - List uploads Component
-
-## Tailwind CSS v4: Core Changes and New Paradigm 
-
-Tailwind CSS v4 introduces major architectural and configuration shifts, simplifying the setup while enhancing performance
-and customization via native CSS features.
-
-For the button, install the tailwind-variants library, since it will make the generic button more customizable with it.
-
-Inside the button function, utilize the ComponentProps from react and use the 'button' as a generic.
-
 #### useDropzone explanation
 
 Inside the `UploadWidgetDropzone` component, import `useDropzone` hook from `react-dropzone`
 
-Assign the hook call to a `getRootProps`, `getInputProps`, `isDragActive` constants.
+Assign the hook call to a `getRootProps`, `getInputProps`, `isDragActive` constants
+
+1. `getRootProps`:
+
+getRootProps is a function that we must use to apply the necessary properties to the parent element, it injects properties
+like `onClick` and dragging and dropping event handlers to our element.
+**Where to use it**: It should be used in the drop zone container
+
+2. `getInputProps`: 
+
+getInputProps is a function we must use to apply the necessary properties to the file input element. It configures the
+input with the correct properties (such as `type="file"` and `onChange`) and visually hides it, while keeping it functional
+so the user can simulate a click on it. This allows users to click in the drop area to open a file selection dialog box.
+
+3. `isDragActive`
+
+A boolean that indicates the current status of the drag and drop, returning true if a file is being dragged and false
+if not.
 
 The hook accepts an object with some properties like the accepted file types and if it allows multiple uploads.
+
+`onDrop`:
+
+  The three arguments that a onDrop requires, such as acceptedFiles, fileRejections, e events, they don't need to be
+  declared by us, since they are automatically provided by any library that implements a callback structure, when the
+  drop event happen
+
+  They leave the function's default signature.
+
+  `react-drop-zone` passes these arguments to our onDrop callback in the following order:
+
+    1. `acceptedFiles`: An array of `File` objects that passed the validations we configured on the`accept` property.
+    2. fileRejection: an array of files that were rejected
+    3. event: the native browser DragEvent that fired the drop
+
+  These variables aren´t declared by us. Dropzone declares them and send them when we call onDrop
+
+  #### Why can i use them without declaring everything?
+
+  onDrop is a callback, internally react-dropzone does something as
+
+```ts
+  // Inside the lib
+  function handleEvent(event) {
+    const acceptedFiles = [...]
+    const fileRejections = [...]
+
+    // Here we calls the callback passing the arguments
+    props.onDrop(acceptedFiles, fileRejections, event)
+  }
+```
+
+  Which means that:
+
+  • It is the library that creates acceptedFiles and fileRejections and passes everything to the onDrop.
+
+
+### Implementation comments
 
 Create a nested div and pass `getRootProps` as an attribute of it along with the classes.
 
@@ -214,7 +253,46 @@ named `data-[active=true]:stylewewant` what comes after the dash is dynamic.
 
 and with this, by modifying the color when something is being dragged to the dropzone, it will modify the color.
 
+### Finishing Setup
 
+Inside the `useDropzone` hook options add a new property onDrop(acceptedFiles, fileRejections, event) that display which
+file was accepted, rejected (based on some rule, such as types, or if other condition failed).
+
+## Lesson 7 - List uploads Component
+
+Create a `UploadWidgetUploadItem` component for each item we have on that list
+
+Each item will have a div containing four buttons, download, copy url, retry and close, and in order to make then more
+accessible, other than the svg, we add a span with the string className of sr-only, meaning that only screen readers will
+see that text.
+
+Install `react-progress` from `@radix-ui` and before the buttons div, include the Progress for control of each item's
+progress.
+
+### Tailwind Hack
+
+`[&+div]:mt-2`: This attribute means that whenever we have a div after that one, add a margin-top to it
+
+## Lesson 8 - Component's visual state
+
+In this lesson we will focus on adding states and visual between the components.
+
+First we add a, still hard-coded, global progress bar and a state to check if something is being uploaded
+
+Define this check also in the title component, the reason is because it will dynamically change the text
+
+Inside the UploadList create a constant that checks if the list is currently empty
+
+
+
+## Tailwind CSS v4: Core Changes and New Paradigm 
+
+Tailwind CSS v4 introduces major architectural and configuration shifts, simplifying the setup while enhancing performance
+and customization via native CSS features.
+
+For the button, install the tailwind-variants library, since it will make the generic button more customizable with it.
+
+Inside the button function, utilize the ComponentProps from react and use the 'button' as a generic.
 
 
 ### ● Key Architectural Changes 
