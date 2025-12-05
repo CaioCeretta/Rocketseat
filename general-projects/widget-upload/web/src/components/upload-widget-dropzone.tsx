@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useDropzone } from "react-dropzone";
 import CircularProgressBar from "./ui/circular-progress-bar";
 
@@ -12,12 +13,16 @@ export function UploadWidgetDropzone() {
       "image/png": [],
     },
     onDrop(acceptedFiles, fileRejections, event) {
-      console.log(acceptedFiles)
-    }
+      console.log(acceptedFiles);
+    },
   });
 
   return (
-    <div className={`px-3 flex flex-col gap-3`}>
+    <motion.div className={`px-3 flex flex-col gap-3`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+    >
       <div
         data-active={isDragActive}
         className="cursor-pointer text-zinc-600 bg-black/20 p-5 rounded-lg border border-zinc-700 border-dashed
@@ -29,7 +34,11 @@ export function UploadWidgetDropzone() {
 
         {isThereAnyPendingUpload ? (
           <div className="flex flex-col gap-2.5 items-center">
-            <CircularProgressBar progress={uploadGlobalPercentage} size={56} strokeWidth={4} />
+            <CircularProgressBar
+              progress={uploadGlobalPercentage}
+              size={56}
+              strokeWidth={4}
+            />
             <span className="text-xs">Uploading 2 files</span>
           </div>
         ) : (
@@ -37,11 +46,12 @@ export function UploadWidgetDropzone() {
             <span className="text-xs">Drop your files here or</span>
             <span className="text-xs underline">Click to open picker</span>
           </>
-        )
-        }
-      </div >
+        )}
+      </div>
 
-      <span className="text-tiny text-zinc-400">Only PNG and JPG files are supported</span>
-    </div >
+      <span className="text-tiny text-zinc-400">
+        Only PNG and JPG files are supported
+      </span>
+    </motion.div>
   );
 }
