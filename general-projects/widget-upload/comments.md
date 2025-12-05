@@ -283,6 +283,87 @@ Define this check also in the title component, the reason is because it will dyn
 
 Inside the UploadList create a constant that checks if the list is currently empty
 
+## Lesson 9 - Widget Animations
+
+### Parent component animation
+
+Start by installing the motion library and importing `motion` and `useCycle` from motion/react
+
+### useCycle
+
+Like an useState, but it stores values change. The reason why we will opt by it, is because when working with variables
+that will only be used in animations context, motion expects us to use motion's specific hooks to store these values and
+make the animations more performative — and we can even see that the library itself has multiple loops.
+
+even though it is being used in boolean values, it is not actually specific for it. useCycle is literally a simple state
+machine that:
+
+1. receives a list of values in the order we want to toggle the animation
+2. returns:
+  . The current value,
+  . A function that advances to the next step
+
+an example with three states could be
+
+`const [current, cycle] = useCycle("idle", "loading", "success);
+
+and the consecutive calls would be
+
+cycle() -> "loading"
+cycle() -> "success"
+cycle() -> "idle"
+cycle() -> "loading"
+...
+
+
+### motion.div
+
+Replace the div with a motion.div. Every element we will animate using the framer motion, should be used inside a framer
+motion container/element. 
+
+motion.div should receive a property named variants and passing to it each step of the animation, e.g.
+
+1 - First variant, let's say that is when the user still has'nt expanded the widget, define its width and height
+2 - Second variant, is similar to the previous one, but for when the widget is "open"
+3 - Define another attribute `animate` where it will animate based on the isWidgetOpen current value
+
+In the open animation, we can also control its transition length
+
+### motion elements / custom elements
+
+We can notice that when creating a motion element, after the dot, we can see that it has every
+element for their respective animations.
+
+However, let's say we want to modify a component that is not part of the react, like our CircleProgressBar, that comes
+from a library. In this case, we would create a constant, like `AnimatedCircularProgressBar` and assign to it, the motion
+function passing the CircularProgressBar external component as argument
+
+### Dropzone animation
+
+In the component, start by changing the div to a motion.div and defining its initial state, and what we want to happen on
+its animation
+
+### Why the dropzone div animates without a condition?
+
+This is the default functioning of Motion. In the dropzone we are saying
+
+• initial -> value ONLY on the component's first render
+• animate -> final value EVERY time the component is in the DOM
+
+Meaning
+
+. It doesn't depend on the parent
+. It doesn't depend on the variants
+. It doesn't depend on any state
+
+As long as the component exists, motion will animate it.
+
+So whenever motion mounts that component (e.g. the first time it becomes visible), it animates from 0 to 1
+
+### Item animation
+
+We will do the same thing as we did with the dropzone's opacity
+
 
 
 ## Tailwind CSS v4: Core Changes and New Paradigm 
