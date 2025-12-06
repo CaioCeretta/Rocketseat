@@ -7,28 +7,37 @@ import { UploadWidgetMinimizedButton } from "./upload-widget-minimized-button";
 import { UploadWidgetUploadList } from "./upload-widget-upload-list";
 
 export function UploadWidget() {
+  const isThereAnyPendingUpload = true;
+
   const [isWidgetOpen, toggleWidgetOpen] = useCycle(false, true);
 
   return (
-    <Collapsible.Root onOpenChange={() => toggleWidgetOpen()}>
-      <motion.div className="bg-zinc-900 w-[360px] overflow-hidden rounded-xl shadow-shape"
-        animate={isWidgetOpen ? 'open' : 'closed'}
+    <Collapsible.Root onOpenChange={() => toggleWidgetOpen()} asChild>
+      <motion.div
+        data-progress={isThereAnyPendingUpload}
+        className="bg-zinc-900
+      w-[360px] overflow-hidden rounded-xl data-[state=open]:shadow-shape border
+      border-transparent animate-border data-[state=closed]:rounded-3xl
+      data-[state=closed]:data-[progress=false]:shadow-shape
+      progress-border"
+        animate={isWidgetOpen ? "open" : "closed"}
         variants={{
           closed: {
-            width: 'max-content',
+            width: "max-content",
             height: 44,
             transition: {
-              type: 'inertia'
-            }
+              type: "inertia",
+            },
           },
           open: {
-            width: '360',
-            height: 'auto',
+            width: "360",
+            height: "auto",
             transition: {
-              duration: 0.1
-            }
-          }
-        }}>
+              duration: 0.1,
+            },
+          },
+        }}
+      >
         {!isWidgetOpen && <UploadWidgetMinimizedButton />}
 
         <Collapsible.CollapsibleContent>
@@ -43,6 +52,6 @@ export function UploadWidget() {
           </div>
         </Collapsible.CollapsibleContent>
       </motion.div>
-    </Collapsible.Root >
+    </Collapsible.Root>
   );
 }
