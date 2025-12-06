@@ -12,11 +12,58 @@
 
   --opacity-2: 0.02;
   --opacity-8: 0.80;
+
+  --animate-border: border 2s linear infinite;
+
 } 
+
+@layer base {
+    @property --border-angle {
+    inherits: false;
+    initial-value: 0deg;
+    syntax: '<angle>'
+  }
+}
+
+@keyframes border {
+  to {
+    --border-angle: 360deg
+  }
+}
+
+
 
 @layer utilities {
   .shadow-shape {
     box-shadow: var(--shadow-shape);
   }
-}
 
+  .progress-border {
+    &:is([data-state='closed']):is([data-progress='true']) {
+        /* Styles for the */
+        background: linear-gradient(
+          45deg,
+          #09090b,
+          var(--theme-color-zinc-900) 50%,
+          #09090b
+        ) padding-box,
+        conic-gradient(
+          from var(--border-angle),
+          var(--theme-color-zinc-700-48) 80%,
+          var(--theme-color-indigo-500) 86%,
+          var(--theme-color-indigo-300) 90%,
+          var(--theme-color-indigo-500) 94%,
+          var(--theme-color-zinc-600-48)
+        ) border-box;
+
+        /* We may have to define the variables: */
+        --border-angle: 0deg; 
+        --theme-color-zinc-900: #18181b; /* Adjust these values for the theme */
+        --theme-color-zinc-700-48: rgba(63, 63, 70, 0.48); 
+        --theme-color-indigo-500: #6366f1; 
+        --theme-color-indigo-300: #a5b4fc; 
+        --theme-color-zinc-600-48: rgba(82, 82, 91, 0.48); 
+      }
+  }
+
+}
