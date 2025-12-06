@@ -364,6 +364,255 @@ So whenever motion mounts that component (e.g. the first time it becomes visible
 
 We will do the same thing as we did with the dropzone's opacity
 
+## Lesson 10 - Button gradient border
+
+In this lesson we will begin updating the minimized title when it has something in progress. Start creating a boolean
+boolean constant `isThereAnyPendingUpload`.
+
+Add the property `data-progress` to the `motion.div` and base it according to that constant value. Now we can create our
+stylings on the combination of data-progress and data-state values. Therefore, when the pending state is true and the
+`Collapsible` is closed, we will add additional stylings to it
+
+## Animation/Keyframes Breakdown
+
+The global css is the new place to define theme, tokens and utilities. Tailwind v4 introduced the new feature @theme, that
+allows us to declare design tokens directly within the CSS — what we were able to do only in the config
+
+In Tailwind v4, animations and keyframes follow native CSS rules, with some specifics for custom properties:
+
+1. Animating CSS variables (--border-angle)
+
+• We can animate a CSS variable using @property and @keyframes.
+• The variable itself (--border-angle) must be defined with @property in @layer base because Tailwind does not process Houdini
+properties inside @theme.
+
+2. Using @theme
+
+• @theme is meant for design tokens (colors, fonts, spacing, animation strings).
+• We can define the animation string there, e.g.:
+
+`--animate-border: border 2s linear infinite;`
+
+• Tailwind understands token and keyframes defined here **only if they modify native CSS properties**
+• Since `--border-angle` is a **custom property**, its keyframe must be outside of `@theme`
+
+3. Placing @keyframes
+
+• For native properties: inside @theme block
+• For CSS variables (e.g. `--border-angle`): outside `@theme`
+
+If an animation doesn't modify a CSS custom property, such as the @property we are defining inside `@layer base{...} ` and
+use it as `@theme { @keyframes name { ... }}`, but since we are modifying a non native CSS, a property border-angle we create, it must be outside
+of the theme
+
+Our correct code is:
+
+--animate inside @theme
+@layer base {} for the property
+and @keyframes outside @theme
+
+For the border-linear-gradient, we will create a custom class more complex to it, which will be
+
+### Custom class explanation
+
+### Initial animation and keyframe creation
+
+Step by step:
+• 1. we defined the --animate-border variable inside the @theme block
+• 2. Tailwind converted the variables into frameworks tokens, allowing us to use animate-border
+• 3. In tailwind v4, we are allowed to
+  . @keyframes can be declared directly in the CSS
+  . Tailwind automatically registers the animation
+  . We can reference this keyframe in a variable inside theme
+  in other words
+  ```
+  @keyframes border {
+    to {
+      --border-angle: 360deg
+    }
+  }
+  ```
+
+  and on the theme
+
+  `--animate-border: border 2s linear infinite;`
+
+• Then, tailwind understands that there exist an animation called border in the global css and provides it as an utility
+
+### @property works because tailwind no longer interferes in CSS
+
+  •  Tailwind v3 processed CSS with PostCSS
+    -> And certain features like @property some times didn't work
+
+  • Tailwind v4 does not use anymore PostCSS by default, it is:
+    - It's own engine
+    - It doesn't "aggressively" transform our CSS
+    - It doesn't remove @property
+    - Doesn't rename variables
+    - Doesn't rewrite keyframes
+  
+  As a result we were able to define @property --border-angle inside @layer base
+
+### @layer works perfectly
+
+  Tailwind v4 still supports @layer, but in a different way
+
+  • We are able to create fully customized utilities
+  • They coexist with tailwind classes
+  • Tailwind doesn't try to extract none of it — Final CSS includes as we wrote.
+  • Which means that our @layer utilities method works without having to extend anything
+
+### Selector with `:is()` works because Tailwind v4 doesn't limit complex selectors anymore
+
+  #### a) What `:is(...)` does?
+
+  • `:is()` is a pseudo-class that allows us to write one selector that matches any selector in its list. Think of it as
+  “selector OR selector OR selector.”
+
+  Example:
+
+  button:is(.primary, .secondary){ ... }
+
+  it matches these two classes and we can use it to reduce repetition in complex selectors, make longer selectors easier
+  to maintain, and allows the combination that would otherwise require multiple rewritten selectors
+
+  In our code 
+
+  ```css
+  .progress-border {
+  &:is([data-state='closed']):is([data-progress='true']) {
+    background: ...;
+    }
+  }
+  ```
+
+  the nesting is expanded, it becomes
+
+  ```css
+    .progress-border:is([data-state='closed']):is([data-progress='true']) {
+      background...
+    }
+  ```
+
+  which is equivalent to 
+
+  ```css
+    .progress-border[data-state='closed'][data-progress='true'] {
+      background ...
+    }
+  ```
+
+  One thing to note is, that this form
+
+  :is([a]):is([b])
+
+  is an AND, not an OR.
+
+  The element must satisfy both pseudo classes
+
+    #### a) What the & does (nesting)
+
+  The `&` stands for: "the parent selector in this nested block".
+
+  It is used in modern CSS nesting (and older Sass-style nesting)
+
+  Example:
+
+    ```cs
+      card {
+        &.active { ... } // -> card is active
+        & > .icon {...} // -> card > .icon
+      } 
+    ```
+
+  Therefore, in our case:
+
+  ```ts
+    .progress-border {
+      &:is([data-state="closed"])
+    }
+  ```
+
+  becomes
+
+  `.progress-border:is([data-state='closed'])`
+
+  So `&` simply represents .progress-border when the nested selector is flattened.
+
+
+  ### Last but not least: Am i using inside that class the keyframes and animations defined
+
+1. Yes, we registered a property named --border-angle, and defined a @keyframe to this variable, changing its degree from
+0 to 360.
+
+Which means that:
+  • We have a custom animatable property (`--border-angle`)
+  • One animation named border
+  • This animation makes the variable to spin
+
+2. But where am i applying this animation? 
+  
+  We defined the --`animate-border` design token inside of theme, animate border will infinitely execute that border 
+  keyframe we created. Now, it is a part of tailwind and can be accessed with the utility `animate-border`.
+
+  However, we defined an animation token, but we did not tell the element to use this animation
+
+3. How are we really calling it?
+
+  The progress border class, makes use of `:is` to check if both the collapsible state is closed, and the progress is true.
+  
+  We do not have to call `animate` because radix + tailwind + data-attributes + css transitions are doing this automatically
+  for us
+
+  1. Radix toggles a data attribute automatically, modifying the data.state
+  2. Our animation is defined in tailwind using the both these conditions
+  3. The animation only starts because the attributes change and meet the requirements. Radix changes the attributer,
+  Tailwind sees the new attribute and applies the animation class, and CSS "turns on" the animation
+
+4. Why does it feels like "the class turn on"? 
+
+Because in CSS
+
+• Selectors = conditions
+• When conditions match, the rule applies
+• When conditions stop matching, the rule is removed
+
+So it behaves almost like "switching on/off a class", even though it is a pure selector logic.
+
+And since we have an animation inside that block, as soon as the selector matches the animation starts and stop.
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Collapsible Explanation
+
+Radix UI's `Collapsible.Root` controls an **internal** state named `open`. This open value changes whether the component is
+expanded or not. By default, radix managed the open state automatically, unless we transform it on a controlled component,
+with `open` and `onOpenChange` .
+
+• `onOpenChange`: This callback is automatically fired by radix every time the user:
+  . Clicks on the `Collapsible.Trigger`
+  . Presses Enter/Space on the trigger
+  . Uses the keyboard to navigate
+  . Any open/close interaction
+
+- It receives the new state
+  . `true` -> just open
+  . `false` -> just closed 
+
+Radix automatically modifies the value using a open state internally within the `Root` itself.
+
 
 
 ## Tailwind CSS v4: Core Changes and New Paradigm 
