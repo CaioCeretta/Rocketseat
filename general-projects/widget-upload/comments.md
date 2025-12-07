@@ -582,6 +582,85 @@ So it behaves almost like "switching on/off a class", even though it is a pure s
 And since we have an animation inside that block, as soon as the selector matches the animation starts and stop.
 
   
+## Lesson 11 - Store Setup With Zustand
+
+There are different ways to handle the state storing, like useReducer. However, nowadays there are libraries that more
+go beyond `useReducer`, they help us to have a better control of the renderings inside react. State management libraries
+are essential because they provide **granular control over component rendering**, ensuring components only update when
+the specific data they consume changes. This directly solves the performance issues where basic solutions trigger unnecessary
+re-renders.
+
+We will have a greater granular control as soon as we have a state management library, which we can also add into it,
+plugins/middlewares that are ways we can add behavior to our state, like loggings, storage persistence so when he come
+back, he will continue seeing the same information, and so on.
+
+We need to be careful with this, as have previously seen, state management isn't simply sharing an updated information
+among two or more components. We must be careful, as simply sharing data is not state management. Tools that merely offer
+shared state often only provide a **Context API substitution**. The key flaw of Context is its coarse-grained rendering
+model — when the system does not control the rendering in fine-grained elements, but yes in larger units, like a complete
+component, a subtree or a full page
+
+State management is providing a unified form of performing updates in these states in an immutable manner and share them
+across the components. It is like creating a "single source of truth" — the only origin of the truth inside our app.
+
+The best two options are **jotai** and **zustand** 
+
+### Zustand
+
+**Zustand** is a replacement for Redux. Its syntax is much simpler, but it follows the same core idea:
+having a **single shared state** that multiple components can subscribe to.
+
+Unlike **Jotai**, which works with many small independent pieces of state called **atoms**, Zustand typically manages asingle, centralized store.
+Each component selects only the slice of the state it needs, and it re-renders when that specific slice changes.
+
+### Implementation
+
+Create a folder store and create a `uploads.ts` file where we will put everything we want to store. 
+
+Every **store** — place where we can put multiple states — is a hook by default.
+
+**zustand** `create` receives a callback function, where we will have access to `set` and `get`
+
+`set` is used for whenever we want to make a state update
+`get` when we want to retrieve something of the state
+
+One useful tip for type safety is to define a type with we information we will have on the state. The state will have a
+list of uploads that instead of being typed as an array, will be typed as `Map`
+
+`Map` is a structure in JS that allows us to create a key/value object that gives us a faster access.
+
+The reason we chose Map is because each upload has to be uniquely identified, because in our app, we have operations based
+on each item's identifier. Non necessarily all the uploads shown on the list is already saved on the database, the database
+may have not already generated an ID. That identifier used in the Map is an id generated on the front-end, since we can´t
+use yet any information from the file to say that it is unique.
+
+Upload is going to be a type with a name property and a file property, which is the reference to that file uploaded by
+the user.
+
+Type zustand's create as `UploadState` and return the values expected by the create method, which will at least be an empty
+map.
+
+Similar to other state management tool, it will also return the functions to make the state updates. Inside the UploadState
+type, define a function addUploads and declare it on the create method
+
+On our dropzone file, that is where we will make our uploads, start by destructuring the useUploads function and retrieve
+the addUploads function, and add it inside the onDrop block
+
+Inside the addUploads function, define a for using the set parameter to add each new file
+
+set is similar to useState, but with some differences. We can use it to replace the state as a whole passing a new object
+to the set or we also can can it to partially replace it, by using a similar syntax that useState, using the current
+retrieved as a parameter to update that partial state we want to.
+
+Since uploads is a map, we can use the set function, provided by the map, pass the uploadId we generate, along with the
+upload const we created, in accordance to the type Upload, and set will return us a `Map`
+
+### Upload List Component
+
+Now that already modified the state, we can go inside this component, and check if the list is empty based on that uploads
+state.
+
+
 
 
 
