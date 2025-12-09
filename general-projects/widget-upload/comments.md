@@ -836,8 +836,25 @@ Modify the progress bar in case the upload fall in one of these two options
 
 and to inform that the process is complete, do the same as we did to inform the status is canceled, but for when it succeeds
 
+## Progress Monitoring
 
+Modify the Upload type by adding two new properties:
 
+`uploadSizeInBytes: number`: How many bytes already have been loaded
+`originalSizeInBytes: number`: size that comes from the file
+
+• update UploadFileToStorage, add a new property to monitor the progress of the upload.
+
+• Inside onProcessUpload, add the new property onProcess to the `uploadFileToStorage` function, and where we update the
+state, now, also, inform that `uploadSizeInBytes` it receives as parameter
+
+• In the item component, use that new originalSizeInBytes as parameter to the formatBytes function, and define a progress
+constant.
+
+• Define a progress constant that multiples the uploadedInBytes by the original size and divide by 100, and update the
+value wherever we hard-code the progress
+
+• Modify the try catch by checking if the error is an instance of CanceledError otherwise the catch falls into Error
 
 ## Tailwind Group
 
