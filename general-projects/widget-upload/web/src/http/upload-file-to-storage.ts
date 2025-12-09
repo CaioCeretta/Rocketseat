@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/noUnreachable: <explanation> */
 import axios from "axios";
 
 interface UploadFileToStorageParams {

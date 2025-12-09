@@ -68,12 +68,17 @@ export function UploadWidgetUploadItem({
             <Link2 className="size-4" strokeWidth="1.5" />
             <span className="sr-only">Copy remote URL</span>
           </Button>
-          <Button size="small">
+
+          <Button
+            disabled={['canceled', 'error'].includes(upload.status)}
+            size="small">
             <RefreshCcw className="size-4" strokeWidth="1.5" />
             <span className="sr-only">Retry upload</span>
           </Button>
 
-          <Button size="small" onClick={() => cancelUpload(uploadId)}>
+
+          <Button
+            disabled={upload.status !== 'progress'} size="small" onClick={() => cancelUpload(uploadId)}>
             <X className="size-4" strokeWidth="1.5" />
             <span className="sr-only">Cancel Upload</span>
           </Button>
