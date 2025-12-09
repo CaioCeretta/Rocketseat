@@ -789,13 +789,14 @@ With inner becomes
 
 Start by creating a folder "http" and a "upload-file-to-storage.ts" file
 
-### uploadFileToStorage
+
+### initial uploadFileToStorage
 
 1. This method will accept a file as props, and use `axios` to make the API calls
 2. Define a `data: FormData` constant, and on each post request, append this file to that request
 3. Define a `processUpload` function inside useUploads body
 
-### processUpload function
+### initial processUpload function
 
 This function retrieves the upload from zustand storage, based on the uploadId of the upload passed as parameter, and call
 the uploadFileToStorage method with that specific upload.
@@ -806,7 +807,62 @@ use `get().uploads.get(uploadId)` the second get comes from the Map type.
 At the moment it will only be used to upload to the server, but in the future it will also be used to compressing the file,
 resize, and more.
 
+## Cancellation and retries
 
+1. define a new status prop on the upload type, and create every constant with the status of `progress`
+2. define a new method cancelUpload for the UploadState
+3. In the cancel upload method, utilize the set to modify that state, we set a new state spreading over the upload we retrieved
+from the database, and modify the upload status. This modify the status on the code, but it still don't stop the upload
+4. Inside the uploadFileToStorage function, define a new interface for that call options, a signal of type AbortSignal,
+which is how we cancel something on the web, and use this signal on the axios call.
+5. Define a new `abortController` property inside the `Upload` type in the Upload interface as optional, and
+add it whenever a new Upload is created in the `addUploads` function
+   
+### processUpload - pt2
+
+Inside the uploadFileToStorage parameters, add a new object with the property signal using `upload.abortController.abort`
+
+### cancelUpload
+
+Utilize upload's signal and call `upload.abortController.abort()`.
+
+On the upload-widget-item, start by importing the function from the state and whenever the cancel button is clicked, 
+invoke the cancel function
+
+To update the view and the user can see that the upload was canceled, add a new div beneath the file compression to inform
+in case the status is error or canceled.
+
+Modify the progress bar in case the upload fall in one of these two options
+
+and to inform that the process is complete, do the same as we did to inform the status is canceled, but for when it succeeds
+
+
+## Tailwind Group
+
+A `group` is a special Tailwind class that transforms the element in a "group", allowing that child elements react to the
+parent state, such as hover, focus, data-* attributes, aria state, etc.
+
+Without group a child can only style itself
+With group a child can be styled based on what happens to the parent
+
+A group is commonly used when a child must have his state modified based on its parent, like:
+
+```ts
+  <div class="group">
+    <button class="group-hover:text-red-500" />
+  </div>
+
+  // or
+  <Progress.Root
+    className="group"
+    data-status={upload.status}
+  >
+
+  <div className="
+  group-data-[status=success]:bg-green-500
+  group-data-[status=error]:bg-red-500" 
+  />
+```
 
 ## useUploads confusion
 
