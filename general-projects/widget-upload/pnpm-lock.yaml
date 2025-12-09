@@ -8,15 +8,15 @@ importers:
 
   .:
     dependencies:
-      tailwind-merge:
-        specifier: ^3.4.0
-        version: 3.4.0
+      immer:
+        specifier: ^11.0.1
+        version: 11.0.1
 
 packages:
 
-  tailwind-merge@3.4.0:
-    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
+  immer@11.0.1:
+    resolution: {integrity: sha512-naDCyggtcBWANtIrjQEajhhBEuL9b0Zg4zmlWK2CzS6xCWSE39/vvf4LqnMjUAWHBhot4m9MHCM/Z+mfWhUkiA==}
 
 snapshots:
 
-  tailwind-merge@3.4.0: {}
+  immer@11.0.1: {}
