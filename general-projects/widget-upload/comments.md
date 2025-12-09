@@ -837,6 +837,8 @@ Modify the progress bar in case the upload fall in one of these two options
 and to inform that the process is complete, do the same as we did to inform the status is canceled, but for when it succeeds
 
 
+
+
 ## Tailwind Group
 
 A `group` is a special Tailwind class that transforms the element in a "group", allowing that child elements react to the
