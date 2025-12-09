@@ -16,6 +16,8 @@ export function UploadWidgetUploadItem({
 }: UploadWidgetItemProps) {
   const cancelUpload = useUploads((store) => store.cancelUpload);
 
+  const progress = Math.min(Math.round((upload.uploadBytesInSize * 100) / upload.originalSizeInBytes), 100)
+
   return (
     <motion.div
       className="p-3 rounded-lg flex flex-col gap-3 shadow-shape-content bg-white/[0.02]
@@ -33,15 +35,15 @@ export function UploadWidgetUploadItem({
         </span>
 
         <span className="text-xxs text-zinc-400 flex gap-1.5 items-center">
-          <span className="line-through ">{formatBytes(upload.file.size)}</span>
+          <span className="line-through ">{formatBytes(upload.originalSizeInBytes)}</span>
           <div className="size-1 rounded-full bg-zinc-700" />
           <span>
             300KB
             <span className="text-green-400 ml-1">- 94%</span>
           </span>
           <div className="size-1 rounded-full bg-zinc-700" />
-          <span>43%</span>
-          {upload.status === "progress" && <span>45%</span>}
+          <span>{progress}</span>
+          {upload.status === "progress" && <span>{progress}%</span>}
           {upload.status === "error" && <span className="text-red-400">Error</span>}
           {upload.status === "canceled" && <span className="text-yellow-400">Canceled</span>}
         </span>
@@ -51,11 +53,12 @@ export function UploadWidgetUploadItem({
           data-status={upload.status}
         >
           <Progress.Indicator
-            className="bg-indigo-500 h-1 w-[43%]
+            className={`bg-indigo-500 h-1 w-[${progress}%]
+             transition-all
              group-data-[status=success]:bg-green-400
              group-data-[status=canceled]:bg-yellow-400
-             group-data-[status=error]:bg-red-400"
-            style={{ width: upload.status === 'progress' ? '43%' : '100%' }} />
+             group-data-[status=error]:bg-red-400`}
+            style={{ width: upload.status === 'progress' ? `${progress}` : '100%' }} />
         </Progress.Root>
 
         <div className="absolute top-2.5 right-2.5 flex items-center gap-1">

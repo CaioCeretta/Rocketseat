@@ -1,3 +1,4 @@
+import { CanceledError } from "axios";
 import { enableMapSet } from "immer";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -8,6 +9,8 @@ export interface Upload {
 	file: File;
 	status: "progress" | "success" | "error" | "canceled";
 	abortController: AbortController;
+	originalSizeInBytes: number;
+	uploadBytesInSize: number;
 }
 
 type UploadState = {
@@ -29,23 +32,37 @@ export const useUploads = create<UploadState, [["zustand/immer", never]]>(
 
 			try {
 				await uploadFileToStorage(
-					{ file: upload.file },
+					{
+						file: upload.file,
+						onProgress(sizeInBytes) {
+							set((state) => {
+								state.uploads.set(uploadId, {
+									...upload,
+									status: "success",
+								});
+							});
+						},
+					},
 					{ signal: upload.abortController.signal },
 				);
+			} catch (err) {
+				if (err instanceof CanceledError) {
+					set((state) => {
+						state.uploads.set(uploadId, {
+							...upload,
+							status: "canceled",
+						});
+					});
 
-				set((state) => {
-					state.uploads.set(uploadId, {
-						...upload,
-						status: "success",
+					return;
+				} else {
+					set((state) => {
+						state.uploads.set(uploadId, {
+							...upload,
+							status: "error",
+						});
 					});
-				});
-			} catch {
-				set((state) => {
-					state.uploads.set(uploadId, {
-						...upload,
-						status: "error",
-					});
-				});
+				}
 			}
 		}
 
@@ -76,6 +93,8 @@ export const useUploads = create<UploadState, [["zustand/immer", never]]>(
 					file,
 					abortController,
 					status: "progress",
+					originalSizeInBytes: file.size,
+					uploadBytesInSize: 0,
 				};
 
 				set((state) => {
