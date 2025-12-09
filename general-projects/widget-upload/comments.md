@@ -615,65 +615,237 @@ Each component selects only the slice of the state it needs, and it re-renders w
 
 ### Implementation
 
-Create a folder store and create a `uploads.ts` file where we will put everything we want to store. 
+First, create a `store` folder and inside it a file called `uploads.ts`.
 
-Every **store** — place where we can put multiple states — is a hook by default.
+Every **Zustand store**, the place where we keep our shared state — is built through a hook.
+The create function from Zustand receives a callback with two parameters:
 
-**zustand** `create` receives a callback function, where we will have access to `set` and `get`
+• `set` → used to update the store
 
-`set` is used for whenever we want to make a state update
-`get` when we want to retrieve something of the state
+• `get` → used to read values from the store
 
-One useful tip for type safety is to define a type with we information we will have on the state. The state will have a
-list of uploads that instead of being typed as an array, will be typed as `Map`
+#### Typing the State
 
-`Map` is a structure in JS that allows us to create a key/value object that gives us a faster access.
+For type safety, start by defining a TypeScript type representing the store’s structure.
+In our case, the store will contain a list of uploads, but instead of typing it as an array, we type it as a Map.
 
-The reason we chose Map is because each upload has to be uniquely identified, because in our app, we have operations based
-on each item's identifier. Non necessarily all the uploads shown on the list is already saved on the database, the database
-may have not already generated an ID. That identifier used in the Map is an id generated on the front-end, since we can´t
-use yet any information from the file to say that it is unique.
+#### Why use a Map?
 
-Upload is going to be a type with a name property and a file property, which is the reference to that file uploaded by
-the user.
+Map is a key–value data structure in JavaScript that provides faster and more direct lookups than arrays.
 
-Type zustand's create as `UploadState` and return the values expected by the create method, which will at least be an empty
-map.
+This is important because:
 
-Similar to other state management tool, it will also return the functions to make the state updates. Inside the UploadState
-type, define a function addUploads and declare it on the create method
+1. Each upload must be uniquely identifiable.
+2. Not all uploads will already exist in the database at the moment they're shown.
+3. The database might not have generated an ID yet.
+4. Therefore, we generate a temporary ID on the frontend, and that becomes the key in the Map.
 
-On our dropzone file, that is where we will make our uploads, start by destructuring the useUploads function and retrieve
-the addUploads function, and add it inside the onDrop block
+Each upload item will follow an Upload type containing at least:
 
-Inside the addUploads function, define a for using the set parameter to add each new file
+• `name` → the file name
+• `file` → a reference to the uploaded File object
 
-set is similar to useState, but with some differences. We can use it to replace the state as a whole passing a new object
-to the set or we also can can it to partially replace it, by using a similar syntax that useState, using the current
-retrieved as a parameter to update that partial state we want to.
+Next, type Zustand’s create store as UploadState and define the structure it should return.
+At minimum, the store starts with an **empty Map**.
 
-Since uploads is a map, we can use the set function, provided by the map, pass the uploadId we generate, along with the
-upload const we created, in accordance to the type Upload, and set will return us a `Map`
+Just like other state management tools, **Zustand** stores also return functions for updating the state.
+Inside UploadState, define an addUploads function and implement it inside the create call.
 
-### Upload List Component
+### Set new uploads
 
-Now that already modified the state, we can go inside this component, and check if the list is empty based on that uploads
-state.
+Inside addUploads, use a loop to iterate over the dropped files and update the store using Zustand’s set.
+
+### How set Works
+
+`set` is similar to React’s useState, but more flexible:
+
+• We can replace the entire state by passing an object.
+• or we can partially update the state, by receiving the current state and returning the updated slice.
+
+Because `uploads` is a Map, we can call the Map’s `.set()` method to store each new upload:
+
+• use the generated uploadId as the key
+• create an object following the Upload type
+• `.set()` returns the updated Map, which we store back in Zustand
+
+## Using the uploads state inside the dropzone component and display on the list
+
+• Inside the dropzone component, inside the onDrop block, invoke the `addUploads` method with the `acceptedFiles`
+• Inside the uploads list component, start by destructuring the useUploads we created on the store, and as argument for
+the use uploads, pass the store => store.uploads
+• Inside upload list component, in the condition where the list is not empty, we are doing the following:
+
+1. `uploads` is a Map<string, Upload>, therefore, each entry stores a string: `Upload`
+2. `uploads.entries()`
+  . Returns an iterator that produces tuples in the format [key, value] for each entry in the `Map`
+  . For our `Map`, each tuple has the type `[string, upload]`
+3. `Array.from(uploads.entries())`
+  . Converts the iterator into an array of tuples [[key, value], [key, value], ...].
+  . This is needed to call `.map` directly (we could also use spread: [...upload.entries()])
+4. `map([uploadId, upload] => { ... })
+  . Here we destructure each tuple [key, value]  into two local variables: uploadId and upload
+  . `uploadId` is the key of the `Map` (in our case, a UUID string)
+  . `upload` is the value associated with that key (the `Upload` object)
+  . Note: These variable names (`uploadId`, `Upload`) are arbitrary, we choose them. However the types come from the `Map`,
+  not the variable names.
+5. What `map` is doing
+  . It iterates through each tuple in the array and returns a new array where each entry is the result of the cb function,
+  in this case, a JSX element
+  . The final result is an array of React components.
+6. Typescript inference
+  . If `uploads` is typed as `Map<string, Upload>`, ts automatically infers:
+    .`uploadId: string`
+    .`upload: Upload`
+  
+
+## Upload item
+
+  Modify `UploadListItem` component  to accept a upload as property
+
+  Create a new interface  that will receive an upload of type Upload defined in the store.
+ 
+  Use the new upload property to modify the hard coded component
+
+### formatFileSize Util
+
+  Create a formatFileSize util function to format the uploaded file size.
+
+## Using Immer with Zustand
+
+Immer is a library used combined with state management tools and it helps us to deal with react's immutability. In react
+when we are going to alter an information, such as uploads, we always have to completely replace this information, we can't
+simply modify the information. We should not simply make an array.push and put the new information on the end, because we
+always have to return the complete array.
+
+Immer removes this necessity, we are able to make the updates the way we want and the immer itself will calculate how it
+should do this update in an immutable way.
+
+And zustand already has an internal library dedicated to immer.
+
+
+### Implementation
+
+Inside the uploads store, start by importing immer from `zustand/middleware/immer`
+
+Wrap create's callback with immer and add a generic, along with the state, a [['zustand/immer', never]] array
+
+By default, immer does not have type to Js's Map/set, so we have to import `enableMapSet` from immer and invoke it before
+calling the hook
+
+With immer, our set does not have anymore to return the current uploads state, only use a
+
+```ts
+  set(state => {
+    state.uploads.set(uploadId, upload)
+  })
+```
+
+and now it will automatically render on screen whenever a new file is uploaded
+
+## Zustand Map Re-render
+
+### Why wasn't without immer wasn't working?
+
+• Map.set mutates the same Map
+• Zustand makes the shallow comparison
+• Reference doesn't change, so zustand doesn't recognize
+• No re-render happens
+
+### Why it started working with immer?
+
+### ****Important: enableMapSet() is required*****
+
+Without it, immer does not know how to correctly deal with Map/Set 
+
+Because Immer
+
+1) Creates a draft proxy of that state 
+  - In other words, `state.uploads` becomes a "fake mutable state"
+
+2) Any mutation inside set(state => {...})
+  - Immer intercepts it
+  - marks that slice as modified
+  - in the end, generates a new immutable state
+
+Meaning that
+
+  `state.uploads.set(uploadId, upload)`
+
+With inner becomes
+
+  ```ts
+    const copiedMap = new Map(originalMap)
+    copiedMap.set(uploadId, upload)
+    return copiedMap
+  ```
+
+3) As a result, the reference changes
+  - zustand detects the change
+  - react re-renders it
+  - list updates in the same way     
+
+
+## Upload Files in the API
+
+Start by creating a folder "http" and a "upload-file-to-storage.ts" file
+
+### uploadFileToStorage
+
+1. This method will accept a file as props, and use `axios` to make the API calls
+2. Define a `data: FormData` constant, and on each post request, append this file to that request
+3. Define a `processUpload` function inside useUploads body
+
+### processUpload function
+
+This function retrieves the upload from zustand storage, based on the uploadId of the upload passed as parameter, and call
+the uploadFileToStorage method with that specific upload.
+
+The way we can get this id inside immer is very simple. Since zustand create inner function have a set and a get, we can
+use `get().uploads.get(uploadId)` the second get comes from the Map type.
+
+At the moment it will only be used to upload to the server, but in the future it will also be used to compressing the file,
+resize, and more.
 
 
 
+## useUploads confusion
 
+`useUploads(selector)` is the state slice that we are selecting, in this case, `uploads`.
 
+However, `useUploads` isn't only a slice. It is the hook generated by Zustand to access the complete state and any function
+defined in it,
 
+### What is `useUploads`?
 
+`useUploads` is a custom hook that works as an entry port for the complete store we created
 
+1. The full store
 
+  The object we return inside create is the full store state
 
+  ```ts
+    // This  is the full store (upload state)
+    return {
+      uploads: new Map(), // <-- 1. the data slice
+      addUploads // <-- 2. The update function
+    }
+  ```
 
+  The type defined (`UploadState`)  represents all the properties (data and functions) of this store
 
+2. Selector function
 
+  When we call `useUploads(store => store.uploads)` we are using a selector function. This function receives the full store
+  as an argument, which is what we call store
 
+  zustand passes us the complete object so that we can select which slice we want.
 
+3. Conclusion
+  
+  • `useUploads` (without arguments): hook that connects our component to the store
+  • `store` (inside the selector): full state object we defined ({ uploads, addUploads })
+  • **Selector Return**: Is the `uploads` slice we chose, and this is what the hook returns to the component
+      
 ### Collapsible Explanation
 
 Radix UI's `Collapsible.Root` controls an **internal** state named `open`. This open value changes whether the component is
