@@ -16,7 +16,9 @@ export function UploadWidgetUploadItem({
 }: UploadWidgetItemProps) {
   const cancelUpload = useUploads((store) => store.cancelUpload);
 
-  const progress = Math.min(Math.round((upload.uploadBytesInSize * 100) / upload.originalSizeInBytes), 100)
+  const progress = upload.compressedSizeInBytes
+    ? Math.min(Math.round((upload.uploadSizeInBytes * 100) / upload.compressedSizeInBytes), 100)
+    : 0
 
   return (
     <motion.div
@@ -39,7 +41,7 @@ export function UploadWidgetUploadItem({
           <div className="size-1 rounded-full bg-zinc-700" />
           <span>
             300KB
-            <span className="text-green-400 ml-1">- 94%</span>
+            <span className="text-green-400 ml-1">{progress}</span>
           </span>
           <div className="size-1 rounded-full bg-zinc-700" />
           <span>{progress}</span>
@@ -62,12 +64,14 @@ export function UploadWidgetUploadItem({
         </Progress.Root>
 
         <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
-          <Button size="small">
-            <Download className="size-4" strokeWidth="1.5" />
-            <span className="sr-only">Download complete</span>
+          <Button size="small" disabled={upload.status !== "success"} asChild>
+            <a href={upload.remoteUrl}>
+              <Download className="size-4" strokeWidth="1.5" />
+              <span className="sr-only">Download complete</span>
+            </a>
           </Button>
 
-          <Button size="small">
+          <Button size="small" disabled={!upload.remoteUrl} onClick={() => upload.remoteUrl && navigator.clipboard.writeText(upload.remoteUrl)}>
             <Link2 className="size-4" strokeWidth="1.5" />
             <span className="sr-only">Copy remote URL</span>
           </Button>
@@ -87,6 +91,6 @@ export function UploadWidgetUploadItem({
           </Button>
         </div>
       </div>
-    </motion.div>
+    </motion.div >
   );
 }
