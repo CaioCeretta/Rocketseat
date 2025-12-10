@@ -920,7 +920,43 @@ to that button, and wrap the icon in an `a` tag.
 
 Set the href as the upload remote url and add the attribute download
 
+## Finishing touches
 
+### 1. Scroll Area
+
+When adding multiple files to the widget, since we have a fixed height, it ends up cropping the last items and does not
+create a scroll.
+
+To fix this, we make use of radix's `ScrollArea` component
+
+By wrapping our list in a scroll area.
+
+Create customized ScrollArea.Scrollbar for which orientation we would like, in this case, only vertical
+
+### 2. File Name too Big
+
+For this, we simply modify the width of the file name in the item and truncate
+
+### 3. Retry Button
+
+Create a new retry upload function inside the upload store that invokes the processUpload again with that id. However, if
+we invoke the processUpload with that uploadId, it may already begin with a progress and we don't want it.
+
+For this, we modify the processUpload function, by calling the updateUpload right at the top, and set that uploadId already
+defined properties to zero/undefined. 
+
+We must not forget to modify the abortController, otherwise it will be retried as is it already was aborted. Therefore, we
+change this property to be optional and not pass it when creating a new upload.
+
+We only create the abort controller when we process the upload, meaning that every time we initiate a new upload, we will
+have a new AbortController
+
+Modify the retry button to use this function.
+
+### 4. Download Button
+
+Create a download-url in the utils folder and define a function that makes a fetch for th desired url, and generate a download
+link.
 
 ## Tailwind Group
 
