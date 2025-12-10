@@ -1,3 +1,5 @@
+import * as ScrollArea from '@radix-ui/react-scroll-area'
+
 import { useUploads } from "../store/uploads";
 import { UploadWidgetUploadItem } from "./upload-widget-upload-item";
 
@@ -14,17 +16,32 @@ export function UploadWidgetUploadList() {
       </span>
 
 
-      {isUploadListEmpty ? (
-        <span className="text-xs text-zinc-400">No uploads added</span>
-      ) : (
-        <div className="space-y-2">
-          {Array.from(uploads.entries()).map(([uploadId, upload]) => {
-            return <UploadWidgetUploadItem key={uploadId} upload={upload} uploadId={uploadId} />
-          })
-          }
-        </div>
+      <ScrollArea.Root className='overflow-hidden'>
+        <ScrollArea.Viewport className='h-[220px]'>
+          {isUploadListEmpty ? (
+            <span className="text-xs text-zinc-400">No uploads added</span>
+          ) : (
+            <div className="space-y-2">
+              {Array.from(uploads.entries()).map(([uploadId, upload]) => {
+                return <UploadWidgetUploadItem key={uploadId} upload={upload} uploadId={uploadId} />
+              })
+              }
+            </div>
+          )}
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar
+          className='flex touch-none select-none bg-zinc-800 p-0.5 transition-colors duration-160ms
+          ease-out data-[orientation=horizontal]:h-2.5 data-[orientation=vertical]:w-2.5'
+          orientation='vertical'>
+          <ScrollArea.Thumb className='relative flex-1 rounded-[10px] bg-zinc-600 before:absolute before:left-1/2
+          before:top-1/2 before:min-h-11 before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2'>
 
-      )}
+
+          </ScrollArea.Thumb>
+
+
+        </ScrollArea.Scrollbar>
+      </ScrollArea.Root>
 
     </div>
   )
