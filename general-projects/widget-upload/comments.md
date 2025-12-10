@@ -856,6 +856,72 @@ value wherever we hard-code the progress
 
 • Modify the try catch by checking if the error is an instance of CanceledError otherwise the catch falls into Error
 
+## Calculate pending uploads state and global percentage
+
+• Start by creating a new hook inside the uploads store named `usePendingUploads`
+
+• usePending uploads invoke useUploads and retrieve the uploads with status `processing`
+
+• The way it uses to calculate a global percentage is by defining a reduce that sums all the uploads size in byte, and how
+much each file has been uploaded, then defining a globalPercentage constant with how much has been uploaded by each file
+divided by the total bytes, divided by 100, and then returning it to the user.
+
+• Assign the `isThereAnyPendingUploads` constant to the returned value of that function. But this may lead to an issue.
+
+### useShallow
+
+When using hooks, zustand recommends to make use of the `useShallow` when we create these custom hooks that retrieve values
+from the state and return more than one value, such as an object, so it can memoize it accordingly.
+
+Therefore, wrap the function inside useUploads in a useShallow hook
+
+### 0% Progress On Completion
+
+In the beginning of the processUpload function, we are retrieving all the uploads, and we continue using the same value
+over and over, just creating new files on the store, to fix this, we create a new function that will update that specific
+upload state based on the id, and call that function every time we upload the state.
+
+**And we must never forget that immer asks us to never return a state update, and just perform the updates with set**
+
+This will make:
+
+1. Every time we make an update, it will fetch the upload again without having to worry of having an out-dated version
+2. In the set state, before the upload.set, update that upload by passing the id and the data we want to change, in this
+case, the status
+3. On the uploadFileStorage, inside the set, call the uploadUpload function, passing the data we want to update.
+
+## Compress, Resizing and Image Compression
+
+We start by compressing the image so it fit a maximum and minimum width
+
+Start by creating a utils function, defining the allowed mime types, and creating a new `FileReader()` instance which wil
+allow us to read a "physical" file bit by bit through the browser.
+
+on the reader.onload create a new Image and attribute to it.
+
+And we fit this resizing to desired width and height by making use of "canvas"
+
+## Download Image from Cloudflare
+
+Here we make use of a `SlotComponent`, it basically works like this
+
+For example, we have our button component. It is a button and behaves like a button. However, if at any point we wish to
+wish to, inside HTML, transform it into another tag, while maintaining its styling and use, we can do it with Slot components
+
+Start by installing the react-slot from @radix/ui, and importing Slot inside the button component.
+
+Define a new button property asChild and inside the function scope, define a new constant component that will check if the
+asChild is true, it will be assigned to Slot, which will be whatever button child, otherwise, to 'button'
+
+Now, on the function return, instead of returning a <button> we return a <Component>
+
+Inside the upload widget item, inside the download button, which we want to behave as an anchor, add the property asChild
+to that button, and wrap the icon in an `a` tag.
+
+Set the href as the upload remote url and add the attribute download
+
+
+
 ## Tailwind Group
 
 A `group` is a special Tailwind class that transforms the element in a "group", allowing that child elements react to the
