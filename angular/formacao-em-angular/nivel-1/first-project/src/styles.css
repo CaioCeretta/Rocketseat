@@ -1,1 +1,35 @@
 /* You can add global styles to this file, and also import other style files */
+*, *::before, *::after {
+  box-sizing: border-box
+}
+
+/* Remove browser's default margins and paddings */
+
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, li, figure, figcaption,
+blockquote, dl, dd, input, textarea, select, button {
+  margin: 0;
+  padding: 0;
+}
+
+/*Ensures that the font is never less than 16px, but increases as the screen gets larger
+*/
+html {
+  font-size: max(16px, 1em + 1vw)
+}
+
+/* defines the family and the base line height for the whole app*/
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* Basic styling for media and lists */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Remove list markers */
+ul, ol {
+  list-style: none
+}
