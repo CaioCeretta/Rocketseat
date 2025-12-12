@@ -455,6 +455,238 @@ With this other approach, we don't have to do all that property binding stuff li
 to the input value (input)="updateText($event), so we create a function to modify the internal texto property and create
 a single call to   make both these calls using [(ngModule)]="property"
 
+## Lesson 6 - Styling a component with global classes
+
+The global css, is the styles.css located at the root and they may affect all the components of our app. This file is
+widely used to remove the global stylings that our browser creates by default so we can have full control of this.
+
+###  What this means? font-size: max(16px, 1em + 1vw)
+
+max(a, b) chooses the biggest value between a and b, in this case, 16 and 1em + 1vw.
+16px is the absolute minimum size, nothing will be the less than 16px
+
+1em = current font-size of the html itself
+1vw = 1% of the viewport width. As the screen width increases, its value also increase
+
+
+###  Utility class
+
+We can also make use of global utility variables, such as
+
+```css
+  //global.css
+  :root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --spacing-unit: 16px;
+  }
+
+  .uc-text-center {
+    text-align-center
+  }
+
+  .uc.mt-16 {
+    margin-top: 16px;
+  }
+
+```
+
+And we can also mix our modules html/css with the global classes, like
+
+```
+  // app html
+    <div class="container uc-text-center uc-mt-16">
+      <p>I am a text</p>
+    </div>
+  //
+
+  //app css
+    container {
+      background-color: grey;
+      padding: 20px;
+    }
+
+  
+    p {   
+        color: var(--primary-color)
+    }
+    
+```
+
+### External Variables CSS
+
+This example will manipulate styles from external components.
+
+In this example, we will use angular material, and inside of it, inspect that element in the browser, find the class
+which we want to modify the color, and inside the styles.css file we have access to these classes from external components.
+
+We can modify it globally or to a specific component, like:
+
+```css
+  .mat-slider .mdc-slider__track--active_fill {
+    border-color: blue;
+  }
+
+  .mat-slider#meu-slider .mdc-slider__track_active_fill {
+    border-color: blue; 
+  }
+```
+
+### Global Layout Classes
+
+Some times we may need to create classes that are a bit more complex (more complex than the utility ones), and they will
+need to be utilized in many different places around our app.
+
+we can put a .container class, to delimit margins/paddings/width inside `styles.css` and share it across the components.
+
+Or define a grid system class, and so on. The nomenclatures we choose for global variables we can prefix with g-className
+if we would like, but not required 
+
+### Separate styles.css in multiple different files
+
+We can create a folder `styles` where we will add files specific for each behavior, like
+
+`reset.css` (that resets the browser styling)
+`variables.css` (For all our variables)
+...
+
+Then, on our styles.css, import all these files into it.  
+
+### Order/Name-Collision
+
+We need to be very careful with defining the correct order so a class doesn't override the other one, as well as avoiding
+class names that are already used by other libraries, for example, creating and using a class items-center which is a name
+already being used by tailwind.
+
+## Lesson 7 - Applying Dynamic Classes
+
+### Style binding
+
+Style binding is a way to dynamically apply styling to the HTML document.  
+
+Style is the html attribute/property that applies isolated custom properties for each element.
+
+In angular, we can make some changes like, if a button is clicked, change the background from blue to red.
+
+e.g.:
+
+```
+  // html file
+  <div [style.css-property]="value"></div>
+
+  // ts file
+  @Component([
+    ...
+  ])
+  export class SimpleComponent {
+    value: any = 'blue';
+  }
+```
+
+or we can define a function to change this value onclick, like `changeColor() {this.value = "blue";}` and event bind this
+style to change onclick 
+
+### Linking a CSS property with units
+
+Units are "px", "em", "rem", "%" and more. The example could be
+
+<div [style.width.px]="widthInPixels"></div>
+<div [style.height]="height + 'px'"></div>
+
+Assume that the widthInPixels property has the value of 100, but since we are using width.px, angular will know that the
+100 is 100px
+
+But the height, since it it isn't represented by height.px, we need to inform the unit prefix manually
+
+### Conditional Linking (using a ternary operator)
+ 
+Let's use for this example a boolean property isActive, which is a boolean that starts as false. We then have a toggle
+function to update its value and this could be something as:
+
+<button [style.background-color]="isActive" ? 'green' : 'gray'"
+  (click)="toggleActive()"
+>
+  Toggle Status
+</button>
+
+### Links with getter functions
+
+Example
+
+```ts
+  myValue: number = 10;
+
+  getColorValue(value: number): string {
+    if(value > 80) {
+      return 'darkgreen'
+    } else if (value > 50) {
+      return 'orange'
+    } else {
+      return 'darkred'
+    }
+  }
+
+  // increases the value
+  increaseValue() {
+    if(this.myValue < 100) {
+      this.myValue += 10;
+    }
+  }
+```
+
+This function will change the color based on the myValue instance property.
+
+### Links with interpolations
+
+Basically the interpolation generates a string, and with this string, it will modify the value, similar to property binding.
+
+ We use the brackets when we want something dynamic, when we are calling a function or referencing a property value.
+
+ When we want to simply pass down a string, we can use interpolations
+
+ for this example we have
+
+ ```ts
+  	widthInPx: number = 200;
+
+	increaseWidth() {
+		this.widthInPx += 50;
+	}
+```
+
+this in our ts and in our html
+
+```
+<div style="width:  {{widthInPx}}px; background-color: lightblue; padding: 10px;">
+  Dynamic Width
+</div>
+
+<button (click)="increaseWidth()">Increase</button>
+```
+
+This is a new angular syntax, so vscode will add squiggly lines but it will work as intended.
+
+### Same example but with backticks
+
+```
+<div style="{{`width:  ${widthInPx}px; background-color: lightblue; padding: 10px;`}}">
+  Dynamic Width
+</div>
+
+<button (click)="increasseWidth()"
+```
+
+This is another syntax, where we create template strings for the variables
+
+### Linking with Object Properties
+
+We can use objects inside our style bindings
+
+
+
+
+
+ 
 
 
 
