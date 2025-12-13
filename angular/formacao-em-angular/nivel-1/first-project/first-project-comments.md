@@ -558,7 +558,7 @@ We need to be very careful with defining the correct order so a class doesn't ov
 class names that are already used by other libraries, for example, creating and using a class items-center which is a name
 already being used by tailwind.
 
-## Lesson 7 - Applying Dynamic Classes
+## Lesson 7 - Applying Dynamic Classes 1
 
 ### Style binding
 
@@ -680,13 +680,206 @@ This is another syntax, where we create template strings for the variables
 
 ### Linking with Object Properties
 
-We can use objects inside our style bindings
+We can use objects inside our style bindings, like this:
+
+```ts
+  //ts
+	styles = {
+		textAlign: "center",
+		"background-color": "lightblue",
+		padding: `${this.padding}px`,
+	};
+
+	increasePadding() {
+		this.padding += 50;
+
+		this.styles = { ...this.styles, padding: `${this.padding}px` };
+	}
+  ```
+  //html
+  ```html
+  <div [style]="styles">Dynamic width with interpolation</div>
+  <button (click)="increasePadding()">Increase Padding</button>
+  ```
+
+Since the styles property is an array of styles, they all were applied to the div, with the only difference that they must
+be written in camelCase inside JS.
+
+### Important Note
+
+When we are dealing with a style binding using an object, we can't simply update a single property, we need to update the
+object as a whole. If we want to update just the padding, we need to attribute to styles a new object, spreading over the 
+current styles object and modifying just the property we want
+
+
+## Lesson 8 - Style binding in practice
+
+Dynamic Text Component Example: We use <p [style.font-size.rem]="textSizeRem"> to apply the value in rems of that property
+dynamically to the p.
+
+Progress Bar Component Example: Simple example where we modify the `[style.width.px]` based on the property and increase
+it on click
+
+Dynamic Text Component Example: We used <p [style.font-size.rem]="textSizeRem"> to apply the value in rems of that property
+dynamically to the p.
+
+Square Pop Up Component Example: 
+
+div element that moves 10% from left to right on each click, with 90% at maximum
+
+and toggle a pop up on click makes the pop up come from not visible in the screen on each
+
+
+ ## Lesson 9 - Applying dynamic styling 2 - Class Binding
+
+### Example No 1. Class binding: 
+
+In html we simply get a given element, and add certain classes to it with class="".
+
+However, by doing this way, they are hard-coded, they don't change based on expressions/logics, they will be always the
+same.
+
+In order to change this behavior and make it more dynamic in angular, we can make use of the class binding
+
+Where the value is a property of the component and use a similar syntax to property binding.
+
+Javascript, we don't have the reserved word "class", classes are usually referenced as classList and classNames. Angular
+developers created this syntax with the reserved word `class`, that is used on property binding, and it is a shortcut for
+us to be able to modify the classes of a HTML element.
+
+e.g. `[class.css-class]="value"`
+
+this way, it will conditionally apply the class based on the value
+
+### Example No 2. Link the class attribute to some string ([class]="string")
+
+```ts
+  //Class property
+  listClasses = "full-width outlined";
+
+  // Class HTML
+  <ul [class]="listClasses">
+    Items
+  </ul>
+```
+
+In this case, we make the property binding on the class attribute, without specifying any class, and the property that will
+be on the class will be the string property defined in the ts file
+
+### Example No 3. Link class attribute to an array of strings 
+
+```ts
+  //Class property
+  sectionClasses = ['expandable', 'elevated']
+
+  addClass() {
+    this.sectionClasses.push('visible'); // Doesn't work
+
+    this.sectionClasses = [...this.sectionClasses, 'visible'] // Works
+  }
+  
+  //HTML
+  <section [class]="sectionClasses">
+    Section
+  </section>
+
+  <button (click)="addClass()">
+    Add Class
+  </button>
+```
+
+We must ensure immutability by creating a new array, spread the already existing classes, with the new one we want.
+
+Now these three css classes are going to be applied to our `section`
+
+### Example No 4 - Link the attribute class to an object ([class]="Record<string, any>")
+
+In addition to arrays and strings, we can pass down an object
+
+```ts
+  // Class
+    sectionClasses:any = {
+      expandable: true,
+      elevated: false,
+    }
+
+    closeSection() {
+      this.sectionClasses.expandable = false // does not work
+      
+      this.sectionClasses = {...this.sectionClasses, expandable: false;} // works
+      } 
+
+    addClass() {
+      this.sectionClasses = { ...this.sectionClasses, visible: true} 
+    }
+
+  // HTML
+
+  <section [class]="sectionClasses">
+    Section
+  </section>
+
+  <button (click)="addClass()">
+    Add Class
+  </button>
+
+  <button (click)="closeSection()">
+    Close Section
+  </button>
+
+  ```
+
+  ### Example No 5. Linking with interpolation
+
+```ts
+  // Class
+    classes = 'visible container'
+    //or
+    classes = { visible: false, container: true} // only the true is applied to the interpolation
+
+
+  // HTML
+      <div class="{{classes}}">Section</div>
+```
+
+We can even do ternary operations, like
+
+```
+  <div class="{{isLogged ? "visible container" : "hidden}}>Section</div>
+```  
+
+And interpolations with back-ticks, like
+
+```
+  <div class={{
+    `
+      container
+      ${isLogged ? 'visible' : 'hidden'}
+
+  }}>Section</div>
+```
+
+We can even have the same scenario as above, which would be
+
+```
+  <div class="container"
+      class="{{isLogged ? 'visible' : 'hidden'}}">Section</div>
+```
+
+In this example, angular accepts that we use two attributes with the same name, using one for the static values and other
+for the dynamic values.
 
 
 
 
 
- 
+
+
+
+
+
+
+
 
 
 
