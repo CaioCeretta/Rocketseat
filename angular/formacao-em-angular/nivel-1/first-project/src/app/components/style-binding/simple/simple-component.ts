@@ -51,6 +51,6 @@ export class SimpleComponent {
 	increasePadding() {
 		this.padding += 50;
 
-		this.styles = {...this.styles, padding: this.}
+		this.styles = { ...this.styles, padding: `${this.padding}px` };
 	}
 }
