@@ -139,4 +139,51 @@ We can also notice that by inspecting the component, it is treating that style a
 Emulated, we will see that angular came back to its natural behavior, and added a random class to the p tag so it does'nt
 conflict with any other component.
 
-## Lesson 2 - View Encapsulation Strategy
+## Lesson 2 - View Encapsulation Emulated Strategy
+
+Default angular behavior so the styles do not conflict with other components. Strategy used by 99.9% of the cases.
+
+Component styles are restricted to the component's scope itself. Global styles still affect them, and they can directly
+style the children within the component's template, but not on the children's own templates.
+
+### Modifying angular specific attribute
+
+We must be cautious and avoid modifying those specific selectors, like creating in style.css something as
+
+```
+<!-- Exact attribute selector -->
+p[_ngcontent_ng-c3432423] {
+  <!-- Styles to be applied only to the element that contains  this specific attribute -->
+  color: blue;
+}
+```
+
+This is troublesome because
+
+1 - We won't know which component it is affecting
+2 - If we need to refactor the components, be it by replacing, modifying its position, this attribute may end up changing.
+
+### Angular not putting specific attributes on components
+
+Even though a component may have the default view encapsulation, angular may not put attribute on every component because
+it may not find it necessary, components that don't have specific styles and so on, usually don't have any.
+
+By adding a single style to one of these components, angular will apply an attribute
+
+### Custom button component
+
+`product-card` is going to be the parent of this component, and even though that component has styles for the p tag and
+button has a p tag, we will notice that it won't affect this component won't be affected by it.
+
+But assume we want to change the styling based on a parent's logic. We can do this by passing to it, custom attributes to
+the child, like `<app-custom-button [changeColor]="value"></app-custom-button>` and based on that value property inside
+the parent, execute some logic.
+
+## Lesson 3 - View Encapsulation - Shadow DOM strategy
+
+
+
+
+
+
+
