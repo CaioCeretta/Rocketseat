@@ -869,6 +869,59 @@ We can even have the same scenario as above, which would be
 In this example, angular accepts that we use two attributes with the same name, using one for the static values and other
 for the dynamic values.
 
+ ## Lesson 9 - Class binding in practice
+
+### Example no 1 - Active Button
+
+Simple button that transitions the background-color by clicking on it, and activating it.
+
+binding the class property to the isActive property and adding the class if isActive is true.
+
+Example no 2 - Invalid-Input
+
+In this scenario we have an input bound to the event checkInput, this event, on every letter we type, it passes the event
+to a function that checks wether that value exists, if no, it adds an error class and a error message, informing that the
+input is required to have a value.
+
+Again, we are typing the event we receive as Event, which is a generic Event type, and in order to retrieve that input
+value after the event, we must ensure that the event.target is an HTMLInputElement.
+
+And we use an `@if(hasError)` on the property, the @if is a structural angular directive. Angular compiler understands it
+and allow us to include or remove an HTML block (or a component) from the DOM based on a boolean conditional. In the same
+way that *ngIf used to do.
+
+### Example no 3 - Simple Visibility
+
+In this example we have a text with a class that will remove its opacity in case the button is clicked. It has two classes:
+one defined with class binding, which is the dynamic one based on the class property (`class.hidden="isHidden" ), and the
+class message-box, which is a static one.
+
+It has a transition for the opacity onClick, and the click chooses whether it appears or not.
+
+## Lesson 10 - Correctly applying margin and width 
+
+The tip shown in this class helps us with the use and reuse for the components.
+
+Assume we have a Card, but want to use it in different places with different sizes. Therefore, for reusable components,
+we must always avoid to hard-code the its dimensions (width, height, margins, paddings, ...)
+
+For this example, we are going to create two components, the card component and the card consumer.
+
+### Card Component
+
+Card component will simply be a skeleton, where it has the header, containing the title, the body, and the footer of the
+card. Then it will have some basic color styling. And no logic inside of it. 
+
+### Card Consumer
+
+Card consumer will be the parent of the card, he will the one having all the logic of the card.
+
+It will have card components but with different sizes for each card, just for exemplifying that this is how we should do
+in order to make this reusable.
+
+
+
+
 
 
 
