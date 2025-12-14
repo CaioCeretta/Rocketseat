@@ -1,6 +1,9 @@
 import { Component } from "@angular/core";
 // import { BotaoFlat } from "./botao-flat/botao-flat";
-import { ClassBinding } from "./class-binding/class-binding/class-binding";
+// import { InvalidInput } from "./class-binding/invalid-input/invalid-input";
+// import { SimpleVisibility } from "./class-binding/simple-visibility/simple-visibility";
+// import { CardComponent } from "./general-components/card-example/card-component/card-component";
+import { CardConsumer } from "./general-components/card-example/card-consumer/card-consumer";
 // import { DynamicText } from "./components/style-binding/dynamic-text/dynamic-text";
 // import { ProgressBar } from "./components/style-binding/progress-bar/progress-bar";
 // import { SimpleComponent } from "./components/style-binding/simple/simple-component";
@@ -12,7 +15,7 @@ import { ClassBinding } from "./class-binding/class-binding/class-binding";
 
 @Component({
 	selector: "app-root",
-	imports: [ClassBinding],
+	imports: [CardConsumer],
 	templateUrl: "./app.html",
 	styleUrl: "./app.css",
 })
