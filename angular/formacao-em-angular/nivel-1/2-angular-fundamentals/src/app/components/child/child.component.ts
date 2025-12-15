@@ -9,7 +9,9 @@ import { Component } from "@angular/core";
     </p>
   `,
 	styles: `
-
+    p {
+      color: var(--shadow-color)
+    }
     :host {
       display: block; /* Web components are inline by default, this will be used to occupy a full line, allowing width/height */
       border: 1px solid  #ddd;

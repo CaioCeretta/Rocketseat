@@ -19,8 +19,14 @@ import { ChildComponent } from "../child/child.component";
 
   `,
 	styles: `
-
+    :host {
+      --shadow-color: blue; 
+    }
+    p {
+      color: var(--secondary-color);
+    }
   `,
+
 	encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class ShadowHostComponent {}
