@@ -266,6 +266,36 @@ context, including those inside child components, will inherit this style, provi
 However, this mechanism is specific to the native browser implementation of Shadow DOM. It does not mean that the same
 component, when used inside an Emulated component, will inherit the parent's styling (due to the CSS scoping attributes).
 
+## Lesson 4 - Using the :root pseudo class
+
+This pseudo class is used to directly access the HTML of our page. Commonly where we define the variables that can be used
+across the app.
+
+Inside styles.css, create a `:root` selector, e.g.
+
+```css
+:root {
+  --primary-color: orange;
+  --secondary-color: grey;
+}
+```
+Now, these variables can be used inside every place of our application, even if it is a ShadowDOM.
+
+And we can also define default dimensions, that we are going to use all across our design system
+
+### root variables inside the ShadowDOM host
+
+Inside the shadow host, which is the component defined as shadow dom, we can utilize something like
+
+```css
+:host {
+  --shadow-color: blue; 
+}
+```
+
+This shadow-color variable, will be available across every component inside this shadow root. So if  we go into the child,
+and utilize var(--shadow-color), it will utilize the given color
+
 
  
 
