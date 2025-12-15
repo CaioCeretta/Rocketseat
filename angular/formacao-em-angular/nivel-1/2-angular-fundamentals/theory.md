@@ -179,7 +179,97 @@ But assume we want to change the styling based on a parent's logic. We can do th
 the child, like `<app-custom-button [changeColor]="value"></app-custom-button>` and based on that value property inside
 the parent, execute some logic.
 
-## Lesson 3 - View Encapsulation - Shadow DOM strategy
+## Lesson 3 - View Encapsulation - None strategy
+
+Basically the styles used inside the component are treated as global and can affect all other components and not only itself.
+Since it does not have scope attributes.
+
+And we should not use it unless it is extremely necessary.
+
+## Lesson 4 - View Encapsulation - Shadow DOM strategy
+
+It is a more complex encapsulation and we are almost never going to use it. 
+
+We are probably going to need it when creating web components. that are reusable components.
+
+Web Components are reusable, front-end only, micro-frontend building blocks. They are primarily chosen because the Shadow
+DOM fully encapsulates their logic and styling, preventing style leaking to the external page. While most global styles
+are blocked, it's important to remember that CSS inherited properties (like font-family and color) will still cross the
+Shadow DOM boundary. This strong isolation makes them ideal for Micro-Frontends to prevent CSS and DOM conflicts.
+
+Essentially:
+
+Component Styles: Shadow Host styles will be considered global inside the ShadowDOM.
+Global Styles: The page global style and styles defined in the styles.css won't affect the components inside the ShadowDOM.
+Child component styles: Child components inside the ShadowDOM are not affected by the page global styles.
+
+### Example:
+
+Assume we have a web application that will load multiple web components, that are custom components which have a specific
+responsibility. Such as a button that makes an HTTP request and a specific processing, it is a separate project that can
+be reused in multiple web pages and two other web components inside that app
+
+Inside our app, we have our global styling, but we don't want our app styles to conflict with the web component's specific
+styles. Because let's say that our styles.css have a container class and each web component also have its container class.
+
+Without ShadowDOM they would end up conflicting, and this is the central idea.
+
+ShadowDOM is a browser's functionality, not exclusive to angular itself. 
+
+Now, assume we have defined in the global css that the button background color is red but we have a component, that defines
+that same background-color blue and it has a shadow dom encapsulation. This will make this component to ignore the global
+styling and apply the component's style.
+
+We can even notice that by opening the developer tools, we see that this component is now wrapped on a
+```html
+#shadow-root (open)
+<style>
+...
+```
+
+Almost as if it was its own app. We can notice how it is not angular specific, but a browser API when defining a <video>
+tag. Opening the dev tools, we will also see that the video has a #shadow-rot because it doesn't want the global styles
+defined by us to affect its own.
+
+## Lesson 4 - Using the host and host-context
+
+How to use the pseudo classes :host and :host-context
+
+Create two components, one child component, and one shadow host.
+
+:host points directly do the component's selector, not to the html elements inside the component. 
+
+Every time this tag is reused on the app, or if we have a web component that we want to delimit its sizes, and more, we
+can use the :host. Therefore, for every style we create inside the component, targeting the pseudo class :host, the styles
+are going to be applied to that selector.
+
+The child component will have five different variations based on given attributes.
+
+Meaning that, when we implement the app-child if it has an attribute, for example, child is a child of shadow-host which
+uses the ShadowDom view encapsulation strategy. If we pass one of these attributes a child expect, like `theme=primary`,
+it will apply the styles defined in the child 
+
+This way, we are simulating different reuses of the same component inside the app with different styles or behaviors. 
+
+### Host context
+
+The host context is based on the parent element that implements our host .
+
+So basically, inside the parent component that calls the child, if we wrap the child calls with a div and add a class to
+it. This div will be the **host context**
+
+### Reinforcement Note
+
+When a Shadow DOM component defines a style like color: red on a parent element, all elements inside its Shadow DOM
+context, including those inside child components, will inherit this style, provided the property is CSS-inheritable.
+
+However, this mechanism is specific to the native browser implementation of Shadow DOM. It does not mean that the same
+component, when used inside an Emulated component, will inherit the parent's styling (due to the CSS scoping attributes).
+
+
+ 
+
+
 
 
 
