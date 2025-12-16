@@ -297,11 +297,30 @@ This shadow-color variable, will be available across every component inside this
 and utilize var(--shadow-color), it will utilize the given color
 
 
- 
+## Lesson 5 - Flow Control and Template Variables
+
+Pretty similar to js, with the difference that it is more focused on the component's  template
+
+- @if, @else-if and @else
+
+. Focused on the structures, we can decide which HTML element we want to show based on conditionals.
+
+And this comparison is usually made using the component's class properties
+
+- @switch
+
+Similar to if
+
+- @for
+
+Used to make loops over a list. And for each item of the list, we can show an HTML element, infos about the item, and so
+on.
 
 
+- @let   
 
-
+Angular's new directive that allows us to create a variable inside the template and easy the reading/organizing of our
+flows.
 
 
 
