@@ -114,7 +114,9 @@ Format returns us a new string, which is the result of the formatting
 
 ## Lesson 5 - Working with Dates
 
-We can crete a `day` variable of the type `DateOnly`. By printing that variable we are going to see 01/01/0001.
+### DateOnly
+
+We can create a `day` variable of the type `DateOnly`. By printing that variable we are going to see 01/01/0001.
 
 If we want to modify that date, inside its parentheses we need to inform its year, month, day
 
@@ -127,3 +129,15 @@ parameter new CultureInfo("PT-BR"). To further formatting, we pass as fist param
 The language already has some pre formats, such as "d", "D", ... But we also can create our own
 
 e.g. "d MMMM yyyy" which  will reproduce "15 December 2025"  or "dd/MMMM/yyyy which returns 15/december/2025
+
+### DateTime
+
+Similar to DateOnly, but with time included
+
+To get the current day, we use DateTime.Now;
+
+To get only the current day, DateTime.Today
+
+And more.
+
+

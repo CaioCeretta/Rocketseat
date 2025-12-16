@@ -10,7 +10,12 @@ namespace ProjetoTeste2
 
             string dayInText = day.ToString("d MMMM yyyy", new CultureInfo("en-US"));
 
-            Console.WriteLine(dayInText);
+            DateTime day1 = new DateTime(2025, 12, 15);
+
+            DateTime today = DateTime.Today;
+
+            Console.WriteLine(today);
+
         }
     }
 }
