@@ -71,7 +71,7 @@ string.Replace(desiredLetter, letterToReplace)
 string.Contains("stringToCheck") - Checks if the variable contains the string
 string.Equals("stringToCheck") - Checks if the string is exactly equal to the property content
 
-## Lesson 3 - Operations with texts
+## Lesson 4 - Operations with texts
 
 Imagine we have a string variable which has a sentence, and a second string variable with other sentence. We then want to
 concatenate them creating a third variable with a single paragraph
@@ -112,5 +112,18 @@ the {0}, {1}, {2} and so on. **We have to fill all the dynamic variables we defi
 Format returns us a new string, which is the result of the formatting
 
 
-## Dates types
+## Lesson 5 - Working with Dates
 
+We can crete a `day` variable of the type `DateOnly`. By printing that variable we are going to see 01/01/0001.
+
+If we want to modify that date, inside its parentheses we need to inform its year, month, day
+
+DateOnly type have some properties like, .ToShortDateString(), .ToLongDateString(), which modify the date in the formats
+we are used to.
+
+If we want to modify the language to portuguese, as instance. We must to convert the day to a string, and pass to it the
+parameter new CultureInfo("PT-BR"). To further formatting, we pass as fist parameter of ToString, the desired format
+
+The language already has some pre formats, such as "d", "D", ... But we also can create our own
+
+e.g. "d MMMM yyyy" which  will reproduce "15 December 2025"  or "dd/MMMM/yyyy which returns 15/december/2025
