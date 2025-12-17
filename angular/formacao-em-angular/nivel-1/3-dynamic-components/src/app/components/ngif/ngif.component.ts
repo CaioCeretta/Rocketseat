@@ -1,11 +1,11 @@
+import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
-import { NgIf } from "../../../../node_modules/@angular/common/common_module.d-NEF7UaHr";
 
 type UserRole = "admin" | "editor" | "viewer";
 
 @Component({
 	selector: "app-if",
-	imports: [NgIf],
+	imports: [CommonModule],
 	templateUrl: "./ngif.component.html",
 	styleUrl: "./ngif.component.css",
 })
