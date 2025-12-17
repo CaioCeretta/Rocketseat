@@ -27,4 +27,47 @@ flows.
 
 If will be useful for letting the component's template dynamic. We can display an HTML snippet based on a condition.
 
-@if replaces the previous `ngIf` directive that we may still find in some projects.
+### @if
+
+@if replaces the previous `ngIf` directive that we may still find in some projects and it is used to determine the conditions.
+
+@else if
+
+In case @if condition returns false (not required)
+
+@else
+
+In case no conditions are met
+
+@if have a nice functionality where it enables us to store the value of the expression. For example
+
+### as variable
+
+`@if(userRole === 'admin'; as result) {...}`
+
+the as variable used in the control flow is used to capture the result of the conditional expression and reuse it inside
+the block, without having to call a function or accessing a complex variable multiple times
+
+In practice, if we use a simple boolean, like @if(userRole === "admin")
+  . result will be the boolean `true`
+  . it has low utility in this case, because we already know it is true
+
+This is often useful when the @if condition involves an Observable, using a pipe async or a function that returns a transformed
+object/value
+
+### *ngIf directive
+
+The syntax was basically, using this directive inside a tag, made the expression inside the quotes, and choose whether to
+display the element based on the conditional
+
+And the else were a little more complex. A ng-template should be created, and this ng-template had the id of that template,
+which would usually consist of a div inside of it. And back to the first ngIf, after the expression we would add a semicolon
+else ng-templateId. And this would have to be done for every else condition we wanted to add
+
+And this is the main reason why angular introduced the new **Control Flow (@if) **, the syntax of *ngIf with `else` was
+counter-intuitive because it used to mix attributes with template references.
+
+
+
+
+
