@@ -67,6 +67,9 @@ else ng-templateId. And this would have to be done for every else condition we w
 And this is the main reason why angular introduced the new **Control Flow (@if) **, the syntax of *ngIf with `else` was
 counter-intuitive because it used to mix attributes with template references.
 
+And in order to use it. We also have to import it inside the ts imports the `CommonModule` that exports these utility
+functions like ngIf, ngFor, and more. And we could also import simply the NgIf
+
 
 
 
