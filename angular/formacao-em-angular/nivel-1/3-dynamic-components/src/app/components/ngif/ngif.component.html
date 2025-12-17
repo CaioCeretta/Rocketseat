@@ -1,0 +1,29 @@
+<h2>Content by Role</h2>
+
+<div *ngIf="userRole === 'admin'; else editorBlock">
+  <div>
+    <h3>Admin Panel</h3>
+    <p>Total access to the system.</p>
+    <button>Manage Users</button><button>System Config</button>
+  </div>
+
+  <ng-template #editorBlock>
+    <div *ngIf="userRole === 'editor': else viewerBlock">
+      <h3>User Panel</h3>
+      <p>Can create and edit contents</p>
+      <button>New Article</button> <button>Manage Articles</button>
+    </div>
+  </ng-template>
+  <ng-template #viewBlock>
+    <div>
+      <h3>Visualization Panel</h3>
+      <p>Only can visualize content</p>
+      <button>See Articles</button>
+    </div>
+  </ng-template>
+
+  <br>
+
+  <button (click)="setUserRole('admin')">Define as Administrator</button>
+  <button (click)="setUserRole('editor')">Define as Editor</button>
+  <button (click)="setUserRole('viewer')">Define as Viewer</button>
