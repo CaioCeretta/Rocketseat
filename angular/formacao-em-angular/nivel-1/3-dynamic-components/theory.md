@@ -117,7 +117,7 @@ Track used to be called trackBy: trackById, where this trackById is going to be 
 this case, implicit) to this tracking.
 
 
-Lesson 5 - @let
+## Lesson 5 - @let
 
 @let is a new angular syntax that allow us to define a local variable and re-use it across a template, similar to the JS
 one.
@@ -136,6 +136,48 @@ with `@let personAddress = person.address;` and adds a conditional with this var
 
 Showing us that this fulfill the purpose of defining a variable on the template and using it across the html.
 
+## Lesson 6 - Communication between components
+
+- Passing values to the component with @Input: Parent to child
+- Receiving values fr om the component with @Output: child to parent
+- Lifecycle ngOnChanges: Every time we receive a value on an input, this lifecycle method is fired
+- Lifecycle ngOnInit vs Constructor: Difference between the life cycle ngOnInit and the constructor — Where do we have to
+execute some logic when initiating the component
+
+## Lesson7 - @Input
+
+We initially are using the let to get the quantity of items and using a for to render it.
+
+Let's say that we think that the component has too many responsibilities, how can we create a componentization to improve
+the comprehension and readability?
+
+To achieve this, we have to create a new component to separate that @for div, where we display the person from the component
+that fetches the person list and pass i t forward.
+
+The `@Input` property requires an initializer. But if we are sure that the value is never going to be undefined when we
+call this property, we can use a non-null assertion on it
+
+An input can also receive an object containing its validations, alias, and more, as a property. But in many cases, we
+utilize the raw @Input() propertyName: Type
+
+For this example, we are going to create an input component, and inside the input folder, create another component for the
+person item:
+
+Since we want to use that person for the input template we will do the following:
+
+. First we will start by moving the div that represents a person to the new person component
+. Reference this new component inside the for loop of the input component.
+. To send the person information to the child, we are going to pass it via @Input.
+. In the child component's ts we create a property annotated with @Input() using the interface defined in the person's
+array, like `@Input() person: IPerson`
 
 
+. To use this new property, first we have to import the child component inside the parent's ts, and inside of the component
+where we call the <app-person> component, and add an attribute with
+`[nameOfTheInput]="variableWeWantToPassIn"`
+
+### Best place to store our interfaces
+
+Even though in the case above we are storing the interface inside the component. The ideal was that the interfaces were in
+a separated files, such as a app/interfaces
 
