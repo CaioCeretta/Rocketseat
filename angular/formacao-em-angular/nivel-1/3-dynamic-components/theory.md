@@ -115,3 +115,5 @@ containing a ngIf define go to a pre defined ng-template for the else clause
 
 Track used to be called trackBy: trackById, where this trackById is going to be a class method that receives the id (in
 this case, implicit) to this tracking.
+
+
