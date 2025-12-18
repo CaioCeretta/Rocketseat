@@ -1,0 +1,12 @@
+@let itemsQuantity = getPeopleQuantity();
+
+@if(itemsQuantity) {
+<h1>Items exist: {{ itemsQuantity }}</h1>
+} @else {
+<h1>List Empty</h1>
+}
+<button (click)="removePerson()">Remove Item</button>
+
+@for(person of people; track person.id ) {
+<app-person [person]="person"></app-person>
+}

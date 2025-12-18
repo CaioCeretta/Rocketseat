@@ -1,0 +1,11 @@
+<div>
+  <p>Name: {{ person.name }}</p>
+  <p>Age: {{person.age}}</p>
+
+  @let personAddress = person.address;
+
+  @if(personAddress) {
+  <p>Street: {{ personAddress.street + ', ' + personAddress.number }}</p>
+  }
+
+</div>
