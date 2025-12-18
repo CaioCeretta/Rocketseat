@@ -1,0 +1,19 @@
+@let itemsQuantity = getPeopleQuantity();
+
+@if(itemsQuantity) {
+<h1>Items exist: {{ itemsQuantity }}</h1>
+} @else {
+<h1>List Empty</h1>
+}
+<button (click)="removePerson()">Remove Item</button>
+
+@for(person of people; track person.id ) {
+<div>
+  <p>Name: {{ person.name }}</p>
+  <p>Age: {{person.age}}</p>
+
+  @let personAddress = person.address; @if(personAddress) {
+  <p>Street: {{ personAddress.street + ', ' + personAddress.number }}</p>
+  }
+</div>
+}
