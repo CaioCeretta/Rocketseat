@@ -1,9 +1,12 @@
 import { Component } from "@angular/core";
-import { IfComponent } from "./components/if/if.component";
+import { ForComponent } from "./components/for/for.component";
+import { NgforComponent } from "./components/ngfor/ngfor.component";
+// import { IfComponent } from "./components/if/if.component";
+// import { SwitchComponent } from "./switch/switch.component";
 
 @Component({
 	selector: "app-root",
-	imports: [IfComponent],
+	imports: [ForComponent, NgforComponent],
 	templateUrl: "./app.component.html",
 	styleUrl: "./app.component.css",
 })
