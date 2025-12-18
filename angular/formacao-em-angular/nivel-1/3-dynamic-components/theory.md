@@ -117,3 +117,25 @@ Track used to be called trackBy: trackById, where this trackById is going to be 
 this case, implicit) to this tracking.
 
 
+Lesson 5 - @let
+
+@let is a new angular syntax that allow us to define a local variable and re-use it across a template, similar to the JS
+one.
+   
+In our example we have an array of person containing two objects where one of them has the property address and the other
+does not.
+
+Then, in our template, where it displays the list of people, in case one of these people has an address, it creates a variable
+with `@let personAddress = person.address;` and adds a conditional with this variable
+
+```ts
+@if(personAddress) {
+  <p>Street: {{ personAddress.street + ', ' + personAddress.number }}</p>
+}
+```
+
+Showing us that this fulfill the purpose of defining a variable on the template and using it across the html.
+
+
+
+
