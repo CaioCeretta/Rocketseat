@@ -262,7 +262,7 @@ If we want ngOnChanges to be fired and to treat that new value. We need to make 
 a new object on the peoples array that will spread over all the already existing person properties, and update only its name.
 like: `this.people[0] = { ...this.people[0], name: "Updated" };`
 
-### Is this 
+### Does this approach violates the immutability?
 
 I thought so, since we are modifying an item on the array in a specific position, but the anser is **no**, and we are actually
 using the correct pattern.
@@ -277,4 +277,60 @@ But what the code is really doing is:
 The object is being re-created, not updated. It is a new memory reference but with the same values.
 
 
+## Lesson 10 - ngOnInit vs constructor
 
+Every component is a js class, and every class has a constructor that creates the instances of that given class.
+Internally, angular does this for us, we don't need to instantiate the class every time, angular does that under the hood,
+but we are able to implement the constructor of our classes.
+
+A component's life cycle order of execution is constructor -> ngOnChanges -> ngOnInit
+
+The constructor and the ngOnIt are fired only once on the initialization.
+
+ngOnChanges is called first because Angular needs to resolve data-bound input properties before the component logic starts.
+It triggers even if the @Input has an initial value.
+ngOnInit then fires once the inputs are set, but before the view is fully rendered.
+
+The life cycle that runs after the final rendering is the `ngAfterViewInit`
+
+### But what is the main difference between both?
+
+If both are called at the component's initialization, when we use one or the other?
+
+If we try to log the person being received as prop on the constructor, and on the ngOnInit, we will see that inside the
+constructor, the person object hasn't been initialized yet: it is still undefined.
+
+If that `person` property had an initial value, it would already be initialized and the constructor would know about it, 
+but since we are using the non null assertion, and simply ensuring to typescript, that the @Input will have a value when
+the component fully renders, this happens after the construction.
+
+ngOnInit will show the @Input value because it fires after all the `@Input`s received their first value.
+
+Meaning that it is a more reliable spot to place the initial logic.
+
+#### Important Detail
+
+I mentioned above that if there was a initial value, the constructor would know it. It is true but we need to be careful
+
+If we would do something as @Input() person = { name: "Caio" } the constructor would see Caio. But if the parent component
+is passing another person object with the name: "Alex", the constructor would still see "Caio"
+
+The value sent by the parent ("Alex) will only be available on ngOnChanges and ngOnInit, that's why even with an initial
+value, ngOnInit continues being the correct place to deal with data that come from the outside.
+
+### Is the constructor still used? 
+
+constructor was mainly used to deal with dependency injections. If we defined:
+
+`constructor(private readonly _myService: MyService) {}`
+
+Angular would automatically create the instance of that service and would allocate it in that property which would end up
+being a "normal" property of the class. 
+
+Today, this is not necessary anymore because we have the @Inject directive. We would define the property _myService and
+assign to it a `inject(myService)`.
+
+
+
+
+ 
