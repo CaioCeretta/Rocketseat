@@ -9,3 +9,5 @@
 @for(person of people; track person.id ) {
 <app-person [person]="person" (removePersonEmit)="removeSpecificPerson($event)"></app-person>
 }
+
+<button (click)="changeName()">Change Name</button>

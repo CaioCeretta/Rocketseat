@@ -32,4 +32,8 @@ export class InputComponent {
 	getPeopleQuantity() {
 		return this.people.length;
 	}
+
+	changeName() {
+		this.people[0] = { ...this.people[0], name: "Updated" };
+	}
 }
