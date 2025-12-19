@@ -144,7 +144,7 @@ Showing us that this fulfill the purpose of defining a variable on the template 
 - Lifecycle ngOnInit vs Constructor: Difference between the life cycle ngOnInit and the constructor — Where do we have to
 execute some logic when initiating the component
 
-## Lesson7 - @Input
+## Lesson 7 - @Input
 
 We initially are using the let to get the quantity of items and using a for to render it.
 
@@ -180,4 +180,36 @@ where we call the <app-person> component, and add an attribute with
 
 Even though in the case above we are storing the interface inside the component. The ideal was that the interfaces were in
 a separated files, such as a app/interfaces
+
+## Lesson 8 - Output
+
+We use `@Output` for properties that we want to use to communicate with the parent component
+
+Now we are going to increment the person component so it "talks" with its parent.
+
+Assume we have a button, and when we click on it, we will tell the parent component that we want to remove that person,
+and the parent will want to know which person it wants to remove to execute the removal of it.
+
+We then call (click)="removePerson" which will be a method defined as output on the parent. Because it is the parent 
+component that manages the people list, and it is it that must indeed remove it.
+
+The child component is only a "dumb" component, it is only used to show the information on the screen and have basic logic
+concerning itself
+
+This will be done with these steps
+
+1 - First, on the person component(child) we create the method we are defining in the (click) method
+2 - We then create the @Output property `removePersonEmit` and assign to it a new `EventEmitter()`. Every time we create
+Outputs, we always have to create an instance of `EventEmitter`. 
+3 - EventEmitter constructor have a generic typing, that tells which value it will emit. Which in this case, it will be
+a number (type of person id parameter).
+4 - Now, when the (click) is triggered, we invoke that removePersonEmit.emit passing as parameter, the one received on the
+click
+5 - Now, the parent component must receive this value being emitted. To do so, we will make the parent component to subscribe
+to this `removerPessoaEmit` property that is being outputted.
+6 - When this component emit a value, we want to execute something on the parent, which will be the execution of a method
+that removes that id from the list. For us to get that id being sent by the output, we use the reserved word $event
+
+
+
 
