@@ -3,6 +3,7 @@ import {
 	EventEmitter,
 	Input,
 	type OnChanges,
+	type OnInit,
 	Output,
 	type SimpleChanges,
 } from "@angular/core";
@@ -14,17 +15,23 @@ import type { IPerson } from "../../input.component";
 	templateUrl: "./person.component.html",
 	styleUrl: "./person.component.css",
 })
-export class PersonComponent implements OnChanges {
+export class PersonComponent implements OnChanges, OnInit {
 	@Input() person!: IPerson;
 
 	@Output() removePersonEmit = new EventEmitter<number>();
 
-	ngOnChanges(changes: SimpleChanges): void {
-		console.log("ngOnChanges changes ", changes);
+	constructor() {
+		console.log("person: ", this.person);
+		console.log("constructor");
+	}
 
-		if (changes["person"].currentValue) {
-			console.log(changes["person"].currentValue);
-		}
+	ngOnInit(): void {
+		console.log("person: ", this.person);
+		console.log("ngOnInit");
+	}
+
+	ngOnChanges(changes: SimpleChanges): void {
+		console.log("ngOnChanges");
 	}
 
 	removePerson(personId: number) {
