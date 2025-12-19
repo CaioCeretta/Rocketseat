@@ -211,5 +211,70 @@ to this `removerPessoaEmit` property that is being outputted.
 that removes that id from the list. For us to get that id being sent by the output, we use the reserved word $event
 
 
+## Lesson 9 - ngOnChanges
+
+ngOnChanges is a lifecycle method that is fired every time the values of a component's input change. Therefore, if we have
+to execute some logic when that happens, that is the place.
+
+For this, inside the person component, which is the component that has the @Input, we will implement the onChanges interface.
+
+It is not required to implement this interface, but it is a good practice because it will require us to implement the 
+`ngOnChanges` method
+
+This method is executed by angular itself. Angular calls it under the hood every time a `@Input()` value changes.
+
+It is not recommended to invoke this method, like `this.ngOnChanges...`, let angular to deal with its life cycles.
+
+this method receives a changes parameter, of the type SimpleChanges. By logging the value of changes we will notice:
+
+. changes is an object
+. it will have the name of the inputs, in this case, the `person` object we are sending to it.
+. the input pessoa will be another object of type simple change containing the currentValue (the one we are passing in).
+the firstChange, which will be true on its initialization and false after every change. and the previousValue attribute
+
+### Does the previous value "gets" the initial value we define in the `@Input()`?
+
+The short answer is **no**. 
+
+We defined the input person with the ! non null assertion, this tells TS that:
+
+"trust me, this property will be initialized at some point". It doesn't initialize any value in runtime
+
+For angular, before the first binding, person is undefined
+
+### Why does previousValue starts at null or undefined? 
+
+At the first time angular makes the @Input binding there is no previous value and with the first change as true. Even if
+the parent passes an initial object, there is no "before". It doesn't consider the default value as the previous one. The
+change cycle begins in the binding coming form the parent
+
+previousValue stops being undefined only after the second change     
+
+### input objects and arrays
+
+When we are dealing with one of these two types, when we simply alter the one property of the object, it won't reflect on
+ngOnChanges. For it to be called again, we need to create a new reference in memory, by creating another instance of object.
+
+We can see this in action by creating a method that changes a person name onclick, and even though we have the console log
+inside the ngOnChanges method, it doesn't fire this method
+
+If we want ngOnChanges to be fired and to treat that new value. We need to make use of the immutability concept, and create
+a new object on the peoples array that will spread over all the already existing person properties, and update only its name.
+like: `this.people[0] = { ...this.people[0], name: "Updated" };`
+
+### Is this 
+
+I thought so, since we are modifying an item on the array in a specific position, but the anser is **no**, and we are actually
+using the correct pattern.
+
+But what the code is really doing is:
+
+. it creates a new object
+. copies every property of the old object
+. overwrites the name
+. **replace** the item in index 0
+
+The object is being re-created, not updated. It is a new memory reference but with the same values.
+
 
 
