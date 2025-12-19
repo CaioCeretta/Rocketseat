@@ -25,11 +25,11 @@ export class InputComponent {
 		{ id: 1, name: "Alex", age: 37 },
 	];
 
-	removePerson() {
-		this.people.pop();
+	removeSpecificPerson(personId: number) {
+		this.people = this.people.filter((person) => person.id !== personId);
 	}
 
 	getPeopleQuantity() {
-		return this.people;
+		return this.people.length;
 	}
 }

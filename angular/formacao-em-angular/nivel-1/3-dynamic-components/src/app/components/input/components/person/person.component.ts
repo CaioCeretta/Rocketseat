@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import type { IPerson } from "../../input.component";
 
 @Component({
@@ -9,4 +9,10 @@ import type { IPerson } from "../../input.component";
 })
 export class PersonComponent {
 	@Input() person!: IPerson;
+
+	@Output() removePersonEmit = new EventEmitter<number>();
+
+	removePerson(personId: number) {
+		this.removePersonEmit.emit(personId);
+	}
 }

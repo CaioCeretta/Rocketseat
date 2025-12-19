@@ -5,8 +5,7 @@
 } @else {
 <h1>List Empty</h1>
 }
-<button (click)="removePerson()">Remove Item</button>
 
 @for(person of people; track person.id ) {
-<app-person [person]="person"></app-person>
+<app-person [person]="person" (removePersonEmit)="removeSpecificPerson($event)"></app-person>
 }
