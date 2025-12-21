@@ -114,9 +114,23 @@ This  means that we will unite every item on the list separating them with a spa
       }
     }
   }
+  ```
 
 
 ## Lesson 4 - Dictionary
+
+How dictionaries work in c#?
+
+Given a key, we have a value associated to this key, where every key in a dictionary is unique. Simple example
+
+`Dictionary<int, string> dictionary = new Dictionary<int, string>();`
+
+Then add values to it with
+
+`dictionary.Add(1, "Caio"); dictionary.Add(2, "Ceretta"); dictionary.Add(5, "Alex");`
+
+And we access the keys similar to arrays, such as dictionary[2] will return the value "Ceretta"
+
 
 
 
