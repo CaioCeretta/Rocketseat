@@ -129,7 +129,11 @@ Then add values to it with
 
 `dictionary.Add(1, "Caio"); dictionary.Add(2, "Ceretta"); dictionary.Add(5, "Alex");`
 
-And we access the keys similar to arrays, such as dictionary[2] will return the value "Ceretta"
+And we access the keys similar to arrays, such as dictionary[2] will return the value "Ceretta".
+
+We could also use a method to find if a given key exists in the dictionary, like
+
+`bool exists = dictionary.ContainsKey(9)" <- false
 
 
 

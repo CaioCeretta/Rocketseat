@@ -15,7 +15,10 @@ class Program
 
 		string value = dictionary[2];
 
+		bool exists = dictionary.ContainsKey(8);
+
 		Console.WriteLine(value);
+		Console.WriteLine(exists);
 
 
 	}

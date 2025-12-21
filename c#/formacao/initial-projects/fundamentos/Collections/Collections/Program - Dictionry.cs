@@ -1,10 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace HelloWorld;
+namespace LegacyHelloWorld;
 
-class Program
+class Legacy3Program
 {
-	static void Main()
+	static void LegacyMain()
 	{
 
 		Dictionary<int, string> dictionary = new Dictionary<int, string>();
