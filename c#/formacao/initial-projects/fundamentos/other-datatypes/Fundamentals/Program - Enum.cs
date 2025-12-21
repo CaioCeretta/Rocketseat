@@ -1,4 +1,4 @@
-﻿namespace HelloWord;
+﻿namespace HelloWordLegacy;
 
 class Program
 {
@@ -9,7 +9,7 @@ class Program
 		High = 2
 	}
 
-	static void Main()
+	static void MainLegacy()
 	{
 		DifficultyLevel level = DifficultyLevel.High;
 
