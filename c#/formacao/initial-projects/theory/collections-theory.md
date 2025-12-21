@@ -16,7 +16,7 @@ array of integers and its length will be 1o0
 We must be cautious that, we should choose the second option only if we are sure of how many items we will have in the
 array, otherwise, modifying that size, may be costly for memory/performance
 
-## Lesson 2 - lists
+## Lesson 2 ~ 3 - lists
 
 In C#, lists are often considered more flexible and powerful than arrays, specially when the size of the collection is not
 fixed or when we need to perform frequent insertions or deletions. Here's why:
@@ -34,6 +34,37 @@ features like LINQ.
   . Arrays can be faster for certain performance-critical scenarios where the size of the collection is known in advance
   and won't change
   . They are less memory overhead compared to lists because they don't need extra space for resizing
+
+### Other types
+
+We can have a List of any type, be it integer, strings, booleans, arrays, and so on.
+
+We can also utilize it to create a list of multiple instances of a class.
+
+#### Can we mix two different types in a single list?
+
+We can, utilizing the object type, which is the base of every type in c#, but by using object to type we may end up losing
+some behaviors, as we have previously seen. So it is preferable to create lists of a single type.
+
+We would need to create a type casting/conversion to utilize the type's methods, but this would be very laborious.
+
+### Strings
+
+Assume we have a list of strings, and we want to transform every value we have into a single string, such as:
+
+```cs
+  List<string> strings = new List<string>();
+
+  strings.add("Ciao,");
+  strings.add("Mondo");
+```
+
+and we want to transform this into a single string "Ciao, Mondo"
+
+We would be able to do so by using the string method `Join`: `string resultado = string.Join("", strings)`
+
+This  means that we will unite every item on the list separating them with a space
+
 
 ### Quick example
 ```cs
@@ -83,5 +114,9 @@ features like LINQ.
       }
     }
   }
+
+
+## Lesson 4 - Dictionary
+
 
 
