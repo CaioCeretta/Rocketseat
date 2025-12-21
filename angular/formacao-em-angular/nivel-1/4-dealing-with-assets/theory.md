@@ -62,3 +62,44 @@ impacting the download of the other files.
 
 And if we have a hard coded base 64, angular will need to download the image along the JS files, it won't be able to do the
 caching. Separate files like the favicon, or a static image, it will be able to store in the cache.
+
+## Lesson 3 - SVGs
+
+SVGs can be loaded in two different ways
+
+1. Directly in the HTML — will be part of the final bundle. Increasing the size of the final.js
+2. Put it in a separate file — faster option
+
+However, many times, the svg icons that we load on our app are usually very small and won't have a great impact on
+performance.
+
+### 1st way:
+
+One option is to download t he fa library and use the snippet provided by it, or the svg way, which we should only copy
+and paste into our project.
+
+However, in this way there are some benefits, like setting the svg color with the fill property and property bind the
+the element itself
+
+2nd way:
+
+Removing the svg from the parent component and put it into a separate file, such as, inside the public folder, create a
+icons folder, create a file for the car.svg and put the code inside of it. Then, inside the component where we want to use
+the svg, reference it on the src attribute of an img.
+
+And different from the 1st way, if we go into the network tab on the developer tools, we will see that a request has been
+done to the requested svg
+
+We can also define a property on our ts file, and property bind it with the src attribute
+
+However, if we don't choose to download the font icon library, and import the CarIcon from it, we won't be able to use the
+fill property, and in case we want to make it more dynamic, we wouldn't be able to do it by copying the svg and creating
+our own file.
+
+
+
+
+
+
+
+
