@@ -96,6 +96,108 @@ However, if we don't choose to download the font icon library, and import the Ca
 fill property, and in case we want to make it more dynamic, we wouldn't be able to do it by copying the svg and creating
 our own file.
 
+## Lesson 4 - Importing font-awesome icons via CDN.
+
+First, subscribe to the font-awesome to get a free kit and it will give us a line of javascript to import the CDN
+
+Create a new component to hold the font-awesome icons.
+
+Load the component inside the index.html of our app and import the app-font-awesome-cdn component inside our app.html
+
+To use a car icon, for example, we can simply use it with `<i class="fa-solid fa-car"></i>`
+
+and use the color, size, rotate, animate, transform with ease
+
+## Lesson 5 - npm font-awesome
+
+Create a new component for this test, which is the font-awesome-npm. We will start by going to do the docs, getting started
+and on the angular page and click on the API docs. It will redirect us to the npm page and we see that there are three
+different commands: with ng, npm and yarn
+
+We will use the ng option, which is the quickest way to configure font-awesome with the command
+`ng add @fortawesome/angular-fontawesome` 
+
+Now, we simply import the icons in the ts file, import the FontAwesomeModule and add it into the imports array, and assign
+the imported icon to a property
+
+e.g: 
+
+```
+import { faCar } from "@fortawesome/free-solid-svg-icons";
+
+...
+faCarIcon = faCar;
+...
+```
+and use them on the html template with
+
+`<fa-icon [icon]="faCar"></fa-icon>`
+
+The FontAwesomeModule will make the fa-icon tag available to us
+
+
+## Lesson 6 - Downloading and Using Third Party Fonts
+
+Here, we will make use of the "Google Fonts" and downloading the desired font, which will be "Cascadia Code".
+
+We have two ways of retrieving a font: Getting embedded code and pasting on the index, or downloading it.
+
+Download and extract it. The VariableFont, which is the option with all the weight variations included, or install it
+statically with only the desired weights.
+
+### How to import them?
+
+Fonts are also an asset, meaning that we can paste both the "regular" file with all the weights included and same for the
+italic fonts inside public folder. Now, they will be copied to the final bundle.
+
+### How we use them?
+
+Normally, we use them inside the `styles.css` so they will be loaded before the components and will be available in the
+whole app.
+
+So we define some styling in the `styles.css`.
+
+### What is @font-face?
+
+`@font-face` is a CSS rule that allows us to load customs fonts on a website
+
+In the past, developers were limited to "web-safe-fonts" (like Arial, Times New Roman or Georgia) that were already installed
+n the user's computer. With @font-face, we can host our own font files, ensuring our design looks consistent for every
+visitor.
+
+The process involves two steps: 1 - defining the font and applying it to our elements
+
+1. In the font-definition, inside the @font-face selector block, define a name for it
+and in the src property, the url where it is located in
+2. Apply this name into any desired element
+
+If we are importing the static ones, such as only the regular and the bold, we would import only the weights: 400 and 700
+
+## Lesson 6 - Importing Fonts from Google Fonts
+
+We also can utilize the fonts directly from the google-fonts.
+
+For this example, we will get the `Roboto` font and copy the embedded file into our index.html
+
+We have two options of "downloading" the embedded font. <link> or @import.
+
+`<link>` is the way we reference on the head of our html.
+@import is where we copy the @import code and place it on the styles.css of our app
+
+<link> is more performative, because when we insert it in the head, when the browser starts creating our HTML, it will
+start by the index, identify the tags and start downloading them in parallel with the styles and js code. Meaning that
+it won't block the rendering of our screen.
+
+@import is inside the css file. The browser will start rendering our file, will encounter in the head the stylesheet,
+download it, and after it downloads it, he will find the font and block the rendering while it downloads that font.
+
+We usually use imports in systems we don't have access to the index.html
+
+
+
+
+
+
 
 
 
