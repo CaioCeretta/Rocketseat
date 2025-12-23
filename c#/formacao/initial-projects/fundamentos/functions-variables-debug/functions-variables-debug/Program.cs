@@ -6,8 +6,15 @@ class Program
 	{
 		var math = new MathOperations();
 
-		math.Add(4, 7);
+		(int result, string author) = math.Add(5, 7);
 
-		math.Subtract(b: 5, a: 7);
+
+
+		Console.WriteLine(result);
+		Console.WriteLine(author);
+
+		//math.Subtract(b: 5, a: 7);
+
+		
 	}
 }
