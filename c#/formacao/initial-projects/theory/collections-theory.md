@@ -140,7 +140,7 @@ We could also use a method to find if a given key exists in the dictionary, like
 HashSets are other type of data collection, they are very similar to Lists
 
 Assume a scenario where we have a list of integers, and we want to create two items on that list with the same value. We
-can't. So a HashSet is a list of unique values
+can't. So a HashSet is a list of unique values.
 
 
 
