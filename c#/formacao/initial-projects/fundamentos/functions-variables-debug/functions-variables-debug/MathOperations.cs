@@ -14,6 +14,10 @@ public class MathOperations
 		
 	}
 
+	public void Test(int a, int b = 7)
+	{
+		Console.WriteLine(a + b);
+	}
 
 
 

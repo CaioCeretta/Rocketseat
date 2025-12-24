@@ -4,17 +4,18 @@ class Program
 {
 	static void Main()
 	{
-		var math = new MathOperations();
+		int number = 10;
 
-		(int result, string author) = math.Add(5, 7);
+			var myCar = new Car("Porsche")
+		{	
+			Color = Color.Red,
+			ReleasedAt = new DateOnly(2020, 1, 1)
+			 
+		};
+
+		myCar.ModelName();
 
 
 
-		Console.WriteLine(result);
-		Console.WriteLine(author);
-
-		//math.Subtract(b: 5, a: 7);
-
-		
 	}
 }
