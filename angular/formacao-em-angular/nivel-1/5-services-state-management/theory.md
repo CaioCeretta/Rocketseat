@@ -85,6 +85,78 @@ it is already complex by itself, with its own functionalities, and by doing the 
 become a mess. Therefore, sometimes it is a good option to create a service that will be injected only in this component
 and consume it.
 
+## Lesson 2 - Creating a service and injecting it.
+
+Create a new `products.ts` component and a `products.service.ts` each one on its own folder.
+
+The way we create a service and make it in a way it becomes available to be injected in other components is by using the
+decorator `@Injectable({providedIn: 'root'})`. the providedIn property defines the scope and the lifecycle of our service.
+
+In our service, we are first going to define the products array, and define a method to add new items to that state.
+
+After defining the service, go back into the component and add the line
+
+`private readonly _productService = inject(ProductsService);`
+
+this way, we are creating a property productService, that injects that service, and allow us to execute its methods through
+this property.
+
+The `readonly` is used for us not to assign a new value to the property, because it will only store the instance of that
+service.
+
+In case the instance has already been generated, it will reuse the existing one. If not, create it.
+
+### List rendering inside the component
+
+The simples and best away to ensure that the component always sees the updated list of products is by using a get.
+
+So to a property of products always have the updated value, we use
+```
+get products() {
+  return this._productsService.products
+}
+```
+By using `get`, angular consults the service every time it needs to render it, what would be different if we simply create
+a property of
+
+`public products = this._productsService.products`
+
+Because when angular executes its cycle of change detection, it calls `get products()`. Since the getter return the current
+products. It always fetches the more recent version of the array stored in the service.
+
+ 
+
+### Memory reference
+
+One thing we need to be careful is, either objects, arrays, or arrays objects, we are dealing with memory references. If
+we have an object created we have a memory reference and if any component modifies that reference, it will affect "everyone"
+that is consuming that memory reference
+
+### Global Singleton
+
+1. Service is a global singleton
+
+When using `root`, angular creates a single instance of that service to be used across all the appS
+
+• If `Component A` modifies any variable inside the service, `Component B` will see this change instantaneously.
+• It is exactly what ensures that the service work as a "Single Source of Truth"
+
+2. Available in any place (Dependency Injection)
+
+We don't have to import  the service in the array of `providers` of any module (`AppModule`, for example). Angular automatically
+"registers¨ the service in the root of the app. We just need to declare the service in the constructor of any component,
+and Angular will know where to fetch it.
+
+3. Tree-Shaking (Performance Optimization)
+
+This is the most "ninja" technical advantage. The `providedIn: root` syntax makes the service "tree-shakeable"
+
+• **How it works**: If we create a service, but for some reason, we end up not injecting it into any component, the Angular
+compiler is smart enough to exclude that service from the final bundle sent to the browser
+• This keeps our application lighter by removing "dead code" that isn't actually being used.
+
+
+
 
 
  
