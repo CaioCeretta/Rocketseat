@@ -156,6 +156,62 @@ compiler is smart enough to exclude that service from the final bundle sent to t
 • This keeps our application lighter by removing "dead code" that isn't actually being used.
 
 
+## Lesson 3 - Service with single instance and multiple dependency injection
+
+Start by creating two other folders under example-1 folder. A products-counter and a products-list
+
+Move the list of products to the products-list component, copy the dependency injection to that list component and
+create the getter. As well as calling injecting the service to the counter
+
+Both the list and the counter will be inside the product component.
+
+Doing this, with every component having a reference to the service, it would be much cleaner than having to pass that service
+from the product as an Input, inside the products-counter and inside the products-list. Each one of them is communicating
+with the same service and same state. Without modifying it directly inside the component, the state is centralized on the
+service and he is the one handling it.
+
+In order for the counter to work, we must make use of the `getter`
+
+### Getter
+
+In our original code, we were using a class property. On angular (and on javascript in general), a property is like a "box".
+If we put a value inside of it, it will remain still until someone modifies it manually.
+
+By using a `getter`, we transform that property in a "disguised function".
+
+1. A getter doesn't store a value, it executes logic.
+
+  When writing `get productsQuantity()`, we are telling Angular: "Every time that you need to draw this value on the screen,
+  do not search for it inside a box, go to the service and count it again.
+
+2. The change detection cycle
+
+  The reactivity "secret" is not on the getter alone, but in how angular works:
+
+    1. **The Event**: User clicks on "Add to Cart"
+    2. **The Change**: `ProductsService` adds an item to the products array
+    3. **The Detection**: Angular notices that something happened (a click, an api answer, etc) and begins its change
+    detection cycle.
+    4. **The Re-Render**: Angular looks to the HTML and sees {{productsQuantity}}
+    5. **The Execution**: Since `productsQuantity` is a `getter`, angular executes the code inside of it on that exact
+    moment. He accesses the service, sees that the length is now five, and updates the 
+    
+### Negative point of Getters
+
+Even though a getter solves the reaction issue, it has a cost: Angular can call that **getter** dozens of times by second
+(every time any thing changes on the page). If inside the getter there were a heavy calculus (Such as filtering a list of
+10.000 itens) our application would become slow.
+
+That`s why, in modern angular, using **Signal** is preferred
+
+. Getter: Angular "asks" what is the value all the time
+. Signal: Signal warns angular: "Hey, my value has changed, update me now"
+
+
+
+
+
+
 
 
 
