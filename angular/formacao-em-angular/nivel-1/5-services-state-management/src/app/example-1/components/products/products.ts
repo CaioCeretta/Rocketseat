@@ -1,9 +1,11 @@
 import { Component, inject } from "@angular/core";
-import { ProductsService } from "../services/products.service";
+import { ProductsService } from "../../services/products.service";
+import { ProductsCounter } from "../products-counter/products-counter";
+import { ProductsList } from "../products-list/products-list";
 
 @Component({
 	selector: "app-products",
-	imports: [],
+	imports: [ProductsList, ProductsCounter],
 	templateUrl: "./products.html",
 	styleUrl: "./products.css",
 })
@@ -18,7 +20,11 @@ export class Products {
 		this._productsService.addProduct(3, "Mic", "300");
 	}
 
-	removeProduct(id: number) {
-		this._productsService.removeProduct(id);
+	removeFirst() {
+		this._productsService.removeFirst(1);
+	}
+
+	modifyList() {
+		this._productsService.products = []; // WRONG
 	}
 }
