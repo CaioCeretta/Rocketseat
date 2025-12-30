@@ -1,0 +1,5 @@
+@let namesList = (observableList$ | async);
+
+@for(name of namesList; track name) {
+<p>{{name}}</p>
+}
