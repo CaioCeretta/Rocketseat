@@ -1,7 +1,7 @@
 import { AsyncPipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { map } from "rxjs";
-import { ProductsService } from "../../services/products.service";
+import { ProductsService } from "../services/products.service";
 
 @Component({
 	selector: "app-products-counter",

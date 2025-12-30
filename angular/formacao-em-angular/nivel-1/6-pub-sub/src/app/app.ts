@@ -1,7 +1,7 @@
 import { Component, signal } from "@angular/core";
-import { Products } from "./example-1/components/products/products";
-import { ProductsCounter } from "./example-1/components/products-counter/products-counter";
-import { ProductsList } from "./example-1/components/products-list/products-list";
+import { Products } from "./components/example-1/products/products";
+import { ProductsCounter } from "./components/example-1/products-counter/products-counter";
+import { ProductsList } from "./components/example-1/products-list/products-list";
 
 @Component({
 	selector: "app-root",

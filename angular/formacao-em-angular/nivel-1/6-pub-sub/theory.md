@@ -164,6 +164,9 @@ This transforms the component in a pure react ive component, removing the manual
   He simply reflects what the service emits. There is no risk that the data is out of sync.
 
 
+## Lesson 2 - What is an Observable
 
+In this lesson we will learn more about observers and how to use `BehavioralSubject`s to make the state managing of our
+app
 
-
+Inside the components folder, create a new folder for a new example
