@@ -166,7 +166,38 @@ This transforms the component in a pure react ive component, removing the manual
 
 ## Lesson 2 - What is an Observable
 
-In this lesson we will learn more about observers and how to use `BehavioralSubject`s to make the state managing of our
-app
+In this lesson we will learn more about observers and how to use `BehaviorSubject` to manage our app state.
 
-Inside the components folder, create a new folder for a new example
+Inside the `components` folder, create a new folder for this example. Start by creating an `observables` component
+and declaring it inside app.html.
+
+**Implementing the Observable**: In the component class, implement `OnInit`, and call a `createObservable()` method. This
+method will instantiate a new `Observable`. The `Observable` constructor receives a callback (the "producer") which takes
+a **subscriber** as a parameter. This subscriber is responsible for emitting values.
+ 
+While we previously used `BehaviorSubject` to emit values via `next()`. The standard `Observable` works similarly:
+Inside the constructor we call `subscriber.next(value)` to push data to listeners.
+
+**Subscribing Manually**: To see these values, we must **subscribe**. In `ngOnInit`, after initializing the observable
+property, call a method name `subscription1(). Since `createObservable()` returns an Observable, assign it to a local
+property (e.g `MyObservable$`). We should also define the emission type using generics, such as `Observable<string>`
+
+In `subscription1()`, call `this.myObservable$.subscribe(...)`. This triggers the logic defined in the constructor and 
+allows us to log the emitted values.
+
+**Memory Leaks & Unsubscribing:**: When we manually subscribe in TypeScript, the subscription remains active in memory
+even if the component is destroyed (e.g., removed by an @if), to prevent memory leaks, we must manually unsubscribe.
+Implement OnDestroy() and inside ngOnDestroy() call .unsubscribe on the Subscription object returned by our initial
+`.subscribe()` call.
+
+**Automatic Subscription with AsyncPipe**: The `AsyncPipe` is a cleaner alternative that handles both subscription and
+unsubscription automatically. This is ideal when we simply need to display data in the template without additional
+logic in the TS file.
+
+So it is basically
+
+1. Create `createObservableList()` that returns an `Observable<string[]>`
+2. Assign it to a property called `observableList$`
+3. In the HTML template, use the @let syntax: @let namesList = observableList$ | async;
+4. iterate over `namesList` using a @for loop to display the data.
+
