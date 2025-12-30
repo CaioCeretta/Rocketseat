@@ -1,0 +1,9 @@
+@for(product of (products$ | async); track product.id) {
+<div>
+  <p>Id: {{product.id}}</p>
+  <p>Name: {{product.name}}</p>
+  <p>Price: {{product.price}}</p>
+
+  <button (click)="removeProduct(product.id)">Remover</button>
+</div>
+}
