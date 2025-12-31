@@ -201,3 +201,159 @@ So it is basically
 3. In the HTML template, use the @let syntax: @let namesList = observableList$ | async;
 4. iterate over `namesList` using a @for loop to display the data.
 
+## Lesson 3 - RXJS operators
+
+This lesson will be focused on `filter`, `tap`, `map` and what they are used for.
+
+These methods are used to manipulate the data before they reach the subscriber. So for example, the subscriber 
+
+### tap
+
+### filter
+
+### map
+
+
+## Callback Remember
+
+
+### 1. Simple example:
+
+  A callback is simply a function that we pass as an argument to another function, so it is called afterwards.
+```ts
+  function sayHi(callback) {
+    callback();
+  }
+
+ sayHi(() => {
+  console.log("Hi!);
+ })
+```
+
+• () => { console.log('Hi!) } is the cb
+• sayHi does not know what the function does
+• He just executes
+
+
+#### 2. Observable Example
+
+When we make something as
+
+`new Observable((subscriber) => { ...}`
+
+What we are doing is passing a callback function for the `Observable`
+
+. This function is not called by us
+. Who calls it is the Observable internally
+
+### 3. Where does the `subscriber` comes from?
+
+We chose the name subscriber on that function, it could be any name like: `new Observable((banana) => { ...}` or `observer`.
+
+• The name does not exist in our component
+• It is automatically created by the `Observable`
+• RxJS passes this object as an argument when it calls its callback
+
+### 4. So what really is the `subscriber`? 
+
+`subscriber` is an object that RxJS gives us.
+
+It comes like:
+
+```ts
+  subscriber = {
+    next: (value) => {},
+    error: (err) => {},
+    complete: () => {}
+  }
+```
+It`s through that object that we send data to who is listening to that Observable
+
+### 5. What fires that callback?
+
+The code `this.observableList$ = new Observable((subscriber) => { ... });` 
+
+Does not execute anything, the code only runs when some subscribes to it
+
+`this.observableList$.subscribe((value) => { console.log(value); })`
+
+At this moment
+
+. `subscribe()` is called
+. RxJS creates the `subscriber`
+. RxJS calls the cb function
+. `subscriber` arrives as argument
+
+### 6. Entire flow
+
+```ts
+this.observableList$ = new Observable((subscriber) => {
+  setTimeout(() => {
+    subscriber.next(["Caio", "Alex", "André"]);
+  }, 5000);
+});
+```
+What happens here is
+
+1. We define the observable
+2. Nothing happens yet
+3. Someone calls the `subscribe()`
+4. RxJS creates the `subscriber`
+5. RxJS invokes the function `(subscriber) => {...}`
+6. After five seconds: `subscriber.next([...])`
+7. Whoever is registered receives the value
+
+### 7. A simple analogy
+
+Imagine this:
+
+```ts
+function faucet(callback) {
+  callback({
+    water: "drop"
+  })
+}
+```
+then, we call
+```ts
+faucet((thing) => {
+  console.log(thing.water);
+})
+```
+• Thing did not exist before
+• The function water created it and passed it
+• We just chose the name
+
+`Observable` does exactly that, but for async data.
+
+### 8. Summary in one sentence
+
+`subscriber` does not come from the component. It is a parameter of the callback function that RxJS calls, and we chose
+the name
+
+### 9. Quick Analogy
+
+We can think that, in the Observable callback parameter
+
+RxJS creates a special flask (subscriber), with some valves that are ready
+He provides the flask to the function (subscriber)
+Our function decides when to open the valve and let the liquid flow
+
+Translating this to code:
+
+• The subscriber
+  . Is already mounted
+  . With the `next`, `complete`, `error` valves
+• Our function
+  . Does'nt create the liquid
+  . Does'nt store the liquid
+  . Just liberates the flow
+
+
+
+
+
+
+
+
+
