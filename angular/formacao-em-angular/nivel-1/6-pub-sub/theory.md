@@ -205,7 +205,15 @@ So it is basically
 
 This lesson will be focused on `filter`, `tap`, `map` and what they are used for.
 
-These methods are used to manipulate the data before they reach the subscriber. So for example, the subscriber 
+These methods are used to manipulate the data before they reach the subscriber. So for example, it reaches the subscribe
+we can transform it to * 10, and so on. We can use it via pipes.
+
+First, on the ngOnInit we will create a new property named subscriptionUppercaseList. Our observable that returns us a
+list of names is the `observableList$`.
+
+The way we can use to make all the names uppercase before reaching the list is by using
+
+`this.ob
 
 ### tap
 
@@ -331,6 +339,9 @@ faucet((thing) => {
 `subscriber` does not come from the component. It is a parameter of the callback function that RxJS calls, and we chose
 the name
 
+
+
+
 ### 9. Quick Analogy
 
 We can think that, in the Observable callback parameter
@@ -348,6 +359,51 @@ Translating this to code:
   . Does'nt create the liquid
   . Does'nt store the liquid
   . Just liberates the flow
+
+### Addressing The Confusion
+
+First, we need to understand that the subscriber parameter on the new Observable does not represents us but WHO WILL subscribe
+in the future.
+
+Even if we hadn't called the `.subscribe()` yet.
+
+When we create an observable, what we are doing is
+. Defining the behavior
+. Don't fire anything yet
+. We don't create the subscriber
+. We don't subscribe
+
+What will create a subscriber is in the moment something subscribe to it. And in this moment:
+. RxJS creates the object
+. This object represents the subscriber
+. Calls our function passing that object
+. This object reaches the parameter we called subscriber
+
+#### So why that name to the property?
+
+. It is the receiver side
+. It represents the active subscription
+
+But inside the new Observable(...), we are in the role of a `Publisher`, not consumer
+
+#### Best terms
+
+`new Observable((observer) => { ... });`
+
+In the docs, this is the most common term
+
+Or Even
+
+`new Observable((emit) => { ... });`.
+
+Therefore, we are creating an observable. But the function parameter represents a future subscriber, and that property
+name represents this future role
+
+
+
+
+
+
 
 
 
