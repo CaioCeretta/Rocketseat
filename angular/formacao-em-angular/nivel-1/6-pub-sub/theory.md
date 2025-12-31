@@ -205,21 +205,75 @@ So it is basically
 
 This lesson will be focused on `filter`, `tap`, `map` and what they are used for.
 
+map: Transforms the emitted values before reaching the subscriber, such as manipulating the data
+filter: Allows us to select only the values we want and meet some condition
+tap: Used for executing collateral effects, like logs, without altering the flow
+
 These methods are used to manipulate the data before they reach the subscriber. So for example, it reaches the subscribe
 we can transform it to * 10, and so on. We can use it via pipes.
 
 First, on the ngOnInit we will create a new property named subscriptionUppercaseList. Our observable that returns us a
 list of names is the `observableList$`.
 
-The way we can use to make all the names uppercase before reaching the list is by using
+The way we can use to make all the names uppercase before reaching the list is by using pipes
 
-`this.ob
+pipe is where we put all rxjs's operators, where we can handle all the emitted values emitted by it.
 
-### tap
+Each operator will be a parameter in that pipe method, like:
 
-### filter
+### But isn't this similar to what we were doing with the BehaviorSubject in the products service?
 
-### map
+Yes. Every time the BehaviorSubject, which is our observable, emitted a value, we wanted to send a clone of that list
+being emitted. And we used the `.asObservable.pipe(map((products) => structuredClone(products)))`
+
+And everyone who subscribed to that observable, would receive this clone.
+
+### map example
+```ts
+	subscriptionUppercaseList() {
+		this.observableList$
+      .pipe(
+        map((list) => {
+          return list.map(name => (
+            name.toUpperCase()
+          ));
+        })
+      )
+      .subscribe((list) => {
+        console.log("List: ", list);
+      });
+  }
+```
+In this example, we are using rxj's map along with js's array map to get each item of the emitted list and transforming 
+it to uppercase.
+
+### filter example
+
+Different from map, filter needs to receive a callback that returns a boolean. Meaning that the value will only fall into
+the subscribe, in cause the condition evaluates to true.
+
+```ts
+	oddSubscriptions() {
+		this.myObservable$
+			.pipe(filter((number) => number % 2 !== 0))
+			.subscribe((number) => console.log("Odd number: ", number));
+	}
+```
+
+filter will receive the numbers being emitted, and check whether they are odd or not and returns to the subscriber.
+
+### tap example
+
+Tap is another property of pipe used for logging, we can add it to the example above by adding
+
+```ts
+			.pipe(
+				tap((number) => console.log("Tap: ", number)),
+        filter(...)
+        ...
+```
+
+
 
 
 ## Callback Remember
