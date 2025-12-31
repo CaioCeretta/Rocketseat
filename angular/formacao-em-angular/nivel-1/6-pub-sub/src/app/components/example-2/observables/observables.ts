@@ -1,6 +1,6 @@
 import { AsyncPipe } from "@angular/common";
 import { Component, type OnDestroy, type OnInit } from "@angular/core";
-import { Observable, type Subscription } from "rxjs";
+import { filter, map, Observable, type Subscription, tap } from "rxjs";
 
 @Component({
 	selector: "app-observables",
@@ -15,8 +15,10 @@ export class Observables implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.createObservable();
-		this.subscription1();
+		// this.subscription1( );
 		this.createObservableList();
+		// this.subscriptionUppercaseList();
+		this.oddSubscriptions();
 	}
 
 	ngOnDestroy(): void {
@@ -46,7 +48,31 @@ export class Observables implements OnInit, OnDestroy {
 		this.observableList$ = new Observable((subscriber) => {
 			setTimeout(() => {
 				subscriber.next(["Caio", "Alex", "André"]);
-			}, 5000);
+			}, 1000);
+			setTimeout(() => {
+				subscriber.next(["Regina", "José"]);
+			}, 2000);
 		});
+	}
+
+	subscriptionUppercaseList() {
+		this.observableList$
+			.pipe(
+				map((list) => {
+					return list.map((name) => name.toUpperCase());
+				}),
+			)
+			.subscribe((list) => {
+				console.log("List: ", list);
+			});
+	}
+
+	oddSubscriptions() {
+		this.myObservable$
+			.pipe(
+				tap((number) => console.log("Tap: ", number)),
+				filter((number) => number % 2 !== 0),
+			)
+			.subscribe((number) => console.log("Odd number: ", number));
 	}
 }
