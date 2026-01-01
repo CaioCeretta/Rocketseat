@@ -374,7 +374,7 @@ use this pattern of creating a service, having a subject inside that service, an
 component, we notify the subject via `.next()` and the other component will be subscribed to the same subject.
 
 
-## Lesson 8 - Class BehavioralSubject
+## Lesson 8 - Class BehaviorSubject
 
 With BehaviorSubject, we can control when it does the value emission and also knows who is subscribed to it.
 
@@ -417,12 +417,53 @@ myBehaviorSubject.next('Third Message');
 #### The main difference between a Subject and a BehaviorSubject is that a Subject does not have memory. It does not store
 the last emitted value, and because of this, new subscribers don't receive past emissions.
 
+In our example, first we define a `BehaviorSubjectComponent`, and create the property myBehaviorSubject$ and assign to it
+a new BehaviorSubject from `rxjs`. We will notice that if we don't inform an initial value to it, it will show an error,
+so we must inform an initial parameter
 
+Inside the onInit, call the firstSubscription() method, this method will subscribe to that observable. It is similar
+to the others, it receives a callback, it will have a parameter named value, which is the value emitted from the subscribe,
+and console.log the first emitted value
 
+We will see that the first subscriber will be able to log the previously emitted value.
 
+Define a method `emitValue` to be fired on a button click with, for example: `this.myBehaviorSubject$.next("Value Sent.");`
 
+On the button click, the first subscription will be fired again, with this new emitted value.
 
+### BehaviorSubject printing the first subscription console.log explanation:
 
+Even if we don't save the subscription in a variable, just calling the method subscribe, BehaviorSubject shows it. why?
+
+#### 1. What happens when we call firstSubscriber() {...} ?
+
+At this moment:
+• We create an active subscription
+• This subscription keeps listening the `BehaviorSubject`
+• The `BehaviorSubject`
+  . Immediately emits the last current value
+  . Continues emitting all the next values
+
+The fact that we don't save the return of subscribe (`Subscription`) it doesn't cancel nor invalids the subscription
+
+It still exists and remains active
+
+#### 2. What happens when we call emitValue()?
+
+• `BehaviorSubject` emits "Value Sent."
+• Every active subscription receive this value
+• The function passed in the subscribe executes
+
+### New Subscriptions
+
+In case after the last value was emitted by the observable and someone subscribes to it and consoles.log the latest
+emitted value. It will have access to the latest value.
+
+### Conclusion
+
+Therefore, the main difference from the `Subject` is that it stores the latest value it emitted. It also has the same use
+of subjects, it is usually placed in services, and since it is a single instance, everyone who calls that same service
+are going to have access to the same `BehaviorSubject`
 
 ## Callback Remember
 
