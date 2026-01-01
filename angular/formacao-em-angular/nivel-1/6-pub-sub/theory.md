@@ -273,6 +273,113 @@ Tap is another property of pipe used for logging, we can add it to the example a
         ...
 ```
 
+## Lesson 7 - Class Subject
+
+### Special types of observables
+
+1. Subject:
+
+**No memory:** New subscribers only receive the values emitted AFTER their subscription. They do not have access to previous
+values.
+
+**Multicast**: It transmits a single sequence of values for all its subscribers. A single `next()` call notifies all the
+subscribers
+
+**Data source and Observer**: A subject acts as both an **Observable** and an **Observer**. This means we can subscribe
+to it, but also manually trigger events using `next()` 
+
+With subjects, we have explicit control over when new values are emitted, and all subscribers receive those values. With
+a pure Observable, the emission logic is encapsulated inside the observable itself, so we don’t externally control when
+values are emitted.
+
+Code example
+```ts
+  import { Subject } from 'rxjs';
+  const mySubject = new Subject<string>();
+
+  //Emit a value, but there are no subscribers yet
+  mySubject.next('This message will be lost');
+
+  // First subscriber connects
+  mySubject.subscribe(value => {
+    console.log('Subscriber 1: Received the value: ', value)
+  })
+
+  // Second subscriber connects
+  mySubject.subscribe(value => {
+    console.log('Subscriber 2: Received the value: ', value)
+  })
+
+  // Emit new value. Both subscribers 1 and 2 receive
+  mySubject.next('This message will be received by both');
+```
+
+So, for this example, we create a new `SubjectComponent` which will implement onInit.
+
+First we define a property mySubject$ with the type of Subject<string> and assign to it a new instance of rxjs's `Subject`.
+
+### First subject implementation
+
+Inside ngOnInit, the first thing we  will do is call that subject, and use `next()` to print out a new string. The
+"radio station" broadcasts the message, but since no one is subscribed to that subject yet, the value is emitted into
+the void and disappears. It is **not stored** inside the Subject.
+
+`this.firstSubscription` will create a new "tuned in" listener. As a result, the subscription is active, but it doesn't
+receive the previous message because a `Subject` does not have memory.
+
+setTimeout(...) (3 seconds later)
+
+The "radio station" broadcasts "New Emitted Value". As a result, our subscription is active, and the console.log
+"First Subscription: New Emitted Value" shows.
+
+The "value" inside the subscribe parameter, is the argument that was passed by the function `.next()` at the moment of
+emission.
+
+### "Pushed" flow
+
+Different from a common function, where we "ask" for a value, rxjs's observable pushes that value to us.
+
+1. `mySubject$` acts like a **pipe**
+2. When we call `this.mySubject$.next("Hello")`, we are dropping data into the pipe
+3. The `subscribe` is like placing a bucket at the other end of the pipe
+4. The `value` is exactly whatever falls into the bucket at that specific moment.
+
+### When should we use subjects?
+
+In our app, when we need values that are not necessarily the latest emitted value (stateless events), we can use `Subjects`.
+They are very good for communication between components.
+
+Normally, we place the subject inside a service, instantiate that subject, and since the service is typically a
+single instance in the app, "everybody" that injects that service and subscribes to that subject, will be listening
+to the events (emits), that it makes. This is a common pattern in Angular
+
+**Note: to prevent memory leaks, we must always call .unsubscribe on ngOnDestroy lifecycle hook**
+
+### Example 2
+
+Add a button to the subject component template to subscribe to that subject and notice that it won't receive the first
+value emitted by the subject.
+
+If we create a click handler that subscribes to that subject, nothing will happen initially, it won't see the first value.
+The only way for the second subscription see an emitted value is if it subscribes before the five seconds. next emission
+
+### Conclusion
+
+Subjects are widely used when we want to facilitate the communication between components, or we want to notify one component
+that something has happened.
+
+Assume we have a component where when we perform some action, we want to notify another component that is not directly
+related to it. In order for us to avoid prop drilling (passing data through many layers of Inputs and Outputs), we can
+use this pattern of creating a service, having a subject inside that service, and when something occurs inside that one
+component, we notify the subject via `.next()` and the other component will be subscribed to the same subject.
+
+
+
+
+
+
+
+
 
 
 
