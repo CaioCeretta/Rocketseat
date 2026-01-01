@@ -374,7 +374,48 @@ use this pattern of creating a service, having a subject inside that service, an
 component, we notify the subject via `.next()` and the other component will be subscribed to the same subject.
 
 
+## Lesson 8 - Class BehavioralSubject
 
+With BehaviorSubject, we can control when it does the value emission and also knows who is subscribed to it.
+
+**Different from Subject, where new subscribers don't receive the last emitted value.**
+
+**Stores a initial value**: It always starts with a default value, this ensures that, even before some value gets
+emitted, a new subscriber will have a value to work with.
+
+**Stores the last emitted value**: It stores the last value that was sent to it, If a new subscriber connects, it will
+immediately receive this last value.
+
+**Works as an Observable**: It can be signed (subscribe()), and emit the next value for all its subscribers each time
+next() is called.
+
+Code Example:
+
+```ts
+import { BehaviorSubject } from "rxjs";
+
+// Start with a default value: "Initial Value"
+const myBehaviorSubject = new BehaviorSubject<string>("Initial Value");
+
+// Subscriber 1 connects to it. It immediately receives the "Initial Value"
+myBehaviorSubject.subscribe(value => {
+  console.log(`Subscriber 1: Received the value: ${value}`)
+})
+
+// Emit a new value. BehaviorSubject stores "New Message"
+myBehaviorSubject.next("New Message");
+
+// Subscriber 2 immediately receives "New Message"
+myBehaviorSubject.subscribe(value => {
+  console.log(`Subscriber 2: Received the value: ${value}`)
+})
+
+// Emit a third value. both subscribers one and two receive
+myBehaviorSubject.next('Third Message');
+```
+
+#### The main difference between a Subject and a BehaviorSubject is that a Subject does not have memory. It does not store
+the last emitted value, and because of this, new subscribers don't receive past emissions.
 
 
 
