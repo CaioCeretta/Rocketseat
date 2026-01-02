@@ -465,8 +465,85 @@ Therefore, the main difference from the `Subject` is that it stores the latest v
 of subjects, it is usually placed in services, and since it is a single instance, everyone who calls that same service
 are going to have access to the same `BehaviorSubject`
 
-## Callback Remember
+## Lesson 9 - State Management with Behavior Subject
 
+This lesson will focus on how to create a `BehaviorSubject` inside a service
+
+We will create a service "context" which will deal with this shared BehaviorSubject
+
+This implementation example will follow these steps
+
+1. Create a `context.service.ts`, where this context has a property `itemsSubject = new BehaviorSubject<any[]>([])`
+  - **In order to inject a service in other components, we must always use the decorator @Injectable([providedIn: "root"])
+
+2. Inside the behavior-context.ts, create a _contextService property and assign to it the inject of that ContextService
+
+3. In the _contextService property, it holds the itemsSubject, where it allows us to execute all the methods we have
+previously seen, such as `next()`, `complete()`, `error()`, and so on.
+  3.1. However, there is a problem with this. It is not a good approach to let this management available to the components.
+  Who must manage the `BS`, emit `.next()` and all the operations addressing the state, must be the service itself.
+  3.2. The components should only access the emitted values and fire the necessary methods from the service.
+  3.3. `.next()` should not be available inside the component, because if multiple components keep on emitting values and
+  a problem happen at some point, we won't easily find the culprit.
+
+4. When initializing the component, define the itemsSubject `.asObservable`, which is a method that limits the use only
+for the consuming and .next is not available anymore. We are now limited to use `forEach`, `pipe` and `subscribe`.
+
+5. On the service, define itemSubject as a private property and return a new property that returns that `BS` as an
+observable — Only with the observable interface that holds .pipe and .subscribe.
+  5.1. The components will now consume this property: `items$ = this.itemSubject.asObservable()`
+
+6. On the initialization, subscribe to items$ to be consume the subject values.
+  6.1 Now, we can see that the responsibilities are starting to become well delimited — components consume while services
+  manage them.
+
+7. Under the hood, a `BS` is still an observable, so we can use .pipe in the method chain. 
+  7.1 In state management, this can be quite useful. We can expose a public asObservable property and clone the
+  original value that is allocated in the `BS` so we avoid passing the same memory reference to the components.
+  7.2 If every consumer of that BS receives the same memory reference of the array (the array emitted via `.next()`), and
+  one component mutates it, be it by clearing, adding new values or similar operations directly inside the component,
+  other components that rely on that same reference will also be affected. This often leads to mutation issues.
+  7.3 The idea is that every consumer of this BS receives is a new copy (a new memory reference).
+  Therefore, if a components modifies the value it receives from its subscription, it will only affect its own local state.
+
+8. For this modification, we can use pipe to modify this memory reference before it reaches the component's subscribe.
+And we can use the map operator to this. it will be as followss
+  ```ts
+	items$ = this.itemSubject.asObservable().pipe(
+		map((itemsList: any[]) => {
+			return structuredClone(itemsList )
+		}),
+	);
+```
+
+8.1. Where structured clone is a javascript method, that receives as parameter what we want to clone. In our case, the list.
+structuredClone does a deep copy. An object's deep copy is a copy whose properties do not share the same references (point
+to the same underlying values) as those of the source object from which the copy was made.
+Which means that we won't have mutation problems because everything will be a new memory reference.
+
+9. Now that we are secure that no component will make direct changes to the subject, we can create support methods to make
+the interaction between the component and the service. Like the method to add a value to that observer through the subject
+e.g.
+
+```ts
+	addItem(item: { name: string; price: number }) {
+		const currentList = this.itemsSubject.value;
+
+		this.itemsSubject.next([...currentList, item]);
+	}
+```
+
+here, currentList recovers the itemsList emitted by the BS, and we are using the itemsSubject reference to add new values
+to it, preserving immutability.
+
+Through `.next()` we will already alter the value being stored by the service.
+
+9.1. The list that will be stored inside the itemsSubject, will now the be the current list, and emit the new list to
+whoever subscribes to it.
+9.2 Now the only way to add some value is when a component calls the service's addItem, which is inside the service.
+
+
+## Callback Remember
 
 ### 1. Simple example:
 
