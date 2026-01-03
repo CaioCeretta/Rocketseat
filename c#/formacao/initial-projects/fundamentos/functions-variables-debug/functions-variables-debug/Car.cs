@@ -15,25 +15,7 @@ public class Car
 
 	public void ModelName() {
 		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
-		Console.WriteLine(Model);
 	}
-
 	public void CarColor() => Console.WriteLine(Color);
 
 }
