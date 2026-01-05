@@ -1,3 +1,5 @@
+# Overall Comments
+
 ## Global angular
 
 In case we don't have angular installed globally in our machine, we must create a new script property named something
@@ -36,3 +38,22 @@ cause the FOIT/FOUT effect (where text appears in a system font and "pops" into 
 • Performance: HTML uses parallel loading and CSS uses sequential loading
 • Organization: Using links we have a "Cluttered" HTML, and imports we have a centralized CSS
 • Best use cases: <link> for production sites & SEO and @import for quick prototypes or CSS-in-JS
+
+## Aligning a flex item to the end
+
+We may think that because exists an align-self in a flex container, that justify-self should also exist. But it doesn't.
+
+`justify-self` does'nt work inside a Flex box. This property exists only on CSS Grids.
+
+However, there is a classic trick. Which is the margin-left: auto;
+
+To push a specific element to the end of the container flex, we must use automatic margins. This works because an auto
+margin will occupy all the remaining space in that direction, pushing the element to the edge
+
+### Other approaches are:
+
+• 1. **Spacer div**: Set an empty div with `flex-grow: 1` between our items. This div will expand to fill all space, pushing the last item
+to the end.
+
+• 2. **Switch to CSS grid**: If we need a more granular control over every item's position, display grid might be a better fit
+
