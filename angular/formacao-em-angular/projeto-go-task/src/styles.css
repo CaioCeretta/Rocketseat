@@ -1,3 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+@theme {
+  /* .font-archivo utility cla    ss */
+  --font-archivo: "Archivo", ui-sans-serif, system-ui, sans-serif;
+}
+
+h1 {
+  font-family: var(--font-archivo);
+}
