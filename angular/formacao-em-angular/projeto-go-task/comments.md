@@ -15,11 +15,24 @@ This way is recommended by google fonts itself. We copy the tags and paste them 
 
 • Advantages: It's quicker. The browser starts downloading the font as soon as it reads the HTML, even before processing
 the CSS
-
 • Performance: It allows the use of `preconnect`, which tells the browser to establish a connection with google's server
 ahead of time.
 
 ### 2. Using @import inside CSS
 
+Place the line at the very top of our stylesheet
 
+• Pro: It keeps our HTML cleaner and centralizes everything related  to styling in the CSS. It is very useful in frameworks
+where we have a "global styles" file
+• Con: The browser must first download the CSS, parse it, and only then discover it needs to download the font. This can
+cause the FOIT/FOUT effect (where text appears in a system font and "pops" into the google font a second later)
+  . FOIT - Flash of Invisible Text: The browser completely hides the text while the font is being loaded. The text will
+  only appear when the font is ready.
+  . FOUT - Flash of Unstyled Text: The browser displays the text immediately using a system's default font, e, as soon
+  as the custom font finishes downloading, it instantly replaces it.
 
+### Which one should we choose?
+
+• Performance: HTML uses parallel loading and CSS uses sequential loading
+• Organization: Using links we have a "Cluttered" HTML, and imports we have a centralized CSS
+• Best use cases: <link> for production sites & SEO and @import for quick prototypes or CSS-in-JS
