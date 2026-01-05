@@ -52,8 +52,9 @@ margin will occupy all the remaining space in that direction, pushing the elemen
 
 ### Other approaches are:
 
-• 1. **Spacer div**: Set an empty div with `flex-grow: 1` between our items. This div will expand to fill all space, pushing the last item
-to the end.
+• 1. **Spacer div**: Set an empty div with `flex-grow: 1` between our items. This div will expand to fill all space, pushing
+the last item to the end.
 
-• 2. **Switch to CSS grid**: If we need a more granular control over every item's position, display grid might be a better fit
+• 2. **Switch to CSS grid**: If we need a more granular control over every item's position, display grid might be a better
+fit
 
