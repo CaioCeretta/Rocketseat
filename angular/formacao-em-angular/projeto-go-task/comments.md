@@ -58,3 +58,19 @@ the last item to the end.
 • 2. **Switch to CSS grid**: If we need a more granular control over every item's position, display grid might be a better
 fit
 
+## Occupying full flex width
+
+In case we have a flex div that takes the full width, and we have three children inside of it, and want them to occupy
+the full width of the container, we can use flex-1 in all 3 of them, and they will equally occpy the same space.
+
+Just a reminder for the width. The parent component has a width of max-w-7xl, which means that it defines the maximum
+width limit and: 
+
+1. If the screen is smaller than 7xl, it occupies 100% of the available width
+2. If the screen is bigger than 7xl, the element stops growing at that value
+
+In other words, it don't have a width, it only sets an upper-limit
+
+So, back to that example of the full width, in case we used 3 div inside the flex container, and the screen size is
+currently smaller than 7xl, we should always add, for the responsiveness, a style of overflow-x-auto, which will create
+a scroll bar for us and do not let the element leak from the component. 
