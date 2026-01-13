@@ -2,9 +2,16 @@
 
 @import "tailwindcss";
 
+
 @theme {
   /* .font-archivo utility cla    ss */
   --font-archivo: "Archivo", ui-sans-serif, system-ui, sans-serif;
+}
+
+@utility scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 h1 {
