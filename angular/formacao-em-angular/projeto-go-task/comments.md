@@ -102,4 +102,30 @@ may ignore them or not be able to properly map them as variables.
 
 #### Extra tip: Pure CSS
 
-If we don't need the class to be "trackable" by Tailwind's engine (In other words, without caring )
+If we don't need the class to be "trackable" by Tailwind's engine (In other words, without caring if it always available
+in the final bundle), we can simply write conventional CSS like
+
+```css
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+```
+
+But using @utility, we maintain the consistence of "only what i use goes to the final bundle"
+
+## Margin-Left Auto
+
+Why does ml-auto works only inside a flex container?
+
+This has to do with how the browser distributes the available space.
+
+1. **The "Positive Spacing" Concept**
+
+In a block layout (Without a flexbox), the automatic margins work in a limited form. For instance, if we give `margin: auto`
+to a block with defined width, it centralizes because the browser equally divides the extra spaces.
+
+In a flexbox, the way it works changfes. The flex container calculates all the available space that remains on the main
+axis. When we apply ml-auto in a specific item, we are telling the browser: "Get all the available space to the left of
+this item and transform it into a margin".
+
+2. **Why it does'nt work in a normal flow?** 
