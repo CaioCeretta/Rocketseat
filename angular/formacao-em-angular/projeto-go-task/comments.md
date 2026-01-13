@@ -61,7 +61,7 @@ fit
 ## Occupying full flex width
 
 In case we have a flex div that takes the full width, and we have three children inside of it, and want them to occupy
-the full width of the container, we can use flex-1 in all 3 of them, and they will equally occpy the same space.
+the full width of the container, we can use flex-1 in all 3 of them, and they will equally occupy the same space.
 
 Just a reminder for the width. The parent component has a width of max-w-7xl, which means that it defines the maximum
 width limit and: 
@@ -73,4 +73,33 @@ In other words, it don't have a width, it only sets an upper-limit
 
 So, back to that example of the full width, in case we used 3 div inside the flex container, and the screen size is
 currently smaller than 7xl, we should always add, for the responsiveness, a style of overflow-x-auto, which will create
-a scroll bar for us and do not let the element leak from the component. 
+a scroll bar for us and do not let the element leak from the parent component. 
+
+## Hiding scroll bar
+
+We can define a utility in our global css, and utilize the class just created inside the element that has the class overflow
+
+## Tailwind v4
+
+In tailwindv4, the rule is to separate what is design configuration (variables) of what is CSS logic (behaviors)
+
+The @theme block is exclusively used to define variables that tailwind will utilize in utilities, like (colors. spacings,
+fonts, ...). When creating something as the scrollbar-hidden to modify the webkit-scrollbar, it involes complex selectors
+and pure CSS properties. This means that it must stay off the @theme and inside the main body of our CSS file, in a @utility
+directive.
+
+### Why does it work like this?
+
+1. The directive `@utility`: It replaces the old way of adding layers `@layer utilities`. By using @utility, Tailwind
+automatically registers the class name and generates the CSS if we use it solely in our HTML/JSX
+
+2. Native CSS Syntax: Tailwind v4 focuses on being "CSS-first" and not "Utility-First", anymore. The use of & for nested
+selectors (such as webkit's pseudo-elements) now is natively supported by modern CSS and perfectly understood by Tailwind
+engine.
+
+3. Organization: @theme is processed to generate the system design. If we put complex selectors inside of it, the compiler
+may ignore them or not be able to properly map them as variables.
+
+#### Extra tip: Pure CSS
+
+If we don't need the class to be "trackable" by Tailwind's engine (In other words, without caring )
