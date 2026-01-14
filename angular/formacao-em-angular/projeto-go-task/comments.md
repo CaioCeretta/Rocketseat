@@ -128,4 +128,35 @@ In a flexbox, the way it works changfes. The flex container calculates all the a
 axis. When we apply ml-auto in a specific item, we are telling the browser: "Get all the available space to the left of
 this item and transform it into a margin".
 
-2. **Why it does'nt work in a normal flow?** 
+2. **Why it does'nt work in a normal flow?**
+
+In the common rendering flow (display: block):
+
+․ The elements try to occupy 100% of the width or vertically stack
+․ The automatic horizontal margin only works to center blocks if they have a fixed width
+․ `margin-left: auto` on its own only pushes the element if there is an opposite aligning logic, what the default flow 
+doesn't manage in a dynamic way like flex-box
+
+3. **Does it work somewhere else?**
+
+Besides **Flexbox**, automatic margins also work similarly when used inside CSS Grid. If we have an item inside a grid
+cell, `ml-auto` also pushes it to the end of the designated area. 
+
+### Other use
+
+Inside flexbox, we can also use my-auto to vertically center an item, what is way harder to do in the default flow.
+
+**Does mt-auto pushes to the bottom and mb-auto to the top?**
+
+Yes, but there is a fundamental rule for WHEN they work.
+
+When working inside the row direction, mt--auto and mb-auto work in the cross axis, mt-auto is to the base of the container
+and mb--auto to the top of the container.
+
+When working inside the column direction, mt-auto and mb-auto start to control the space inside the main axis (vertical).
+
+## Form submit
+
+We must ensure that whenever we use two buttons inside a form, but we only want to submit that form, to always inform that
+the type of the non-submit button is button. If we leave it empty, it will also submit the form
+
