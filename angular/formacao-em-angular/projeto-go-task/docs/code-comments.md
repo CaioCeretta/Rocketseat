@@ -56,9 +56,106 @@ one of these lists and render the items of each one.
 
 **The instructor chose the three lists approach, where one will have all the to-dos, doing, and complete.**
 
-## Lesson 4 - Defining the mangament local
+## Lesson 4 - Defining the task managament scope
 
-##
+A component, is solely used to manage only itself. And it is not the place to manage the state. It should not be the place
+that holds a source of truth, and manage state that will be used in one or more component in our app.
+
+Being cautious about coupling components, and preventing it, is what defines if our app is going to be scalable and easy
+to maintain.
+
+### Ideal Source of Truth Scope
+
+The ideal would be to create a service for it. Because a service is a class that will have a single instance in our app,
+and we can inject that class in any component we want, and they will always consume the same instance.
+
+We will have a service that will hold the three task list, and each task list will hold each object representing the task.
+
+Instead of managing the tasks inside the component, we will have methods inside the service, to manage this list. Method
+to create, update, delete, and more. And whoever inject that service will be able to consume thee methods.
+
+### List Copy
+
+Our task list section component need to consume these three status list, to be able to render in its template columns.
+
+But when we consume that list, and retrieve this data, it receives a decoupled copy rather than the original instance
+stored in the service. This is crucial for maintaining a `Source of Truth`.
+
+By working with a copy (using new memory references), any modification made within the component, such as moving tasks
+between lists, remain scoped to that component. This prevents side effects that could unexpectedly alter the global state.
+
+Because every modification in the lists that are made inside the component, will stay only on the scope of this component,
+it won't affect our source of truth. This way, our original list structure, will remain intact and reliable. This will make
+that every time we consult that list, it is not currently being handled, and its structure is not being modified
+
+Ensuring the original list remains intact guarantees thjat the data remains predictable and reliable for all other consumers.
+If componentes were allowed to mutate the source of truth directly, the application state would become inconsistent and
+difficult to debug.
+
+## State Management: Local Copy vs Centralized State
+
+In a modern software architecture, specially in frameworks like Angular, React, or Vue, we generally handle data in one
+of two ways.
+
+### 1. Local Copy (The "Sandbox" Pattern)
+
+The service provides a **clone** of the data to the component
+
+• **How it works:** The component receives a copy with a new memory reference. Any changes (like draggin a task) happen
+only inside that component's scope
+
+• **Pros:**
+• Isolation: No other part of the app is affect by "in-progress" changes.
+• Performance: UI updates are instant because they don't depend on a global refresh
+
+• **Cons:**
+• Sync Issues: The "Source of Truth" in the service becomes outdated unless we explicitly save the changes back later.
+• Inconsistency: If two components show the same list, one might show the update while the other doesn´t
+
+### 2. Centralized State (Redux / Store Pattern)
+
+This is the pattern used by **Redux**, **NgRx**. The state is "read-only" for the components.
+
+**How it works:** If a component wants to move a task, it cannot touch the list, it must **dispatch an action** or call a
+**service method**. The service updates the master list, and the new state "flows down" to all components.
+
+• **Pros:**
+
+. Consistency: Every component always sees the exact same data
+. Predictabily: We can track exactly when and why he state changed (TimeTravel debugging).
+
+• Cons:
+
+. Boilerplate: Requires more code (actions, reducers, or specific methods).
+
+### Comparison Table
+
+**Feature: Modification**
+
+1. Local Copy (Isolated): Direct mutation of the local copy
+2. Centralized State (Redux Style): Dispatches via methods/actions.
+
+• Memory Reference
+
+1. Local Copy (Isolated): New reference created for the component
+2. Centralized State (Redux Style): Single reference maintained in a Store.
+
+• Souce of Truth
+
+1. Local Copy (Isolated): Beocmes fragmented across components.
+2. Centralized State (Redux Style): Remain unified in the service/store
+
+• Best Use Case
+
+1. Local Copy (Isolated): Complex forms or "draft" states
+2. Centralized State (Redux Style): Global data like User Info or Task Boards
+
+### Which one to choose?
+
+• If we want the user to "play around" with tasks (move to one place or another) and only save on the database when clicking
+on the "Save" button, the **Local Copy** model is the best option.
+• If we want that, by moving a task, this change is automatically showin in every places of the app (ex: a task counter
+in the header), the **Centralized** style is the correct.
 
 ## When to use Interface and when to use Type?
 
