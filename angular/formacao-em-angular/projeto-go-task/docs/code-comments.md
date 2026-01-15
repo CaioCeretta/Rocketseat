@@ -28,10 +28,39 @@ id: number
 title: string
 description: string
 comments: Comment[]
-status: 'to-do' | 'processing' | 'done'
+status: 'to-do' | 'doing' | 'done'
 }
 
-### When to use Interface and when to use Type?
+## Lesson 3 - Defining the list structure
+
+How will the tasks managenement be? Will they be inside a single list or they will be divided in different lists? What are
+the positive and negative points of each option?
+
+### Three Lists
+
+**Negative Points:**
+
+• We have three different lists, so we will have to manage these three lists. Every time we delete or update a task, we
+must know its current status, and based on it, identify which list we must access to find that task. But for us, this won't
+be a problem, since we will always know what is the current stage of that task.
+
+Therefore, it won't be a problem to pass that status as a parameter to know which list to look for, be it for replacements,
+deletions, etc.
+
+### Positive Points
+
+• We are going to have less items to iterate in each one of them, so it is going to be quicker to access the task object
+and modify it.
+• When thinking of our layout, it will be easier to render each task by column, since we will be able to "listen" to each
+one of these lists and render the items of each one.
+
+**The instructor chose the three lists approach, where one will have all the to-dos, doing, and complete.**
+
+## Lesson 4 - Defining the mangament local
+
+##
+
+## When to use Interface and when to use Type?
 
 #### Interface
 
