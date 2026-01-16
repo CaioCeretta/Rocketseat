@@ -92,6 +92,46 @@ Ensuring the original list remains intact guarantees thjat the data remains pred
 If componentes were allowed to mutate the source of truth directly, the application state would become inconsistent and
 difficult to debug.
 
+## Lesson 5: Defining the task management methods
+
+Every method will receive the currentStatus in its parameters. The reason for the currentStatus parameter is to directly
+iterate the correct list.
+
+• createTask(name, description)
+• deleteTask(id)
+• updateStatus(id, currentStatus, nextStatus): This method, when we move a task from any list to other, we are also updating its status.
+And the nextStatus will be passed to us via the component.
+• editTask(id, currentStatus, name, desc): receives the id, currentStatus, and the new task properties
+properties.
+• updateComments(taskId, currentStatus, commentsList): We won't receive a single comment, we will treat the component,
+that will have the current list of comments for that task, make the updates only inside that component, and it will
+always return us the final list with all the comments from that task, and we make the replacement based on it.
+
+All these methods will be executed through the service, which is our source of truth
+
+## Lesson 6: Defining the modal entry point
+
+**In which part of the application will te modal trigger logic reside?**
+
+We have to think that we need to open them in three different places
+
+1 - Welcome Component
+2 - When clicking on the edit of the task
+3 - When clicking on the "comments" button that will be used to add or remove a comment
+
+We are used to think that we are going to use the components to open these modals, be it the task, or the welcome, or more.
+But according to the instructor, there is a better approach.
+
+Which is removing the logic from the component and putting it inside a service. Because this way, we centralize all the
+modal opening logic in a service. Sometimes the components can have too many internal responsibilities and adding these
+implementations may increase even more its size.
+
+And many times, in case we have more than one modal in our app, like is the case of the task creation/edit and the comment
+creation, they may also share its configurations, like height, width, classes, and so on. Which if we choose to let this
+behavior for the component itself, we might end up replicating that logic.
+
+## Lesson 7: Defining the modals responsibilities
+
 ## State Management: Local Copy vs Centralized State
 
 In a modern software architecture, specially in frameworks like Angular, React, or Vue, we generally handle data in one
