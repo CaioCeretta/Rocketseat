@@ -132,6 +132,33 @@ behavior for the component itself, we might end up replicating that logic.
 
 ## Lesson 7: Defining the modals responsibilities
 
+**What are going to be the modals responsibilities? Should they be able to directly access the task management service?**
+
+Our `task-comments-modal` component is similar to any other component, it will have its ts, its html, and its css, the
+difference is that they are going to open using the functionalities from the `AngularCDK`.
+
+We could simply inject the task management service inside the modal component, and call the methods to create, delete,
+edit, etc. But is this a modal's responsibility or a responsibility from the component that is calling (opening) the
+modal.
+
+However, in the modal component, it is usually not the best place to call these services, because it is way more intuitive
+if the component that opens the modals, call these methods, and the modal only pass on the informations we need to
+call the task management methods.
+
+The flow is, for example:
+
+1. Our welcome section component calls the modal opening service to open a modal
+2. The service opens the modal
+3. We make the necessary modifications in the modal and when we close it, it will pass on the data to the welcome component.
+
+Therefore, the role of the modal is to pass on the data and our component is the one that injects the service management
+service and invoke the methods, such as the creation, passing the name and description retrieved by the modal.
+
+Take the task comments modal as an example, what it will do is receive the current instance of our card (the one that
+resides in the component (copy)), will make the handling inside of it, and return if i made or not an update on the
+comments. If a change was made, be it by adding, removing, our component will know it at the moment that we close that
+modal and if we altered something, the component will call the method to update that list.
+
 ## State Management: Local Copy vs Centralized State
 
 In a modern software architecture, specially in frameworks like Angular, React, or Vue, we generally handle data in one
