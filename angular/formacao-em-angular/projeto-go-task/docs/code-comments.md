@@ -159,6 +159,11 @@ resides in the component (copy)), will make the handling inside of it, and retur
 comments. If a change was made, be it by adding, removing, our component will know it at the moment that we close that
 modal and if we altered something, the component will call the method to update that list.
 
+## Lesson 8 - Drawing the integrated view of the app
+
+Other than the macro view of an app, there is also an integrated view, which basically shows how a component of the app
+integrates and talks to the others. Both the parents and children component, the upstreams and downstreams, and more.
+
 ## State Management: Local Copy vs Centralized State
 
 In a modern software architecture, specially in frameworks like Angular, React, or Vue, we generally handle data in one
