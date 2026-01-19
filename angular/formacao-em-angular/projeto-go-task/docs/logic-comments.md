@@ -47,7 +47,41 @@ dialogRef.close('Pizza!');
 
 ### Observable Recap
 
-The observable pattern is very common in Angular (specially with `Angular Material`).
+The observable pattern is very common in Angular (specially with `Angular Material`). We must think of an observable
+as a "communication tunnel¨ who waits for something to happen.
+
+The anatomy of the process is:
+
+#### 1. The "Contract" (.subscribe)
+
+When we execute the dialogRef.closed.subscribe(...), we are not executing any logic on that moment, we are simply telling
+the code:
+
+• Hey, i know this dialog will close any time in the future
+• When this happen, get whatever leaves it (`result`) and execute this `console.log`
+
+It is like if we left our phone number in a store for someone tro call it as soon as a product arrives. We don't remain
+standing in the store, we go about our business until the phone rings.
+
+#### 2. The Trigger (.close)
+
+The line `dialogRef.close("Pizza!") is what pushes the data into the tunnel
+
+• The moment `close()` method is called, the Observable understands its task is accomplished.
+• It "emits" the value "Pizza!" to everyone who was listening (subscribed) inside the .subscribe
+
+#### The Step-By-Step Flow
+
+1. Observable (closed): This is the data source. It remains "dormant" until the dialog closes.
+2. Subscription (subscribe): This is the hook that connects the Observable to our response code.
+3. Emission: The close('Pizza!') acts as the trigger that shoots the message through the pipe
+4. Execution: Only now is the `console.log` inside the `subscribe` executed.
+
+#### Why use observables instead of a simple function?
+
+Unlike a regular function that returns an immediate value, an Observable handles **time**. A user might take 1 second or
+1 hour to close the dialog. The observable keeps this connection open and organized for us. Ensuring the code only
+runs when the data actually exists.
 
 ### Handling the modal opening via service
 
