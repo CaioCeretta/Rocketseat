@@ -27,7 +27,7 @@ export class ModalControllerService {
 	}
 
 	openTaskCommentsModal() {
-\		return this._dialog.open(TaskFormModal, {
+		return this._dialog.open(TaskFormModal, {
 			...this.modalSizeOptions,
 		});
 	}
