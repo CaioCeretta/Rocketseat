@@ -43,7 +43,16 @@ dialogRef.closed.subscribe((result) => {
 });
 
 dialogRef.close('Pizza!');
+
+/* The dialogRef which we are returning, has a closed property, which is an observable, we subscribe to that observable
+and the anonymous function gets executed everytime the modal/dialog reference closes and we are able to get, inside the
+function parameter, the value being emitted by the modal
 ```
+
+For testing, inside the app's html, alongside with the ts, define a button which clicked opens a modal.
+
+Inside the ts, create a private property and assign to it the inject(ModalName), create a openModal function and in
+its body, call the openNewTaskModal() from the service and replicate it to the comments modal
 
 ### Observable Recap
 
@@ -76,6 +85,28 @@ The line `dialogRef.close("Pizza!") is what pushes the data into the tunnel
 2. Subscription (subscribe): This is the hook that connects the Observable to our response code.
 3. Emission: The close('Pizza!') acts as the trigger that shoots the message through the pipe
 4. Execution: Only now is the `console.log` inside the `subscribe` executed.
+
+#### Other Example
+
+**`closed`** is the observable.
+**`subscriber`** is the code inside our subscribe, which is listening
+**`trigger`** is the .close
+
+Each other role:
+
+1. `dialogRef.closed` (the radio): Imagine that closed is a radio station that only plays music when the dialog closes.
+2. `.subscribe(...)` (radio turned on): When we subscribe to an observable, we are "syncing" in that station. We remain
+   silent (code doesn't run) until something is broadcasted
+3. `.close("Pizza")` "announcer": When we call the function, it is like if the announcer pressed the "play" button and
+   put "Pizza" "on air"
+4. The reaction: In the instant that the announcer presses plays, the radio (subscribe) receives the sound and executes
+   the console.log
+
+So essentially, what we used inside the method close is what will "travel" across the Observable pipe and fall into the
+`result`.
+
+Origin: dialogRef.close(VALUE)
+Destination: .subscribe(VALUE => { ... })
 
 #### Why use observables instead of a simple function?
 
