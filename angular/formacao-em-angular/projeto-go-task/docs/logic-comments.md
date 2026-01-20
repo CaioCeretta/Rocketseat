@@ -54,6 +54,59 @@ For testing, inside the app's html, alongside with the ts, define a button which
 Inside the ts, create a private property and assign to it the inject(ModalName), create a openModal function and in
 its body, call the openNewTaskModal() from the service and replicate it to the comments modal
 
+## Lesson 2 - Making the creation/edition modal dynamic with mode flags
+
+In this lesson, we are going to pass the mode of the modal on its opening. By mode we understand that i may be creation
+or editing. Based on it, we will edit its title and the button text. For this, we will use the `data` property of the modal
+configuration.
+
+Other than the properties to modify a modal display, such as height, width, maxWidth, we also have the `data` property.
+The `data` property is a dynamic object where we can pass any property into it. We are able to capture that object inside
+our modal.
+
+Initially we are going to pass the `mode` attribute, which will define what we want to display in the modal, in this case
+'create' and 'edit'
+
+### TaskFormModal Component
+
+Inside our task form component class.
+
+Start by defining a property \_data and assign to it the call to `inject(DIALOG_DATA)`, this injects the data provided in
+the dialog configuration when this modal opens via the `Dialog.open`
+
+• DIALOG_DATA: Injection token from angular material that holds the value defined in the modal data.
+
+Now that we can access that property inside the HTML. However, we need to notice one thing, when we hover over the property
+\_data, which the DIALOG_DATA was injected to, we can notice that it has the type of any.
+It is very common in companies like angular, that they leave the typing of any. But typing as any, makes the code intent
+harder to understand, and for it, we usually create interfaces to define the shape of the data.
+
+Outside of the @Component directive, define the interface, and type the data accordingly.
+
+### Dynamic Template
+
+We need to dynamize the task modal component template, and do this, we make use of the \_data attribute
+
+use angular's interpolation, and inside the task form modal html, utilize a ternary conditional to modify both the title
+of the modal as well as the button text based on the \_data.mode.
+
+### Separate the interface in its own file
+
+Inside the app folder, create another folder interfaces and create a file for each one, like `task-form-modal-data.interface.ts`
+and move our interface to this file.
+
+### Edit Modal
+
+For this, we will follow a similar pattern to what we just did
+
+1. The edit modal is the same modal as the create task one, the difference is that inside the service, we have two different
+   methods to handle this, each method, has a different data object property
+2. Inside the card task component, define a property with the same name as the service we are injecting where we inject
+   the ModalControllerService.
+3. Define a method to open the edit modal which we will use onClick, the form modal already contains the data property
+   value which will be contained in the fired method.
+4. Modify the task card component template, so that the click on "Editar" opens the modal
+
 ### Observable Recap
 
 The observable pattern is very common in Angular (specially with `Angular Material`). We must think of an observable
