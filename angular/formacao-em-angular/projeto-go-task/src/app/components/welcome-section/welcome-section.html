@@ -4,12 +4,18 @@
   </div>
   <div class="p-3 flex flex-col gap-4">
     <div class="flex flex-col my-2">
-      <h2 class="font-bold text-2xl">Bem vinda de volta,<br /> Jennie</h2>
-      <h3 class="font-medium opacity-80 text-lg text-[#374151]">Não se esqueça de atualizar as tarefas</h3>
+      <h2 class="font-bold text-2xl">
+        Bem vinda de volta,<br />
+        Jennie
+      </h2>
+      <h3 class="font-medium opacity-80 text-lg text-[#374151]">
+        Não se esqueça de atualizar as tarefas
+      </h3>
     </div>
     <div>
-      <button type="button" class="text-white text-sm font-semibold text-center bg-[#2A89EF] shadow-md
-        shadow-blue-500/50 rounded-xl flex gap-2 cursor-pointer active:translate-y-1 transition-center py-3 px-4">
+      <button type="button"
+        class="text-white text-sm font-semibold text-center bg-[#2A89EF] shadow-md shadow-blue-500/50 rounded-xl flex gap-2 cursor-pointer active:translate-y-1 transition-center py-3 px-4"
+        (click)="openNewTaskModal()">
         <div class="flex items-center duration-75 gap-1">
           <img src="images/icon-plus-circle.svg" />
           Criar uma tarefa
