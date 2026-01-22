@@ -107,7 +107,97 @@ For this, we will follow a similar pattern to what we just did
    value which will be contained in the fired method.
 4. Modify the task card component template, so that the click on "Editar" opens the modal
 
-### Observable Recap
+## Order of Execution
+
+We have a service that handles the modal opening, a component that injects that service, and a component that injects that
+service, and call a method using this property.
+
+How is it working?
+
+**This is life cycle + Angular's DI (Dependency Injection) working behind the scenes. Here is a step by step:**
+
+To understand this flow, we need to look a the chain reaction. Even though `TaskCard` and the `FormModal` are separate
+components, they are linked by `Angular CDK Dialog` engine and our sevice.
+
+### 1. The trigger (TaskCard)
+
+Everythhing starts in the `TaskCard`. When `openEditModal()` is called:
+
+• The component calls the `openEditTaskModal` method from our service
+
+## Lesson 3 - Configuring the creation/editing modal
+
+We are now going to pass more value into the modal, adressing the task name and description. Create a form with these two
+fields and make the button dynamic based on its status — if it is valid or invalid.
+
+Essentially, in the solution of this lesson, we are going to click on the edit task button, and pass its existing name and
+description. And in the creation, also pass these properties, but with empty values.
+
+Finally, we will make the button stylings so it's properties/styles are dynamic, to indicate if the task is valid or not.
+
+Start by opening the modal service and inside the open edit modal, say that it should expect some parameters. Parameters
+which will create an interface (`ITaskFormControls`) to type them.
+
+The reason the instructor chose the name controls, is because the modal will have a form, and each form field is a control.
+
+Now that we have defined that the editModal **expects** an object with a name and a description, we must pass the `formValues`
+object into the data object.
+
+And for the creation, we pass the same formValues object, but defaulting them as empty values.
+
+This update was easier to make since the modal openings are at the same place (service) and not spread in multiple components.
+
+Modify the ITaskFormModalData to include the new property, and the `TaskFormModal`'s data property has access to that
+object.
+
+### Form Controls
+
+Essa é uma excelente pergunta conceitual. In case we are studying frameworks like Angular (Reactive Forms) or state management
+libraries, terms like "Control" appear all the time
+
+The reason is that a form field is not just a text box, it is a "live object" that needs to manage behaviors other than
+the simple entered value.
+
+Some reasons for this nomenclature are:
+
+1. **Individual State Managing**
+
+Each field needs to know its "history" in realtime. If the field is a `Control` object, it can track states like:
+
+• Value: The current data (e.g. "caioceretta@gmail.com")
+• Touched: If the user already clicked/entered the field
+• Dirty: If the user updated the original value
+• Pristine: If the value remains untouched
+
+2. Encapsulated Version
+
+By transforming the field in a `Control`, the validation logic remains "hanged" in it. The field becomes responsible by
+answering the question: "Am i valid now?". If we have an e-mail field, internally, the `Control` executes the regex and
+expose an error object in case something is wrong. Without having to consult the entire form for it.
+
+3. Reactive data flow (Observables)
+
+When a field is a `Control`, it usually emmits events, this allow us to "listen" to the `valueChanges` or `statusChanges`
+
+• Example: If we trype in a `Country` field, the neighbor `Control`, such as state, can react automatically and filter
+the possible options, because it is observing the first's state.
+
+4. Interface Decoupling
+
+By considering the field as a `Control`, it usually emmits events, This allows us to "listen" to the valueChanges or
+statusChanges
+
+#### Structure Summary
+
+Think of the form as a tree
+
+• FormGroup (The Form): The tree trunk that groups everything
+• FormControl (The Field): The leaves that store the value and tells if they are valid or not.
+
+• Analogy: Imagine a plane's control panel: Each button or lever is a "Control". The pilot doesn't look only to the
+position of the lever, but if the error lights of that lever is turned on and if it responds to the command.
+
+## Observable Recap
 
 The observable pattern is very common in Angular (specially with `Angular Material`). We must think of an observable
 as a "communication tunnel¨ who waits for something to happen.
