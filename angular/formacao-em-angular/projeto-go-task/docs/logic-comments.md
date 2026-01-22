@@ -124,6 +124,32 @@ components, they are linked by `Angular CDK Dialog` engine and our sevice.
 Everythhing starts in the `TaskCard`. When `openEditModal()` is called:
 
 • The component calls the `openEditTaskModal` method from our service
+• It passes a raw object (the `formValues`) containing task's name and description.
+
+### 2. The Service Logic (`ModalControllerService`)
+
+The service acts as a factory for our dialogs:
+
+• `openEditTaskModal` method is executed
+• It combines our default `modalSizeOptions` (width, maxWidth) with the specific data for this task
+• **Crucially**: It calls `this._dialog.open(TaskFormModal, { data: ... })
+• At this exact moment, the CDK Dialog service creates a `Portal` and prepares to instantiate our component.
+
+3. Dependency Injection and Data Passing
+
+Before TaskFormModal is actually rendered on the screen
+
+• Angular's injector creates an instance of `TaskFormModal`.
+• The CDK Dialog Service creates a special Provider for the DIALOG_DATA token, containing the object we passed in the service
+(the mode and the forrm values)
+• Inside `TaskFormModal`, the line `readonly \_data = inject(DIALOG_DATA) runs. it grabs the data that was just put into
+the injector
+
+4. Initialization (TaksFormModal)
+
+• The `TaskFormModal` is now fully instantiated
+• The \_data property is populated.
+• The HTML template (`task-form-modal`) is rendered, and we can now access \_data.mode and \_data.nome
 
 ## Lesson 3 - Configuring the creation/editing modal
 
