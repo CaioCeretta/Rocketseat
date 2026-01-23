@@ -1,4 +1,4 @@
-<form action="" class="rounded-xl overflow-hidden bg-white">
+<form action="" class="rounded-xl overflow-hidden bg-white" [formGroup]="taskForm">
   <div class="flex gap-1 items-center p-4">
     <img src="images/icon-new-task.svg" />
 
@@ -29,9 +29,10 @@
       type="button">
       Cancelar
     </button>
-    <button
-      class="py-3 px-4 bg-[#2A89EF] rounded-xl text-sm font-semibold cursor-pointer active:translate-y-1 transition-transform duration-75 shadow-md shadow-blue-500/50 text-white"
-      type="submit">
+    <button class="{{ `py-3 px-4 rounded-xl text-white text-sm cursor-pointer font-semibold
+      ${taskForm.invalid ? 'bg-[#D7D8D8]' : 'bg-[#2A89EF]'}` }}" class="py-3 px-4 bg-[#2A89EF] rounded-xl text-sm font-semibold
+      cursor-pointer active:translate-y-1 transition-transform duration-75 shadow-md shadow-blue-500/50 text-white"
+      type="submit" [disabled]="taskForm.invalid">
       {{ _data.mode === 'create' ? 'Criar uma tarefa' : 'Salvar alterações' }}
     </button>
   </div>

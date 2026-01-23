@@ -33,7 +33,7 @@ export class ModalControllerService {
 			...this.modalSizeOptions,
 			data: {
 				mode: "edit",
-				...formValues,
+				formValues,
 			},
 		});
 	}
