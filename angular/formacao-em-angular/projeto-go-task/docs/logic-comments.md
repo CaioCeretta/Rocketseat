@@ -193,7 +193,52 @@ Steps:
 3. When defining the fields of the FormGroup object, we inform that his fileld is an instance of FormControl with the
    initial value this field will have, and as the second parameter, its validations, making use of the Validator
    object and its methods
-4.
+4. Now that we have defined the structure of our form in our component, we will pass it to our template
+5. Add some `Reactive Form` directives in our form element, which are
+   1. Create a [formGroup] property binding, and specify our form group, which will be the taskForm property
+   2. Define a event binding (ngSubmit), that will be fired when the form is submitted, for this event, we use our
+      component's onFormSubmit method
+
+### FormGroup methods
+
+When we have a property typed as a FormGroup, we have access to multiple validation and control methods. We can, for example,
+set the button as disabled in case [taskForm.invalid] === true
+
+## Class interpolation and dynamic classes: Angular x React
+
+### Angular: HTML + Template Syntax
+
+In angular, we are inside **real HTML**
+
+Which means that every attribute assignment must be a string
+
+`class = "..."`
+
+When we want to evaluate an expression, Angular uses **interpolation**
+
+`{{ expression }}`
+
+If we want, inside a class, modify its styling based on a JS value, we must use
+
+class="{...}"
+
+HTML requires double quotes, {{}} tells angular that it is a js/ts expression, and the template string is just normal JS
+running inside the interpolation
+
+### React: JSX (Not HTML)
+
+We don't write HTML, we write JSX, that is basically "disguised" JavaScript
+
+className={`... ${...}`}
+
+Here
+
+className already indicates that this is JS
+there is not interpolation {{}}
+Template string is already JS, so it is direct
+
+In JSX, {} is already js
+outside of this, is normal text
 
 ### Form Controls
 
