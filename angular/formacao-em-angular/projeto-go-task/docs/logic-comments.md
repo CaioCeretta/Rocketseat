@@ -173,8 +173,27 @@ And for the creation, we pass the same formValues object, but defaulting them as
 
 This update was easier to make since the modal openings are at the same place (service) and not spread in multiple components.
 
-Modify the ITaskFormModalData to include the new property, and the `TaskFormModal`'s data property has access to that
-object.
+Modify the ITaskFormModalData interface to include the new property of formValues. wjocj we will use the new interface
+of the form values it will receive. This will enable `TaskFormModal`'s data property to have access to that object.
+
+### Form Creation
+
+Now, that we have already defined the structure of the form and "told" the modal's interface, that the formValues is of
+this type. We will create our forms.
+
+Since we are creating a "Reactive Form", the form structure will be created inside the component's class, different from
+`Template Driven Forms` that we create the structure inside the template.
+
+Steps:
+
+1. Start by importing `ReactiveFormsModule` inside the modal component from `@angular/forms`
+2. Create a taskForm property, which is typed as a FormGroup. Every form is a `FormGroup`, it is a group that consist
+   of one or multiple controls, which are the form fields. This property initial value will be a new FormGroup, and
+   as its parameter, the fields expected by this form
+3. When defining the fields of the FormGroup object, we inform that his fileld is an instance of FormControl with the
+   initial value this field will have, and as the second parameter, its validations, making use of the Validator
+   object and its methods
+4.
 
 ### Form Controls
 
@@ -222,6 +241,132 @@ Think of the form as a tree
 
 • Analogy: Imagine a plane's control panel: Each button or lever is a "Control". The pilot doesn't look only to the
 position of the lever, but if the error lights of that lever is turned on and if it responds to the command.
+
+## When to use ?? (nullish coalescinging) e when to use || (logical OR)
+
+### || (Logical OR)
+
+• Returns the right value if the value to the left is false
+• It considers as falsy:
+• `""` (empty string), `0`, `false`, `NaN`, `null`, `undefined`
+
+value || fallback
+
+**Examples would be: **
+
+```ts
+   const name = user.name || "Guest"
+
+   "Caio" -> "Caio"
+   "" -> "Guest"
+   null -> "Guest"
+   undefined -> "Guest"
+```
+
+?? (Nullish Coalascing)
+
+• Only considers `null` and `undefined` as "abscence of value"
+
+It preserves valid values, even if they are falsy, so it narrows more the condition than ||
+
+value ?? fallback
+
+**Simple example:**
+
+```ts
+   const name = user.name ?? "Guest";
+
+   // If user.name is:
+   "Caio" -> "Caio"
+   "" => ""
+   null -> "Guest"
+   undefined -> "Guest"
+```
+
+### Direct difference (side by side)
+
+0 || 10 // 10
+0 ?? 10 // 0
+
+"" || "abc" // abc
+"" ?? "abc" // ""
+
+false || true // true
+false ?? true // false
+
+This means that `||` discards 0 and "", and for ??, only null/undefined "doesn't exist"
+
+### 1. When to use ||
+
+1. Fallback for simple boolean values
+
+`const isAdmin = user.isAdmin || false;`
+
+In this case:
+
+• If it is undefined, returns false
+• If it is false -> false (ok)
+• If it is true -> true
+
+2. Simple feature flags
+
+`const neableLogs = config.enableLogs || false;`
+
+3. Values the 0, "", false doesn't make sense
+
+`const pageSize = Number(input) || 10;`
+
+If input is:
+
+"0" -> 0 -> falls to `10` (ok. 0 is not valid)
+"20" -> 20
+undefined -> falls to 10
+
+### 2. When to use ??
+
+1. Values coming from the backend
+
+const username = apiUser.username ?? "Anonymous"
+
+If backend sends "" -> keeps ""
+null -> fallback
+undefined -> fallback
+
+This is the correct use in APIs
+
+2. Numerical values (Very important)
+
+const quantity = product.quantity ?? 1;
+
+if `quantity` is:
+
+0 -> maintains 0
+null -> 1;
+undefined -> 1;
+
+3. Optional configuration
+
+`const theme = userSettings.theme ?? "dark"`
+
+4. Forms (React, Angular, etc)
+
+const value = formData.age ?? 10;
+
+If the user types 0, we don't want to overwrite it.
+
+### 5. Golden Rule
+
+Use ?? by default
+Use || only when any falsy values show falls on the fallback
+
+### 6. Common combination with optional chaining
+
+const city = user?.address?.city? ?? "unknown"
+
+Prevents error (`?.`), because the question mark verifies if the value is either null or undefined. Any one of these it
+stops the execution.
+
+Only uses fallback if it is null or undefined
 
 ## Observable Recap
 
@@ -330,6 +475,14 @@ We can think of it like
 
 **Angular CDK** = behavior
 **Angular Material** = behavior + visual (material design)
+
+```
+
+```
+
+```
+
+```
 
 ```
 
