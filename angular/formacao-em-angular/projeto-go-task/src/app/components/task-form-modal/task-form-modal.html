@@ -10,9 +10,11 @@
     <p class="font-semibold text-sm mb-2">Nome</p>
     <input class="w-full border border-[#D1D5DB] p-3 rounded-lg text-sm font-light text-[#89919F]" type="text"
       formControlName="name" placeholder="Descreva o que deverá ser feito" />
+    @if(taskForm.get('name')?.invalid && taskForm.get('name')?.touched) {
     <p class="font-semibold text-sm text-red-500">
       O campo é obrigatório e precisa ter no mínimo 10 caracteres.
     </p>
+    }
   </div>
 
   <div class="p-4 border-y border-[#D1D5DB] flex flex-col gap-4">
@@ -20,9 +22,11 @@
     <input formControlName="description"
       class="w-full border border-[#D1D5DB] p-3 rounded-lg text-sm font-light text-[#89919F]" type="text"
       [value]="_data.formValues.description ? _data.formValues.description : ''" placeholder="Adicione uma descrição" />
+    @if(taskForm.get('description')?.invalid && taskForm.get('description')?.touched) {
     <p class="font-semibold text-sm text-red-500">
       O campo é obrigatório e precisa ter no mínimo 10 caracteres.
     </p>
+    }
   </div>
   <div class="flex p-4 justify-end gap-2">
     <button
@@ -38,4 +42,4 @@
       {{ _data.mode === 'create' ? 'Criar uma tarefa' : 'Salvar alterações' }}
     </button>
   </div>
-</form>ou vao
+</form>
