@@ -198,6 +198,9 @@ Steps:
    1. Create a [formGroup] property binding, and specify our form group, which will be the taskForm property
    2. Define a event binding (ngSubmit), that will be fired when the form is submitted, for this event, we use our
       component's onFormSubmit method
+   3. Reference the form controls based on our form group's form controls, name and description. And for this, simply
+      add the attribute formControlName="controlName"
+   4. We can now see that if the satisfy the validations, the button becomes available.
 
 ### FormGroup methods
 
