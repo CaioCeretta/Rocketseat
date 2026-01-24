@@ -242,6 +242,52 @@ OR
 • Field touched -> isn't enough
 • Invalid field AND touched -> now, show the error
 
+## Lesson 5: Send data back on modal close.
+
+### We are already:
+
+1. In our service: using the CDK dialog and listening to the `closed` observable
+2. Injecting data in the modal with
+   • `readonly _data: ITaskModalData = inject(DIALOG_DATA);`
+   This ensures that the modal is being passed correctly to the modal.
+3. Initializating the form with the form group / form controls
+
+Now we need to do, implement the submit to close the dialog with data, and the result is not undefind.
+
+### What we need to change
+
+1.  Inject the `DialogRef` inside the modal with:
+
+```ts
+   import { DialogRef } from '@angular/cdk/dialog';
+
+   readonly _dialogRef = inject(DialogRef)
+```
+
+The `DialogRef` is not global. It is created in the moment the dialog is open, the object is registered in the injector
+of that specific modal
+
+2. Close the dialog with payload on submit
+
+```ts
+   onFormSubmit() {
+      if(this.taskForm.invalid) return;
+      this._dialogRef.close(this.taskForm.value)
+   }
+```
+
+This is the exact emission time
+
+3. Flow after correction
+
+1. Inside the modal: User clicks on "Salvar". -> onFormSubmit() -> dialogRef.close(formValue)
+1. Inside service: dialogRef.closed.subscribe(result) -> result === formValue
+
+1. Final Modal Code
+
+Define a property `dialogRef`, containing the value of the current reference created by the open modal, and inside the
+submit, close that dialogRef observable, and emit the values of the formGroup
+
 ## Class interpolation and dynamic classes: Angular x React
 
 ### Angular: HTML + Template Syntax
