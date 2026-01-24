@@ -207,6 +207,41 @@ Steps:
 When we have a property typed as a FormGroup, we have access to multiple validation and control methods. We can, for example,
 set the button as disabled in case [taskForm.invalid] === true
 
+## Lesson 4 - Dynamic error message.
+
+We need to show the error message, only if the input is invalid and has already been touched. With form controls, we
+can check whether the input has been "touched" or not in case something has being typed on it, don't meet the requirements,
+and loses its focus.
+
+Inside `reactive forms`, each `FormControl` maintains an internal; state, like a "mini report" of the field.
+
+`touched` -> user entered and left the field (blur)
+`dirty` -> value has been altered
+`invalid` -> some validation has failed
+`errors` -> which validations have failed
+
+We don't need to create this, angular already does that for us.
+
+The condition to make the error to display only if the input is invalid and has already been touched, is like:
+
+```ts
+    @if(taskForm.controls['description'].invalid && taskForm.controls['description'].touched) {
+    <p class="font-semibold text-sm text-red-500">
+      O campo é obrigatório e precisa ter no mínimo 10 caracteres.
+    </p>
+    }
+```
+
+OR
+
+`@if(taskForm.get('description')?.invalid && taskForm.get('description')?.touched)`
+
+### When to show an input error?
+
+• Invalid field by itself -> Isn't enough
+• Field touched -> isn't enough
+• Invalid field AND touched -> now, show the error
+
 ## Class interpolation and dynamic classes: Angular x React
 
 ### Angular: HTML + Template Syntax
