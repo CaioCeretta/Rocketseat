@@ -1,4 +1,4 @@
-import { DIALOG_DATA } from "@angular/cdk/dialog";
+import { DIALOG_DATA, DialogRef } from "@angular/cdk/dialog";
 import { Component, inject } from "@angular/core";
 import {
 	FormControl,
@@ -6,6 +6,7 @@ import {
 	ReactiveFormsModule,
 	Validators,
 } from "@angular/forms";
+import type { ITaskFormControls } from "../../interfaces/task-form-controls.interface";
 import type { ITaskModalData } from "../../interfaces/task-form-modal-data.interface";
 
 @Component({
@@ -18,6 +19,9 @@ export class TaskFormModal {
 	// Injects the data passed to the dialog when it was opened
 	readonly _data: ITaskModalData = inject(DIALOG_DATA);
 
+	// injects the given DialogRef of the current modal.
+	readonly _dialogRef = inject(DialogRef);
+
 	taskForm: FormGroup = new FormGroup({
 		name: new FormControl(this._data.formValues.name ?? "", [
 			Validators.required,
@@ -29,5 +33,13 @@ export class TaskFormModal {
 		]),
 	});
 
-	onFormSubmit() {}
+	onFormSubmit() {
+		if (this.taskForm.invalid) return;
+
+		this._dialogRef.close(this.taskForm.value);
+	}
+
+	closeModal(formValues: ITaskFormControls | undefined = undefined) {
+		this._dialogRef.close(undefined);
+	}
 }

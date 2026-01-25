@@ -268,6 +268,8 @@ The `closed` observable only emits a value when a payload is exactly passed to `
 by:
 
 • Clicking the backgroup
+. However, if we wish to disable closing it via clicking on the backgroup, in the configuration properties of the
+modal, we can use `disableClose: true`
 • pressing `ESC`
 • calling `dialogRef.close()` without arguments
 
@@ -275,7 +277,16 @@ Then the emitted value is `undefined`.
 
 ### What needs to be implemented
 
-**1. Inject the `DialogRef` inside the modal**
+**1. First, we will define a method for closing the modal when clicking on the x button**
+
+We have two ways of closing a modal, by clicking on the x or on the backgroup , which will simply call close and pass
+undefined as argument
+
+**2. We should also type in the generic, what will be the expected the emitted value**
+
+We will simply use, inside the angle brackets of the dialog.open, the ITaskFormControls interface
+
+**2. Inject the `DialogRef` inside the modal**
 
 ```ts
    import { DialogRef } from '@angular/cdk/dialog';
@@ -290,7 +301,7 @@ Then the emitted value is `undefined`.
 • That instance is registered in the **injector of the dialog component**
 • Injecting `DialogRef` inside the modal guarantees access to the same reference created by `Dialog.open(...)`
 
-**2. Close the dialog with a payload on submit**
+**3. Close the dialog with a payload on submit**
 
 ```ts
    onFormSubmit() {
@@ -306,7 +317,7 @@ This is the exact emission moment.
 • `dialogRef.closed` emits value
 • Observable completes automatically
 
-**3. use `(ngSubmit)` on the form**
+**4. use `(ngSubmit)` on the form**
 
 We don't need to import the `FormsModule` to use (ngSubmit) if we are using ReactiveFormsModule.
 
@@ -314,7 +325,7 @@ We don't need to import the `FormsModule` to use (ngSubmit) if we are using Reac
 
 Add this attribute to our form, pointing it to the onSubmit function.
 
-**4. Final Flow (end to end)**
+**5. Final Flow (end to end)**
 
 Inside the Modal:
 
@@ -328,7 +339,7 @@ Inside the Service:
 2. result === formValue
 3. Data arrives correctly
 
-**5. Final Flow (Conceptual Summary)**
+**6. Final Flow (Conceptual Summary)**
 The modal:
 • Injects `DialogRef`
 • Closes itself
