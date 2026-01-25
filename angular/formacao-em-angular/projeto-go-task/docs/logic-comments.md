@@ -244,49 +244,150 @@ OR
 
 ## Lesson 5: Send data back on modal close.
 
-### We are already:
+### Current Setup (Already Done):
 
-1. In our service: using the CDK dialog and listening to the `closed` observable
-2. Injecting data in the modal with
+We already have the base structure in place:
+
+1. Service Layer
+   • using the Angular CDK dialog
+   • Subscribing to the `closed` observable
+
+2. Modal data injection
    • `readonly _data: ITaskModalData = inject(DIALOG_DATA);`
-   This ensures that the modal is being passed correctly to the modal.
-3. Initializating the form with the form group / form controls
+   This ensures the modal receives the configuration data passed when it opened.
 
-Now we need to do, implement the submit to close the dialog with data, and the result is not undefind.
+3. Form Initialization
+   • A `FormGroup` with `FormControl`s
+   • Initial values coming from `_data.formValues`
 
-### What we need to change
+At this point, the dialog opens correctly and the form works, bur the result emitted on lcose is `undefined`
 
-1.  Inject the `DialogRef` inside the modal with:
+### Why the result is `undefined`?
+
+The `closed` observable only emits a value when a payload is exactly passed to `dialogRef(value)`. If the dialog is closed
+by:
+
+• Clicking the backgroup
+• pressing `ESC`
+• calling `dialogRef.close()` without arguments
+
+Then the emitted value is `undefined`.
+
+### What needs to be implemented
+
+**1. Inject the `DialogRef` inside the modal**
 
 ```ts
    import { DialogRef } from '@angular/cdk/dialog';
 
-   readonly _dialogRef = inject(DialogRef)
+   readonly _dialogref = inject(DialogRef);
 ```
 
-The `DialogRef` is not global. It is created in the moment the dialog is open, the object is registered in the injector
-of that specific modal
+**Important concept**
 
-2. Close the dialog with payload on submit
+• `DialogRef` is not global
+• It is created at the moment the dialog is opened
+• That instance is registered in the **injector of the dialog component**
+• Injecting `DialogRef` inside the modal guarantees access to the same reference created by `Dialog.open(...)`
+
+**2. Close the dialog with a payload on submit**
 
 ```ts
    onFormSubmit() {
       if(this.taskForm.invalid) return;
-      this._dialogRef.close(this.taskForm.value)
+
+      this._dialogRef.close(this.taskForm.values)
    }
 ```
 
-This is the exact emission time
+This is the exact emission moment.
 
-3. Flow after correction
+• dialog is closed
+• `dialogRef.closed` emits value
+• Observable completes automatically
 
-1. Inside the modal: User clicks on "Salvar". -> onFormSubmit() -> dialogRef.close(formValue)
-1. Inside service: dialogRef.closed.subscribe(result) -> result === formValue
+**3. use `(ngSubmit)` on the form**
 
-1. Final Modal Code
+We don't need to import the `FormsModule` to use (ngSubmit) if we are using ReactiveFormsModule.
 
-Define a property `dialogRef`, containing the value of the current reference created by the open modal, and inside the
-submit, close that dialogRef observable, and emit the values of the formGroup
+(ngSubmit) belongs to the direct NgForm but also ReactiveFormsModule.
+
+Add this attribute to our form, pointing it to the onSubmit function.
+
+**4. Final Flow (end to end)**
+
+Inside the Modal:
+
+1. user clicks on save
+2. (ngSubmit) fires `onFormSubmit()`
+3. dialogRef.close(formValue) emits the value
+
+Inside the Service:
+
+1. `dialogRef.closed.subscribe(result)`
+2. result === formValue
+3. Data arrives correctly
+
+**5. Final Flow (Conceptual Summary)**
+The modal:
+• Injects `DialogRef`
+• Closes itself
+• Emit the form data, on close
+
+This transforms the modal in a declarative component, that doesn't know the service, only communicates via closing.
+
+## Standalone Model vs NgModules
+
+Angular currently uses the Standalone approach. It represents the biggest paradigm change inside the framework. The
+main objective is to remove unnecessary complexity and make Angular more intruitive, similar to libraries like React
+and Vue.
+
+### 1. NgModules Approach
+
+Traditionally, every component, directive, or pipe, needed to belong to a "club" called "NgModule", nothing worked
+isolately
+
+**How it worked**: We would create a component and had to declare it in the `declarations`arrays of a module. For
+example, the AppModule. If we would like to use this component in other pace, we would have to export and import
+the entire module inside the given placdce.
+
+**The analogy**: Imagine that to use a red lego block, we were forced to carry the entire box of the set "Fire Station"
+set box everywhere.
+
+### 2. New Approach (Standalone)
+
+Now, the components are self-sufficient. They manage their own dependencies
+
+**How it works**: Every component is standalone by default. Instead of an external module deciding what the component can
+use, the component itself has an `imports` array where it declarews exactly which components, directives or pipes it
+requires.
+
+**The analogy**: We simply grab the red lego brick and snap it wherever we need it.
+
+### 3. Key Differences
+
+**Organization**: With NgModules, it was module based (`.module.ts`). With standalone, it is component based
+**Boilerplate**: With NgModules, we had multiple boilerplates, many files and declarations. With standalone, the code is
+leaner.
+**Learning Curve**: With NgModules, it was difficult to grasp modules. With standalone, it is more intuitive for beginners
+**Bootstrapping**: With NgModules, it was via bootstrapModule(AppModule). With standalone, it is via bootstrapApplication
+
+### 4. Benefits of switching:
+
+• **Reduced Boilerplate**: We eliminate the need to create `.module.ts` files for every feature. The project folder structure
+becomes much cleaner.
+
+• **Better "Tree Shaking"**: Since dependencies are explicit per component, the Angular compiler can precisely remove
+unused code, resulting in smaller bundle sizes.
+
+• **Simplified Lazy Loading**: Previously, lazy loading required creating a specific module for a route. Now, we can lazy
+load a component directly in the routes file.
+
+• ** Easier Testing**: Testing a standalone component is simpler because we don't have the need to set up a whole module
+in the `TestBed`, we can just import exactly what the component needs.
+
+• **Interoperability**: Standalone components can be used within old NgModules and vice versa, allowing for a gradual
+migration.
 
 ## Class interpolation and dynamic classes: Angular x React
 
