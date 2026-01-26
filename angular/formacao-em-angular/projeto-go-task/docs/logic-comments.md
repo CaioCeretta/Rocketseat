@@ -347,6 +347,62 @@ The modal:
 
 This transforms the modal in a declarative component, that doesn't know the service, only communicates via closing.
 
+## Lesson 3 - Receiving values sent by the modal in the parent component
+
+When we define `dialogRef.closed`, we are dealig iwth an Observable, so we subscribe to it. When the dialog is closed via
+`close` method, the value passed to `close` is emitted and received by subscribers.
+
+We are able to access `dialogRef`, because our service function returns the result of `open`. The `open` method returns an
+instance of `DialogRef`, which represents the currently opened modal, and exposes the `closed` observable.
+
+### Instructor's Approach
+
+The instructor took a different approach from the one where i handled the `closed` subscription inside the `service`
+
+Instead of managing everything inside the service, he:
+
+• Returns the `DialogRef` instance from the service, which is already properly typed
+• Defines and handles the `dilogRef` inside the component that opens the modal
+• Subscribes to closed in the component, not in the service.
+
+This means that `openNewTaskModal` does not simply delegate everything to the service. Instead, the component
+
+1. Calls the service to open the modal
+2. Receives the `DialogRef`
+3. Subscribes to closed
+4. Decides what to do when the modal is closed
+
+So, instead of creating and assigning the `dialogRef` inside the service, it is created and handled inside the component
+via the `openNewTask` method
+
+The same pattern is applied to the edit modal, the service returns the dialog reference, and the component subscribes to
+`closed` and handles the result.
+
+### Responsibility of the Modal Component
+
+The value emitted when `close` is called is handled by the modal component itself. The task modal's submit logic is only
+responsible for calling `close` with the appropriate return value, it does notcare about what happens after that.
+
+### **Important to concept to notice**
+
+Even though we have seen that it is important to unsubscribe whenver we subscribe to an observable, `closed` method already
+unsubscribe for us
+
+### Difference between my approach and the instructor's approach
+
+• My Approach
+   . The service opens the modal
+   . The service subscribes to `dialogRef.closed`
+   . The service handles the result of the modal
+• Instructor's Approach
+   . The service only opens the modal and returns the DialogRef
+   . The component subscribes to `dialogRef.close`
+   . The component decides to handle the result
+
+In short, the approach i took centralizes the modal life cycle and result handling inside the service, while the instructor's
+approach keeps the service focused on modal creation and delegates the result handling to the component, making it flexible
+and more context-aware
+
 ## Standalone Model vs NgModules
 
 Angular currently uses the Standalone approach. It represents the biggest paradigm change inside the framework. The
