@@ -347,7 +347,7 @@ The modal:
 
 This transforms the modal in a declarative component, that doesn't know the service, only communicates via closing.
 
-## Lesson 3 - Receiving values sent by the modal in the parent component
+## Lesson 6 - Receiving values sent by the modal in the parent component
 
 When we define `dialogRef.closed`, we are dealig iwth an Observable, so we subscribe to it. When the dialog is closed via
 `close` method, the value passed to `close` is emitted and received by subscribers.
@@ -402,6 +402,48 @@ unsubscribe for us
 In short, the approach i took centralizes the modal life cycle and result handling inside the service, while the instructor's
 approach keeps the service focused on modal creation and delegates the result handling to the component, making it flexible
 and more context-aware
+
+## Lesson 7 - Creating the Task Management Service
+
+We will now create the service that will represent our task's source of truth, and define the typing that represent our
+task.
+
+Start by creating a new service, add the @Injectable decorator, and as an argument, use `{providedIn: "root"}` so the
+instance is shared across all app. Our source of truth, is going to consist of three lists based on the status. 
+
+Every task is going to be an instance of a behavior subject, where it is an **Observable**, and every time we update
+that list, we can perform an emit so every subscriber consume the next updates.
+
+```ts
+   private todoTasks$ = new BehaviorSubject<any[]>([]);
+   readonly todoTasks = this.todoTasks$.asObservable();
+```
+When we define a property that is equal to the Observable.asObservable(), we can send this copy for whoever subscribes to
+it. The only thing something can do, is to subscribe to the copy.
+ They will never consume or modify the behaviorSubject class directly. We don't want any consumer component to have the
+ "power to emit" anything to the other components. Only the source of truth (service) can do this. This way, its responsibility
+ is well defined and we don't have components to modify these properties. Repeat the same for the two other lists.
+
+ Its flow is going to be:
+
+ 1. The service will be the one responsible for updating that lists using the utility methods.
+ 2. The components will subscribe and consume the list copies we created
+ 3. Since the service is an Observable, every time we emit a new value, we update the lists and automatically, everyone who
+ is subscribed to it, will get the new list. It will propagate through the service and go to the subscribe that is being
+ made on the components.
+ 4. To update the lists, we use the `.next()` method, which is capable for updating our source of truth, as well as emiting
+ the new value for the subscribers.
+
+
+
+
+
+
+
+
+
+
+
 
 ## SRP (Single Responsibility Principle), which one is the best approach?
 
@@ -538,6 +580,7 @@ Example
 
    In our specific case, the instructor's approach applies SRP in a more correct and scalable way 
 
+##
 
 ## What does "reason to change" actually mean?
 
