@@ -15,8 +15,28 @@ export class ModalControllerService {
 
 	private readonly _dialog = inject(Dialog);
 
+	//myApproach, the closing process happen on the service
+	// openNewTaskModal() {
+	// 	const dialogRef = this._dialog.open<ITaskFormControls>(TaskFormModal, {
+	// 		...this.modalSizeOptions,
+	// 		disableClose: true,
+	// 		data: {
+	// 			mode: "create",
+	// 			formValues: {
+	// 				name: "",
+	// 				description: "",
+	// 			},
+	// 		},
+	// 	});
+
+	// 	dialogRef.closed.subscribe((result) => {
+	// 		console.log("The dialog was closed", result);
+	// 	});
+	// }
+
+	// instructor approach, return the modal to the component, the service, only returns
 	openNewTaskModal() {
-		const dialogRef = this._dialog.open<ITaskFormControls>(TaskFormModal, {
+		return this._dialog.open<ITaskFormControls>(TaskFormModal, {
 			...this.modalSizeOptions,
 			disableClose: true,
 			data: {
@@ -26,10 +46,6 @@ export class ModalControllerService {
 					description: "",
 				},
 			},
-		});
-
-		dialogRef.closed.subscribe((result) => {
-			console.log("The dialog was closed", result);
 		});
 	}
 
