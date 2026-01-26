@@ -403,6 +403,163 @@ In short, the approach i took centralizes the modal life cycle and result handli
 approach keeps the service focused on modal creation and delegates the result handling to the component, making it flexible
 and more context-aware
 
+## SRP (Single Responsibility Principle), which one is the best approach?
+
+The different modal approach made me question which one is the most accurate one.
+
+### What does SRP really says?
+
+**A module should have only one reason to change**
+
+This does not mean that a function should do only one thing, this is a shallow interpretation
+SRP is about responsibility and reasons to change
+
+**A module must have one single reason to change**
+
+### Applying SRP to the moodal scenario
+
+**Responsibilities involved**
+
+When working with modals, several responsibilities exist
+
+1. Opening and configuring the modal (UI infrastructure)
+2. Defining the modal layout and form
+3. Deciding what happens the modal closes
+4. Executing a business action with the returned data (create, edit, navigate, etc.)
+
+The SREP question is:
+
+   **Who should change if the behavior after the modal closes change?**
+
+### Where would our approach starts to violate SRP
+
+In our original approach, the service:
+
+• Opens the modal
+• subscribes to `dialogRef.closed`
+• Decides what to do with the result
+
+This gives the service more than one reason to change
+
+1. If the way the modal is opened changes
+2. If the behavior after the modal closes changes
+
+Even though the code works, this is already a violation of SRP
+
+### Why the instructor's approach aligns better with SRP
+
+**Service Responsibility**
+
+The instructor's approach, the service has a **single responsibility**
+
+   • Opening and configuring the modal
+
+Its reason to change is limited to:
+
+   • UI library changes
+   • Modal configuration changes (size, animation, etc)
+
+### Component's Responsibility
+
+   The component is responsible for:
+
+   • Orchestrating the UI flow.
+   • Deciding what to do when the modal closes
+
+   **Its reason to change is**
+
+   • Business rules or screen specific behavior
+
+   **This separation:**
+
+   • Keeps responsibilities clear
+   • Reduces coupling
+   • Improves scalability
+
+### A practical rule
+
+Even though the same modal is used for both creation and editing, the key difference is not the modal itself, but what
+happens after it closes.
+
+For example
+
+• After creating a task, the screen might
+   . navigate to another page
+   . show a success toast
+• After editing a task, the screen might
+   . Stay on the same page
+   . Update the local state without showing feedback
+
+Because these actions vary depending on the context in which ther modal is used, the logic that reacts to the modal's closure
+should live in the component, not in the service
+
+### When our approach still fits SRP
+
+Our approach can still respect SRP when
+   • The modal has a single well-defined behavior
+   • The service acts more like a use case
+
+Example
+   `confirmDelete(entityId)
+   
+   -> open modal,
+   -> if confirmed, delete entity
+   -> done
+
+   Here:
+   
+   . There is only one reason to change
+   . SRP is not violated
+
+
+### Concrete example
+
+   Imagine a service that:
+
+   • Formats dates
+   • Fetches data from an API
+   • Decides how errors are shown to the user
+
+   This service would need change if:
+
+   • The API changes
+   • The date format changes
+   • The UI error behavior changes
+
+
+
+
+### Quick Summary
+
+   • SRP !== "small functions¨
+   • SRP = one reason to change
+   • Generic Modals -> handle result in the component
+   • Action specific modals -> handling logic can live in the service
+
+   In our specific case, the instructor's approach applies SRP in a more correct and scalable way 
+
+
+## What does "reason to change" actually mean?
+
+When we say:
+   "A module should have only one reason to change"
+
+We are not talking about how often something changes, but why it would need to change.
+
+A reason to change means:
+
+   A single type of decision or concern that can force us to modifyt that code
+
+In other words:
+
+   • Who whould ask for the change?
+   • What kind of change is it?
+   • Which rules or constraints does it belong to?
+
+If different kinds of decisions can break or require changes in the smae piece of code, then that code has multiple reasons
+to change
+
+
 ## Standalone Model vs NgModules
 
 Angular currently uses the Standalone approach. It represents the biggest paradigm change inside the framework. The
