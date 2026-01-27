@@ -596,11 +596,50 @@ This is why it feels weird.
 
 ## Lesson 9 - Creating a function to generate the ID.
 
+Lesson will target the creation of a function that returns a random id
+
 Start by creating a folder called utils, which is specific folder for functions that we can reuse on different parts
 and create `generate-unique-id-with-timestamp.ts` that returns us a random id based on the timestamp.
 
+## Lesson 10 - Task Creation Method
 
+Create a new method inside a task service to create a new task. This new method will receive the values sent from the modal
+spread them, since they have the same keys as the ITask interface, and along side with it, the status of `TODO` and the
+comments as an empty array
 
+We might think, isn't status the enum type? why it accepted the TaskStatusEnum.TODO? The reason is, as we previously
+seen, the union type consist of the values of the todoenum, not the keys, so TaskStatusEnum.TODO returns us the string
+`to-do`, which is part of the union type.
+
+`TODO` is simply the identifier, the Enum value `to-do` is what really fills the variable
+
+### Best of two worlds
+
+By defining a Type using the values inside of a `Enum`, we create a "perfect symbiosis" relationship between them. By
+that, we mean that they live in the same system where one befits of the other and they are both in sync. In practical
+terms, a change on a structure automatically reflects on the other.
+
+#### Why is it the best of both worlds?
+
+1. **Single Source of Truth**: The maintenance becomes centralized. If we have to rename a tatus of "IN_PROGRESS" to
+"DOING", we alter only the value of the Enum, since our Type is derived (like `Status = keyof typeof MyEnum`), the change
+propagates across all app instantly. Without dangerous "Find and Replace".
+
+2. **Runtime vs Compile-time:**
+
+   Enum: Gives us a real object at the final JS. We can iterate over it, use it in selects (dropdowns) or validate values
+   coming from an API
+
+   Union Type: Ensures that, during development, TS prevents us of passing invalid strings, such as "doing" (in minuscule)
+   of the type expects for "DOING"
+
+3. DX (Developer Experience) and Security
+
+By typing, VS Code will not only suggest the value, but ensure that we are using the correct reference 
+
+• Prevention of "Magic Strings": We avoid spreading strings, like hardcodes strings. If the value change inside the DB,
+we modify the Enum and the compiler automatically points out exactly where the code has broken.
+• Secure Refactoring: Renaming a member of the Enum via IDE (F2) updates all the type and value reference simultaneously.
 
 ## Enums
 
