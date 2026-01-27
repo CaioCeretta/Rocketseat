@@ -405,8 +405,7 @@ and more context-aware
 
 ## Lesson 7 - Creating the Task Management Service
 
-We will now create the service that will represent our task's source of truth, and define the typing that represent our
-task.
+This lesson will focus on creating the service that will represent our task's source of truth
 
 Start by creating a new service, add the @Injectable decorator, and as an argument, use `{providedIn: "root"}` so the
 instance is shared across all app. Our source of truth, is going to consist of three lists based on the status. 
@@ -426,13 +425,122 @@ it. The only thing something can do, is to subscribe to the copy.
 
  Its flow is going to be:
 
- 1. The service will be the one responsible for updating that lists using the utility methods.
- 2. The components will subscribe and consume the list copies we created
- 3. Since the service is an Observable, every time we emit a new value, we update the lists and automatically, everyone who
- is subscribed to it, will get the new list. It will propagate through the service and go to the subscribe that is being
- made on the components.
- 4. To update the lists, we use the `.next()` method, which is capable for updating our source of truth, as well as emiting
- the new value for the subscribers.
+   1. We have the three lists, and the only way to access them is subscribing to the service
+   2. The service will be the one responsible for updating that lists using the utility methods.
+   3. The components will subscribe and consume the list copies we created
+   4. Since the service is an Observable, every time we emit a new value, we update the lists and automatically, everyone who
+   is subscribed to it, will get the new list. It will propagate through the service and go to the subscribe that is being
+   made on the components.
+   5. To update the lists, we use the `.next()` method, which is capable for updating our source of truth, as well as emiting
+   the new value for the subscribers.
+
+
+## Lesson 8 
+
+Now, we must define an interface that types the list, ITask, and ITaskComment;
+
+However, is a good option to separate the status in a separate type or enum, if we do something like:
+`status: 'to-do' | 'doing' | 'done´
+
+is not wrong, but it can be improved, since the status may be used in different places of our app, and in case we would
+like to modify that status of "to-do" to "todo" withou an hiphen, we would have to repeat it. So by creating an enum or
+Type to represent that status, is a better approach, like:
+
+export enum TaskStatusEnum {
+	TODO = "to-do",
+	DOING = "doing ",
+	DONE = "done",
+}
+
+This enum is an object containing three properties, and would jusr fine, however. Typing a property as a enum makes the
+code a little bit harder to work with when we wish to create properties that will have this enum type, passing these
+strings as parameters, and so on.
+
+That's why the instruct or likes to defining a Type, that will also have these strings, but based on our enum. It will
+be like this
+
+`export type TaskStatus = TaskStatusEnum.TODO | TaskStatusEnum.DOING	| TaskStatusEnum.DONE;`
+
+### If i already have the ENUM, why should i create a type?
+
+**The problem of enum as type**
+
+When defining `status: TaskStatusEnum`, ts will, many times, require us to import the Enum and  use it explictly
+`TaskStatusEnum.TODO` by assigning a value. This can be too verbose in tests or when we are receiving simple data via
+an API.
+
+**Advantage of the union type**
+
+By creaating `type TaskStatus = TaskStatusEnum.TODO | ...`, we are obtaining the best of both worlds
+
+• Flexibility: We can pass a pure string "to-do" and TS will accept, because it recognizes that this string is part of
+the allowed set.
+• Security: If we try to pass something as "fazendo", TS will give a warning.
+• Single Reference: Our type is still "coupled" to the Enum. If we change a value inside the Enum, Type automatically
+updates itself
+
+**Practical Comparative**
+
+   Pure String: 'status: to-do' is difficult to modify globally
+   Simple Enum: `status: TaskStatusEnum.TODO`, it's safe, but sometimes, too much verbose/strict
+   Enum + Type: `status: 'to-do'` ( validated by enum). This is flexible and easy to maintain
+
+### Final Summary
+
+If we typed status as `TaskStatusEnum`, if we try to use something as
+```ts
+   const task: ITask = {
+      status: "to-do" // TS will say that to-do is not of the TaskStatusEnum type
+   }
+```
+But if we modify to define a Type based on this enum, the same code as above would work.
+
+And i said it was the best of both worlds because the Enum is the source of truth (if we need to modify the text, we only
+modify it) and the `Type` is the entry port, acting as a "bridge" and allowing us to directly using the string without
+TS complaining.
+
+This way, we can reuse this enum everywhere on the app that we need that status, and in case we want to remove, add,
+update its name. We have one single place to do so.
+
+### Separate folder for the enum
+
+Instead of simply creating it inside the interface folder, create a new `enums` folder and create a task-status.enum.ts.
+
+We can also create a new types folder for the type. But in this case, i'm going to make different from the instructor and
+take the "domain" approach. But to not modify too much what the instructor is doing, i am going to unite only the enum
+and the type.
+
+## Domain Approach
+
+I came across something that made me reflect
+
+If i have a type, that is entirely based in a enum, should i add this type in a separate folder/file than the enum?
+
+Sometimes, separating "what the file consist of" (two folders, one for enums and other for types), we separate for what
+the file "speaks"
+
+If our Enum and our Type refer to Tasks, they should live together. That's why, the Type depends on the Enum. If we change
+the Enum, it is almost certain that we will have to modify the Type.
+
+Multiple times, in modern approaches, developers tend to prefer to take an approach like
+
+src/
+  types/
+    user.ts       <--Here we have all the Enum, Interface and User types
+    product.ts
+    shared.ts     <-- Generic types that are used across the whole app
+
+
+
+
+
+
+
+
+
+    
+
+
 
 
 
