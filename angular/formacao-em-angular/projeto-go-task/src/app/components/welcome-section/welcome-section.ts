@@ -1,5 +1,6 @@
 import { Component, inject } from "@angular/core";
 import { ModalControllerService } from "../../services/modal-controller.service";
+import { generateUniqueIdWithTimeStamp } from "../../utils/generate-unique-id-with-timestamp";
 
 @Component({
 	selector: "app-welcome-section",
