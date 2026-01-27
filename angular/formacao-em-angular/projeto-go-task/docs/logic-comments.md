@@ -516,32 +516,192 @@ I came across something that made me reflect
 
 If i have a type, that is entirely based in a enum, should i add this type in a separate folder/file than the enum?
 
-Sometimes, separating "what the file consist of" (two folders, one for enums and other for types), we separate for what
-the file "speaks"
+And the real question here is, instead of
 
-If our Enum and our Type refer to Tasks, they should live together. That's why, the Type depends on the Enum. If we change
-the Enum, it is almost certain that we will have to modify the Type.
+"Should i have folders for types, enum and interfaces?"
 
-Multiple times, in modern approaches, developers tend to prefer to take an approach like
+I asked myself
 
-src/
-  types/
-    user.ts       <--Here we have all the Enum, Interface and User types
-    product.ts
-    shared.ts     <-- Generic types that are used across the whole app
+"How should i model my domain so my types express intent, say readable, and don't fight TypeScript?", this is the right
+question.
+
+### First: Forget folders for a second
+
+In TypeScript:
+• `interface`, `type`, and `enum` are tools
+• They are not domain concepts
+
+Our domain concept here are things like, in this case
+
+Task
+TaskStatus
+TaskComment
+TaskFormData/TaskModalDta
+
+So the domain approach is:
+
+Group things by what they represent, not by what keyword they use
+
+### Our current situation (What was happening)
+
+Right now, we have:
+
+• `interfaces/`
+   . ITask
+   . ITaskComments
+   . ITaskFormControls
+• types/
+   . `TaskStatusEnum`
+   . TaskStatus(Derived from the enum)
+
+This lights a lamp on our heads: "TaskStatus is part of the TaskDomain, but it lives in a different conceptual place just
+because it's a `type/enum`
+
+This is why it feels weird.
+
+### Domain-Driven Way (Recommended)
+
+**Rule of thumb**
+
+   One domain concept -> one file (or folder)
+
+   Inside that file, use whatever TS construct makes sense
+
+**Example: Task domain (clean & scalable)**
+
+   task/
+   ├─ task.model.ts
+   ├─ task-status.ts
+   ├─ task-comment.model.ts
+   └─ task-form.model.ts
+
+   `task.status.ts`
+
+   Here, we have two options
+
+   1 - Only enum (simples and most common)
+
+   export enum TaskStatus {
+      TODO = 'to-do',
+      DOING = 'doing',
+      DONE = 'done',
+   }
+
+   Then, in `Task`
+
+   status: TaskStatus
+
+   In this case, no extra type is needed, but if we don't need the enum values at run time and we are consuming an API
+   that already returns strings, it is better to convert to a type.
 
 
 
 
 
 
+## Enums
 
+### 1. What actually is a `enum` in typescript
 
+When we write
 
-    
+```ts
+export enum TaskStatusEnum {
+  TODO = 'to-do',
+  DOING = 'doing',
+  DONE = 'done',
+}
+```
+TypeScript creates two things at the same time
 
+1. A type
+2. A run-tiime object
 
+Which means that, in our case, TaskStatusEnum is simultaneously a type and a value
 
+This is different than type and interfaces that fades away during runtime
+
+### 2. Enum is already a type
+
+When defining `status: TaskStatusEnum`, TypeScrpt already understands it like:
+
+"status can only be of one of the values defined in this enum"
+
+In practice, this means
+
+status = TaskStatusEnum.TODO // ok
+status = TaskStatusEnum.DOING // ok
+status = "to-do" // doesn't work
+status = "doing" // doesn´t work
+
+Meaning that an enum restricts the type exactly how we want.
+
+### 3 - Type Conversion
+
+But if we create a type, consisting of a union of
+
+```ts
+export type TaskStatus =
+  | TaskStatusEnum.TODO
+  | TaskStatusEnum.DOING
+  | TaskStatusEnum.DONE;
+  ```
+This union is daying
+
+"TaskStatus is "to-do" | "doing" | "done"
+
+**But the enum already guarantees this...**
+
+So when we write
+
+status: TaskStatus vs status: TaskStatusEnum; there is no difference in type security
+
+both approaches are equivalent to ts
+
+status: TaskStatusEnum;
+status: TaskStatusEnum.TODO
+     | TaskStatusEnum.DOING
+     | TaskStatusEnum.DONE;
+
+But the second is
+
+• Longer
+• More fragile (if we add a new value to enum, we must update the type)
+
+### Benefits of creating the type
+
+Transforming an `Enum` into a `Union Types` is a common practice named "String Literal Union"
+
+Here are some of the reasons to prefer unions instead of traditional enums
+
+1. Simplicity and Code Readability
+
+With Enums, we need to import the Enum object every time we want to use a value. With Union Types, we just need the pure
+string.
+
+• With Enum: setStatus(StatusEnum.Active) (Requires import)
+• With Union Types: setStatus('active') more direct and intuitive
+
+2. Nominal Behavior vs Structural
+
+TS is based in structural typing, but enums are nominal
+
+• If we have an Enum with the value of 'ACTIVE´, we can't pass the string 'ACTIVE'
+directly to a function that waits for an Enum; TS will complain that we did not
+pass the "Enum's member"
+
+• With Union Types, if the string is exactly the type it waits, TS accepts it.
+This easies the data consume that come from APIs, JSON.
+
+3. Less "Dirt" in the final JS
+
+Enums in typescript generate an extra code (a reverse mapping object or an IIFE) when they are compiled to JS. Union types,
+in other hand, completely disappear after compiling, resulting in a smaller, cleaner bundle.
+
+4. Better error massages
+
+By using `UT`, VS Code and other editors show exactly what strings are allowed (intelliSense) more clearly than pointing
+to a Enum reference
 
 
 
