@@ -594,7 +594,10 @@ This is why it feels weird.
    In this case, no extra type is needed, but if we don't need the enum values at run time and we are consuming an API
    that already returns strings, it is better to convert to a type.
 
+## Lesson 9 - Creating a function to generate the ID.
 
+Start by creating a folder called utils, which is specific folder for functions that we can reuse on different parts
+and create `generate-unique-id-with-timestamp.ts` that returns us a random id based on the timestamp.
 
 
 
