@@ -607,39 +607,38 @@ Create a new method inside a task service to create a new task. This new method 
 spread them, since they have the same keys as the ITask interface, and along side with it, the status of `TODO` and the
 comments as an empty array
 
-We might think, isn't status the enum type? why it accepted the TaskStatusEnum.TODO? The reason is, as we previously
-seen, the union type consist of the values of the todoenum, not the keys, so TaskStatusEnum.TODO returns us the string
-`to-do`, which is part of the union type.
+Now, create another constant of the current list, getting the values returned by the subscription via value.
+What the value does, when working with BehaviorSubject in RxJS (Which is the most common scenario for this pattern), the
+property `.value` or the method `.gertValue()` work as an instant snapshot of the current state, and then, call
+our observable, `next()` method, to update the list with the new value, e.g.
 
-`TODO` is simply the identifier, the Enum value `to-do` is what really fills the variable
+`this.todoTasks$.next([...currentList, newTask])`
 
-### Best of two worlds
+On our open task modal, when it closes, invoke our taskService to call the method to add a new task to the list, passing
+the taskForm as argument.
 
-By defining a Type using the values inside of a `Enum`, we create a "perfect symbiosis" relationship between them. By
-that, we mean that they live in the same system where one befits of the other and they are both in sync. In practical
-terms, a change on a structure automatically reflects on the other.
+However, there is "nobody" subscribed to this behaviorsubject, and where we want to receive the updated list is inside
+`task-list-section` component where we render our task cards.
 
-#### Why is it the best of both worlds?
+Make the `TaskService` injection inside this component by assigning the inject(TaskService)
 
-1. **Single Source of Truth**: The maintenance becomes centralized. If we have to rename a tatus of "IN_PROGRESS" to
-"DOING", we alter only the value of the Enum, since our Type is derived (like `Status = keyof typeof MyEnum`), the change
-propagates across all app instantly. Without dangerous "Find and Replace".
+Inside ngOnInit(), subscribe to the todoTasks service property, which will first emit the new value to the list via the
+formModal close method, that is opened through the welcome-section. 
 
-2. **Runtime vs Compile-time:**
 
-   Enum: Gives us a real object at the final JS. We can iterate over it, use it in selects (dropdowns) or validate values
-   coming from an API
+### Role of `.value`
 
-   Union Type: Ensures that, during development, TS prevents us of passing invalid strings, such as "doing" (in minuscule)
-   of the type expects for "DOING"
+1. **Current State**: Different of a common observable, that is just a data "flow", the `BehaviorSubject` stores the last
+emitted value in memory
 
-3. DX (Developer Experience) and Security
+2. **Synchronism**: The value allows us to access the data synchronously, without having to subscribe() to it everytime.
+This is the quickest way of "saying". "Hey, give me the current list"
 
-By typing, VS Code will not only suggest the value, but ensure that we are using the correct reference 
+## Lesson 11 - Creating the add task method
 
-• Prevention of "Magic Strings": We avoid spreading strings, like hardcodes strings. If the value change inside the DB,
-we modify the Enum and the compiler automatically points out exactly where the code has broken.
-• Secure Refactoring: Renaming a member of the Enum via IDE (F2) updates all the type and value reference simultaneously.
+
+
+
 
 ## Enums
 
@@ -747,6 +746,39 @@ to a Enum reference
 
 
 
+### Best of two worlds
+
+We might think, isn't status the enum type? why it accepted the TaskStatusEnum.TODO? The reason is, as we previously
+seen, the union type consist of the values of the todoenum, not the keys, so TaskStatusEnum.TODO returns us the string
+`to-do`, which is part of the union type.
+
+`TODO` is simply the identifier, the Enum value `to-do` is what really fills the variable.
+
+By defining a Type using the values inside of a `Enum`, we create a "perfect symbiosis" relationship between them. By
+that, we mean that they live in the same system where one befits of the other and they are both in sync. In practical
+terms, a change on a structure automatically reflects on the other.
+
+#### Why is it the best of both worlds?
+
+1. **Single Source of Truth**: The maintenance becomes centralized. If we have to rename a tatus of "IN_PROGRESS" to
+"DOING", we alter only the value of the Enum, since our Type is derived (like `Status = keyof typeof MyEnum`), the change
+propagates across all app instantly. Without dangerous "Find and Replace".
+
+2. **Runtime vs Compile-time:**
+
+   Enum: Gives us a real object at the final JS. We can iterate over it, use it in selects (dropdowns) or validate values
+   coming from an API
+
+   Union Type: Ensures that, during development, TS prevents us of passing invalid strings, such as "doing" (in minuscule)
+   of the type expects for "DOING"
+
+3. DX (Developer Experience) and Security
+
+By typing, VS Code will not only suggest the value, but ensure that we are using the correct reference 
+
+• Prevention of "Magic Strings": We avoid spreading strings, like hardcodes strings. If the value change inside the DB,
+we modify the Enum and the compiler automatically points out exactly where the code has broken.
+• Secure Refactoring: Renaming a member of the Enum via IDE (F2) updates all the type and value reference simultaneously.
 
 
 
