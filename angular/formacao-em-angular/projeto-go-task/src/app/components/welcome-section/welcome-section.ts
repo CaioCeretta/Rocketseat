@@ -1,5 +1,6 @@
 import { Component, inject } from "@angular/core";
 import { ModalControllerService } from "../../services/modal-controller.service";
+import { TaskService } from "../../services/task.service";
 import { generateUniqueIdWithTimeStamp } from "../../utils/generate-unique-id-with-timestamp";
 
 @Component({
@@ -10,6 +11,7 @@ import { generateUniqueIdWithTimeStamp } from "../../utils/generate-unique-id-wi
 })
 export class WelcomeSection {
 	private readonly _modalControllerService = inject(ModalControllerService);
+	private readonly _taskService = inject(TaskService);
 
 	// myApproach - The modal execution is handled everything in the service
 	//openNewTaskModal() {
@@ -22,6 +24,10 @@ export class WelcomeSection {
 
 		dialogRef.closed.subscribe((taskForm) => {
 			console.log("Tarefa criada: ", taskForm);
+
+			if (taskForm !== undefined) {
+				this._taskService.addTasks(taskForm);
+			}
 		});
 	}
 }
