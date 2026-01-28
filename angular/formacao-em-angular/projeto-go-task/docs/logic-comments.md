@@ -647,7 +647,126 @@ everytime our behaviorSubject changes and `.next()` is called.
 2. However, if we get take subscribe parameter, that is the list, and try to modify the any item properties, such as the
 name, in the ideal world, this should not affect our source of truth, only the copy
 3. Now, after modifying the name property, if we console.log the source of truth, we will see that it was modified from
-the component. Which is incorrect, the only place it should be altered is through the service and our support functions  
+the component. Which is incorrect, the only place it should be altered is through the service and our support functions
+4. How to fix this?
+
+## Lesson 12 - Fixing immutability issue
+
+### Protecting shared state with RxJS (Behavior Subject)
+
+#### Problem
+
+By exposing a `BehaviorSubject` through `asObservable()`, the components are not able to call `next()`, but they still
+receive mutable references of the internal state
+
+This allows a `subscribe` to accidentally modify the global state
+
+```ts
+   this._taskService.todoTasks.subscribe(list => {
+      list.pop() // mutates the real state
+   })
+```
+This tyoe of mutation
+
+• Leaks to other subscribers
+• Break the reactive flow
+• Makes the state unpredictable
+
+### Key-Concept
+
+`asObservable()` protects the API, not the memory.
+
+Arrays and objects in JS/TS are passed by reference. Which means that emiting an array does not mean to emit a copy.
+
+### Architectural Principle Adopted
+
+**Any subscribe must be automatically protected**
+
+This implies:
+
+• No subscribe can receive the real state reference
+• The state mutation only happens in the servbice
+• Components only react to changes
+
+### State vs View-Model
+
+**State**
+
+• Source of truth
+• Lives in the service
+• Shared
+• Mutable only by specific methods
+
+**View Model**
+• Projection holds the state
+• Emited to the UI
+• Can be modified locally
+• Never affects the real state
+
+The public `Observable` should emit view models, not the raw state.
+
+### Shallow copy is not sufficient
+
+Copying only the array does not protect the state:
+
+• The array is new
+• But the internal objects continue the same
+
+If the state contains a nested structure, like (task -> comments -> comment), every mutable layer must be recreated.
+
+Golden Rule:
+**Everything that is mutable and is part of a shared state, must be recreated before being emitted**
+
+### Service responsibility
+
+The service should
+
+• Keep the state private
+• Emit only safe snapshots
+• Ensure that no consumer can mutate the global state
+
+The `subscribe` should never be a place of state change
+
+If there is the necessity of changing something
+• This indicates that a method in the service is missing.
+
+### Where should the copy live, how it is created, and why
+
+#### 1. Where should the copy originate?
+
+Inside the service, never in the subscribe
+
+`BehaviorSubject` stores the real state
+Public `Observable` emit safe snapshots (view models)
+
+**2. Default standard**
+
+**Private State**
+
+Inside the service
+`private readonly todoTask$ = new BehaviorSubject<ITask[]>([])
+
+**Public observable (View Model)**
+
+```ts
+readonly todoTasks = this.todoTask$.pipe(
+   map(tasks => 
+      tasks.map(task => ({
+         ...task,
+         comments: task.comments.map(comment => ({...comment}))
+      }))
+   )
+)
+```
+
+What is this doing?
+
+• Creates a new array
+• Creates a new task
+• Creates a new array of comments
+• Creates new comments
+
+Any mutation outside of the service, dies there.
 
 
 
