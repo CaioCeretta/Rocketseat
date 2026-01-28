@@ -636,6 +636,23 @@ This is the quickest way of "saying". "Hey, give me the current list"
 
 ## Lesson 11 - Creating the add task method
 
+In the way our source of truth is defined is not yet optimal. What we want to do is, we want the component to consume our
+list, a copy of it, that it gets it, make any desired change, and this change of the list structure/adding new items,
+won't affect our source of truth.
+
+To simulate if our Observable is adherent to that goal. We will go through the flow
+
+1. We subscribe to the `todoTask`, that is an observable of our source of truth `todoTask$`, we are receiving the todoList
+everytime our behaviorSubject changes and `.next()` is called.
+2. However, if we get take subscribe parameter, that is the list, and try to modify the any item properties, such as the
+name, in the ideal world, this should not affect our source of truth, only the copy
+3. Now, after modifying the name property, if we console.log the source of truth, we will see that it was modified from
+the component. Which is incorrect, the only place it should be altered is through the service and our support functions  
+
+
+
+
+
 
 
 
