@@ -40,6 +40,6 @@ export class TaskFormModal {
 	}
 
 	closeModal(formValues: ITaskFormControls | undefined = undefined) {
-		this._dialogRef.close(undefined);
+		this._dialogRef.close(formValues);
 	}
 }
