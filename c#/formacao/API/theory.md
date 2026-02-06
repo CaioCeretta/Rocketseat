@@ -133,6 +133,10 @@ specific one has equal properties. The specific overwrites the general.
 So, the general one defines configurations that should be shared across all settings, and merge these settings with the
 specific ones.
 
+We usually add inside the general one, the variables that are independent of the environment. Assume we have an email
+service where we have the URL to that service and our private key. This url is usually public and this URL is totally
+fine to be public. Whereas a key, for particular uses, or different environments, it can't be on the general one.
+
 
 
 
