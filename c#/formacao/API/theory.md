@@ -1,3 +1,5 @@
+## This section will focus both on the creation of an API as well as understanding the files inside a project
+
 ## Lesson 1 - API project creation
 
 Inside visual studio `Create New Project` window, choose the `ASP .NET Core Web API` option. Fill the options, rename
@@ -50,6 +52,43 @@ In order to use it, with swagger, we must do the following
 3. Add these lines in our Program.cs, before calling `app.UseSwagger()`:
     builder.Services.AddEndpointsApiExplorer(); // Required to find the routes
     builder.Services.AddSwaggerGen();
+
+## Lesson 3 - Program.cs
+
+`Program.cs` is our entry point. When we execute the API, the lines defined on this file are going to be the first lines
+to be executed.
+
+Everything related to configuration in order for the API to work, will be configured on that file.\
+
+Let's use the API project as an example:
+
+. `var builder = WebApplication.CreateBuilder(args)`:
+
+    After this variable builder, it will make the addition and the import configurations for the entry point, such as:  
+
+    . builder.Services.AddController(): Adding the controllers defined on the Controllers folder
+    . builder.Services.AddEndpointsApiExplorer(): Add the endpoints defined by us to the API
+    . builder.Services.AddSwaggerGen(): This function generates a swagger file, which is read by the browser and display
+    it to use.
+
+. `var app = builder.Build();`
+
+    . After defining and adding these configurations to the builder variable. Store in a variable app, the result of
+    calling Build() on the builder configurations and it will persist all the configurations already defined.
+    
+    . With the app variable, check if its Environment is set to IsDevelopment, and if yes, call the `useSwagger()` function
+    and allow the browser show the Swagger page. Swagger is a simple page to document all our endpoints. 
+        - When we execute the project on the cloud and in production/release mode. These page won't be displayed.
+    
+. `app.UseHttpsRedirection()`: What redirects our api to inform it uses https.
+
+. `app.UseAuthorization()`: We will focus on this later
+
+. `app.MapControllers()`: We already added all the controllers on the builder, now we map them to the API.
+
+. `app.Run()`: It is after this point, that the browser opens the swagger and our API will be ready to receive the requests.
+
+
 
 
 
