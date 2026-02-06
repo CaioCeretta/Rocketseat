@@ -88,18 +88,50 @@ Let's use the API project as an example:
 
 . `app.Run()`: It is after this point, that the browser opens the swagger and our API will be ready to receive the requests.
 
+## Lesson 4 - AppSettings.JSON
 
+The AppSettings.JSON is very similar to the .env file in JS applications, it also follows the idea tof separating configuration
+from code.
 
+Although the objective is the same, the way the operate "over the hood" has some important differences of resource structuring.
 
+Core differences
 
- 
+1. Data Structure
 
+`.env` is a list of `key=value`. And the `AppSettings` uses the JSON hierarchical structure. What allow us to better organize
+complex configurations.
 
+2. Native .NET behavior
 
+While in Node.js we generally need libraries like `dotenv` to load the file, inside `.NET` the support to this file is
+configured by default in the `Host.CreateDefaultBuilder()`.
 
+.NET also work with the file inheritance concept
 
+    1. It reads the appsettings.json (general)
+    2. Then it reads the specific `appsettings.Development.json`
+    3. What is inside this second files, overwrites the first
 
+    In C#, for really sensitive data in development, such as DB passwords, the official recommendation is not even to
+    place them inside the JSON, but inside the User Secrets , that store data outside of the project folder to avoid
+    accidental commits
 
+### Profiles AppSettings
+
+We can also, inside the `launchSettings.json`, inside a profile array item, determine that the ASPNETCORE_ENVIRONMENT attribute
+that we define for each launch profile, is going to use any given appSettings file we choose. e.g. `appsettings.Caio.json`.
+
+Notice that, the app settings for the production, such as appsettings.Production.json, will never be available inside
+this "public" files.
+
+### Why do we also have these nested AppSettings, other than the default one?
+
+As we have seen, it will first read the general appsettings, and after that, read the specific one, and in case the
+specific one has equal properties. The specific overwrites the general.
+
+So, the general one defines configurations that should be shared across all settings, and merge these settings with the
+specific ones.
 
 
 
