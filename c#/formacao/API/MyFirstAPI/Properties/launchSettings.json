@@ -6,7 +6,7 @@
         "dotnetRunMessages": true,
         "launchBrowser": true,
         "launchUrl": "swagger",
-        "applicationUrl": "http://localhost:5267",https://www.youtube.com/watch?v=Oyiv8QmrrIg
+        "applicationUrl": "http://localhost:5267;https://www.youtube.com/watch?v=Oyiv8QmrrIg",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development"
         }
