@@ -137,6 +137,71 @@ We usually add inside the general one, the variables that are independent of the
 service where we have the URL to that service and our private key. This url is usually public and this URL is totally
 fine to be public. Whereas a key, for particular uses, or different environments, it can't be on the general one.
 
+## Lesson 5 - Reading AppSettings.json
+
+We start by defining a new property inside the main appSettings.json and another property inside the appSettings.Development.json.
+
+We must use `Program.cs` to access these properties, since we will need the `builder.Configuration` method. We can also,
+in the future, pass this builder as a reference to other parts of the project.
+
+inside `Program.cs`, we call `builder.Configuration.GetSection("sectionName")`. The name here is section, but we can
+understand this as an object and use it to access the objects inside our JSON config file. We can also use it to chain
+nested objects, so if we have an object login with other objects inside of it, we could use something like:
+
+`builder.Configuration.GetSection("Logging").GetSection("LogLevel").Value`.
+
+`.Value` always returns us a string, in case we have a number field, and we want to get its value as a Number, we can
+make use of the `Get` method: 
+
+Like this: `var test = builder.Configuration.GetSection("MyClass").GetSection("Number").Get<int>();`
+
+There is also a simpler syntax than this:
+
+`var test = builder.Configuration.GetValue<int>("MyClass:Number");`
+
+This means that we are getting the int value from the Class:Property
+
+
+### Manual Lookup (String-Based)
+
+What we just did is often called **manual configuration access**. The problem with this approach, is that is "string-heavy".
+If we have a typo in any section value. The code won't break until we run it. We can also have to manually cast values if
+they are numbers or booleans
+
+### Typed Binding
+
+    - 1. The Concept of Schema Mirroring
+    
+    For this technique to work, our C# class acts as a template or a blueprint of the JSON data.
+
+    In our JSON, `MyClass` is not just a single piece of data, it is an Object Node. Everything inside the curly braces
+    are Attributes (or fields) of that node. When we use `.Get<MyClass>()`, .NET performs a recursive search
+
+    1. It identifies the section "MyClass"
+    2. It looks at the properties of the C# class we provided
+    3. It searchers the JSON for the keys that match those property name.
+    
+    - 2. How the "Binding" engine works
+    
+    When we call `.Get<T>()`, .NET uses a process called **Property Matching**. Even though the JSON is just text, the binder
+    is smart enough to handle the "Deep Merge".
+
+    . Discovery: The binder sees `Prop1` in the class. It looks through the merged configuration (The combined result of
+    all our `appsettings` file)
+    . Type Conversion: If our JSON value is "100" but our C# property is `public int Prop1 { get; set;}`, the binder will
+    automatically convert that string into an integer.
+    . Null Handling: If a property exists in our Class but is missing from the JSON, the binder simply leaves it as null
+    (or the default value) rather than crashing.
+
+    - 3. The "Object Graph" vs "Flat Keys"
+    
+    . Flat Access (Old way): We are trusting the configuration like a dictionary. We have to know the exact "path" to the
+    value `MyClass:Prop1`
+
+    . Object Graph (New Way): We are treating the configuration like a Tree. By binding to a class, we are capturing an
+    entire "branch" of that tree and turning it into a structured C# object in one command.
+
+
 
 
 
