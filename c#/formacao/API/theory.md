@@ -201,7 +201,43 @@ they are numbers or booleans
     . Object Graph (New Way): We are treating the configuration like a Tree. By binding to a class, we are capturing an
     entire "branch" of that tree and turning it into a structured C# object in one command.
 
+## Lesson 6 - What is a Controller
 
+Inside an API project there will exist a Controllers folder. And inside this folder we will place special classes, that
+are controllers. 
+
+A Controller is a special class, and inside this class, we will put functions that are going to consist of our endpoints.
+Each endpoint will perform a specific functionality, commonly regarding our HTML methods.
+
+A `Controller` is usually a grouping of related endpoints, so if we for example, have a `UserController`, every endpoint
+inside this controller are going to be specific user related functionalities, such as creating a user, recovering the users,
+updating user information, etc.
+
+### Visual Studio - Controller Creation
+
+Inside the `Controllers` folder, add a new Controller. Controllers -> add -> Controller -> (Here we need to be careful,
+VS opens the window with the MVC list being displayed, and this is not what we want for an API, select API in the sidebar
+and choose a empty controller) -> Choose whatever name we want (Singular, e.g. UserController). The logic behind this is
+that the class name should represent the **main resource** or the **entity** that this controller manages, and not the
+items collection.
+
+## Controller Implementation
+
+For us to tell .NET, that this class (UserController), is a special class that will group endpoints that have similar
+context, before the class block, we need to to add the attribute [ApiController].
+
+The `UserController : ControllerBase`, is what we call inheritance between classes. But this lesson isn't focused on
+this. However, every controller is required to inherit from the `ControllerBase`.
+
+The `Route("api/[controller])` is addressing our `launchSettings.json`. Inside our profiles, we are informing the
+applicationUrl, like `https://localhost:7081`. And this api/controller will complement this given route. e.g.
+POST to `https://localhost:7081/api/user`
+
+ 
+
+
+
+ 
 
 
 
