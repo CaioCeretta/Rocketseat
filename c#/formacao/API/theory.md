@@ -233,7 +233,53 @@ The `Route("api/[controller])` is addressing our `launchSettings.json`. Inside o
 applicationUrl, like `https://localhost:7081`. And this api/controller will complement this given route. e.g.
 POST to `https://localhost:7081/api/user`
 
- 
+ ## Lesson 7 - Creating our first endpoint
+
+ Start by defining a public function, where the return type is going to be an `IActionResult`, because an endpoint always
+ returns us this value. 
+ We also need to inform, before the function definition, which is the HTTP method type, like:
+
+ ```cs
+        [HttpGet]
+        public IActionResult GET()
+        {
+            return Ok("Caio");
+        } 
+```
+
+For this example, we will simply return an Ok function so this function returns something. If we hover over the `Ok`
+function we will see that it returns a OkFunction, that is located inside the `ControllerBase` class.
+
+Now, if we run the code, open an API client, such as insomnia, and run `https://localhost:7008/api/User` as a GET req
+
+it will return us "Caio"
+
+### Uppercase endpoint URL
+
+In case we have a route with a uppercase letter, such as User, we can go into `Program.cs` file, and in the builder
+configuration, add
+```cs
+builder.Services.AddRouting(option =>
+    {
+        option.LowercaseUrls = true;
+    }
+);
+```
+
+This way, we are forcing every URL to be lower case
+
+### Response Class
+
+We were simply making a `Ok()` return so VS wouldn't complain. But we can create a , for example, `Response` class
+
+Create this class in the API root folder. This class will consist of two parameters: Name, and Age.
+
+Now, on the controller's Get() class, define a new instance of `Response` filling these properties.
+
+Now, if we modify the Ok, to use this response instance as the parameter, when we call this GET method in the API client,
+it will returns us this object as a JSON.
+
+
 
 
 
