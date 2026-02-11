@@ -279,6 +279,63 @@ Now, on the controller's Get() class, define a new instance of `Response` fillin
 Now, if we modify the Ok, to use this response instance as the parameter, when we call this GET method in the API client,
 it will returns us this object as a JSON.
 
+## Lesson 7 - Knowing more about Swagger
+
+We can understand `Swagger` as something like a "tourist guide", but the API one.
+
+That page that is being generated from the API, will show to us, in an organized/friendly way, what our API can do. Not
+only what it can do with the endpoints, but what has to passed on a given API invocation, what it will return to us, and
+so. It is a way of documenting our API`s endpoints, and it is very important for us to know the correct rules, because
+a well documented API facilitates a lot the communication between a team.
+
+However, if we look into our API call that is  returning an `Ok` function, we will notice that swagger is saying that it
+is returning a status 200. But if we modify that return to a `NotFound()`, swagger will still show that the status till
+be 200 and not 404, as it should.
+
+### What is an Attribute in C#?
+
+Attributes are a way of attaching metadata to some element of the code, such as 
+
+. class
+. method
+. property
+. parameter
+
+These metadata can be read by the framework (ASP.Net, Entity Framework, etc) using reflection
+
+So in the GET endpoint example, `[HttpGet]` is basically telling ASP.NET that the method should respond to HTTP Requests
+of the type GET
+
+### Improving Swagger
+
+For the parameters a function may receive, it will work as expected, it will show which parameters a request should receive
+and their types.
+
+But for us to tell to swagger which type of `Response` the endpoint will return. Below the [HttpGet] attribute, we write  `[ProducesResponseType(typeof(Response), StatusCodes.Status200OK)]`
+
+When we pass this new attribute, swagger will show two things
+
+1. It will create a new `Schemas` section. Where it says that there will be an object `Response`, which is the name of
+the class being passed as first parameter, and it also shows what are the properties and their respective types.
+2. If we expand the `GET` endpoint, it shows that its response will be an object with
+`{"name": "string", "age", 0}` 
+
+#### More than one answer type
+
+One endpoint, should have only one response type? 
+
+The obvious answer is no. Imagine we are registering an user inside the platform, if the user is valid, it will return 201,
+but if some property inside that register is invalid, we should return a `bad request` with a list of errors to tell the
+user which was the error. Meaning that an endpoint can return one or more response types.
+
+
+
+
+
+
+
+
+
 
 
 
