@@ -328,6 +328,65 @@ The obvious answer is no. Imagine we are registering an user inside the platform
 but if some property inside that register is invalid, we should return a `bad request` with a list of errors to tell the
 user which was the error. Meaning that an endpoint can return one or more response types.
 
+To inform swagger, we simply duplicate that ProducesResponseType line with something like
+`[ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]`. But normally, we inform a list of errors.
+
+## Lesson 8 - Passing values through the routes 
+
+There are three ways for us to pass values on endpoint calls. However, GET only accepts two of these three ways, URL and
+headers.
+
+1. On the URL
+2. On the requests headers
+3. On the message body
+
+### URL (Query Strings)
+
+Assume our GET request is recovering a specific ID, which will be set as the function parameter. When we execute the app
+and open it inside swagger, we will now notice that the function has that id int in the parameters.
+
+And by noticing how that endpoint is going to be called, we will notice that it is, e.g:  `http://localhost:7081/api/user?id=1`
+if we add a new `nickname` parameter, that endpoint is going to be added `&nickname=john`, for example.
+These are both are part of the query parameters.
+
+One case where this scenario is useful is, for example, assume we are inside the amazon and we want to filter by any desired
+product, and these filters are going to be concatenated to the URL as query strings. This is important, because inside
+an e-commerce, is important to utilize query strings so we can copy this URL, send to another person, and that person
+will see the same result as us.
+
+### Route Params
+
+Below the [HttpGet] attribute, we can write something as [Route("desiredRouteParameter")]
+
+e.g. `[Route("{id}")]`. That parameter name, must be the same one as we are receiving as parameter on the function.
+
+Now, inside swagger, if we expand that GET request, we will see that the name is not id integer (query) anymore, but
+(path)
+
+And the way that call is being made is now: `http://localhost:7081/api/user/7`. We are adding the id directly to the route.
+
+To add new parameters. We add a new one to the parameter, and: `[Route("{id}/person/{nickname}")]` and the request is
+
+`http://localhost:7081/api/user/7/person/caio`
+
+Therefore, it will always separate with slashes our path
+
+### Can i have both? 
+
+Yes. If we have two parameters, but on the [Route()], we only define one of those parameters. Only this one will be path
+parameter and the other query. So if we have both nickname and id, but only the id is a required parameter. it will be:
+`https://localhost:7008/api/user/7?nickname=Caio`
+
+
+
+
+
+
+
+
+
+
+
 
 
 
