@@ -378,7 +378,33 @@ parameter and the other query. So if we have both nickname and id, but only the 
 `https://localhost:7008/api/user/7?nickname=Caio`
 
 
+## Lesson 9 - Passing values through the headers
 
+This lesson will still use the `[Route("{id}/person/{nickname}")]` example. 
+
+we could see that our `GET(int, id, string nickname)` was working with no problems. However, before the int keyword,
+we open and close brackets, and can say where this value is coming from.
+
+Although VS is smart enough to understand, we can write attributes like FromRoute and FromQuery.
+
+If we, for instance, remove that `Route` attribute, as we have previously seen, VS understands that these values are going
+to come from the URL query parameters, and we can explicitly inform that this parameter is coming from the query.
+
+### Why is this important?
+
+By removing the [Route] attribute, VS infers that it comes from the query, and if we add the [Route], it infers that it
+comes from the route params. But if we send through the headers, it won't infer anything.
+
+We need to explicitly inform [FromHeader] when the parameter comes from the header request. 
+
+If we run the code, and go into `Swagger`. We will see that this endpoint, now receives the parameter from the header.
+
+By trying out the endpoint, running the code with any value, it sends a request on that url 'http://localhost:7081/api/user',
+and, for example, send a curl request, informing that on the header these variables are being sent.
+
+If we send the request through rest api clients, such as postman, and we send an empty request, with nothing on the header,
+it will return us an error saying that it expects the id and the nickname field. In case we want these header parameters
+to be optional, we simply use a question mark after the property type
 
 
 
