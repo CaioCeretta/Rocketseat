@@ -406,6 +406,54 @@ If we send the request through rest api clients, such as postman, and we send an
 it will return us an error saying that it expects the id and the nickname field. In case we want these header parameters
 to be optional, we simply use a question mark after the property type
 
+## Lesson 10 - Creating a POST endpoint
+
+In this lesson, we'll create an endpoint for the user creation
+
+First, inside the function scope, we define that it returns a Created function. Created comes from the ControllersBase,
+we are inheriting from.
+
+One thing the instructors likes to do, is inside the project root. Add a new folder "Communication", and inside this folder
+another folder "Requests". And inside this Requests folder, he likes to create all the classes responsible for requests,
+and these classes will contain properties to register, update, and so on.
+
+Let's say we are going to register a user. Then, we create a class: `RequestRegisterUserJson.cs`, which will contain
+all the properties a user needs, and instantiate a new user object based on this class. We should also initialize these
+properties as `String.Empty`, because otherwise, it will start as null and no method from the String property can be
+called. 
+
+### Sending properties for the POST
+
+POST requests only accept information through the request body. So, when we define that this endpoint function, receives
+a parameter of the same type of the class. It means that we must call this endpoint which the "class properties" in the
+body.
+
+If we execute and check `Swagger` , if we check the parameters this endpoints is supposed to receive, it is going to be
+a JSON object, just like the class:
+
+`{ "name": "string", "email": "string", "password": "string" }`
+
+and the parameter of that type, will now hold all these properties inside of it.
+
+### Created Method
+
+We are returning a `Created()` inside that endpoint and it should return a status of 201, but swagger is showing that it
+returns a 204, why? 
+
+When we send `Created()`, but with no parameters inside of it, and when we do this, internally .NET changes 201 to
+204, which means `no content`. Normally, inside of this we pass `Empty.string` as first parameter, and as the second
+argument. The response.
+
+The response will follow the same structure as a request, but in this case, we are going to type what we will return
+to the user. A DTO.
+
+
+
+
+
+
+
+
 
 
 
