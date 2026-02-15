@@ -15,13 +15,13 @@ namespace MyFirstAPI.Controllers
         public IActionResult GetById([FromHeader] int id, [FromHeader] string nickname)
         {
             var response = new User
-            { 
+            {
                 Id = 1,
                 Name = "Caio",
-                Age = 29        
+                Age = 29
             };
 
-            return Ok(response); 
+            return Ok(response);
         }
 
         [HttpPost]
@@ -33,12 +33,19 @@ namespace MyFirstAPI.Controllers
             {
                 Id = 1,
                 Name = request.Name
-            }; 
+            };
 
-         
+
             return Created(string.Empty, response);
         }
-        
+
+        [HttpPut]
+        [Route("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public IActionResult Update([FromRoute] int id, [FromBody] RequestUpdateUserProfileJson request)
+        {
+            return NoContent();
+        }
              
     }
 } 
