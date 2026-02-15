@@ -447,7 +447,12 @@ argument. The response.
 The response will follow the same structure as a request, but in this case, we are going to type what we will return
 to the user. A DTO.
 
+## Lesson 11 - Creating a PUT endpoint
 
+Usually PUT requests doesn't return anything. At the most, it the returns the id of the updated item. In this case, we
+won't return anything.
+
+We set on its parameter that it receives an instance of the Dto, which contains the name, and email.
 
 
 
