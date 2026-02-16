@@ -452,7 +452,11 @@ to the user. A DTO.
 Usually PUT requests doesn't return anything. At the most, it the returns the id of the updated item. In this case, we
 won't return anything.
 
-We set on its parameter that it receives an instance of the Dto, which contains the name, and email.
+It basically follows the same approach as the create one, with the difference that it should receive the id of the item
+being updated as a route param like: PUT to `https://localhost:5700/user/1`, passing the object with the desired changes
+on the body.
+
+
 
 
 
