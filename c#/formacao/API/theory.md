@@ -456,6 +456,78 @@ It basically follows the same approach as the create one, with the difference th
 being updated as a route param like: PUT to `https://localhost:5700/user/1`, passing the object with the desired changes
 on the body.
 
+## Lesson 12 - Endpoints with similar names
+
+Let's take the user controller as example
+
+### Empty Routes
+
+If we have two methods with the attribute [HttpGet], and none of them define a specific template (only having the controller
+base route), .NET will try to register both to the same path `GET api/user`, and when the request is received, the framework
+finds two "candidates" for the same URL, and throws an `AmbiguousMatchException`.
+
+### Parameters Conflict
+
+.NET only cares about the type and the structure, not with the name of the variable. So an example would be:
+
+`[HttpGet("{id}")]`
+`[HttpGet("{name}")]`
+
+To the router, both look like `api/user/{value}`. It does not matter if the parameter types (int id or string name) are
+different, since a URL is just a string of text, and both of them would follow the same exact pattern, one segment of
+text after /user/.
+
+Meaning that even if our C# method expects an int and the other expects a string, the ROuting Middleware matches the URL
+before the Model Binder tries to convert the value to a specific type.
+
+1. The Router looks at `api/user/123`
+2. It sees [HttpGet("{id})"] and [HttpGet("{name})"]
+3. Both match the "one segment" pattern
+4. Crash
+
+### How to work around this conflict?
+
+One of the ways would be using that `[Route("{id}")] (which would only work if only one route needs the ID)
+
+#### Significative Names
+
+##### No params
+
+The other way is to use significative names, for example. So, if we have two PUT routes, with no parameters
+and se use something like [HttpPut("change-password")] in one and [HttpPut("change-password2)] on the other, even though
+both of them are PUT, their route is different, for the route system, it is perfectly clear.
+
+##### Same params quantity
+
+When we write something like [HttpPut("change-password")] and [HttpPut("change-password")], but both have [Route("{id}")]
+attribute, it seems that the final route would have different names. But this is not what happens
+
+. How does ASP.NET interprets it? 
+
+[HttpPut] is also a route attribute.
+
+And we have two route templates in the same method, e.g. "update-password" and "id"
+
+They don't automatically merge, the method responds to `PUT /update-password` `PUT /{id}`.
+
+. In practice we have created
+
+Method 1
+PUT /update-password
+PUT /{id}
+
+Method 2
+PUT /update-password2
+PUT /{id}
+
+both respond to PUT /{id}
+
+
+As the course goes on, we might discover more workarounds.
+
+
+
+
 
 
 
