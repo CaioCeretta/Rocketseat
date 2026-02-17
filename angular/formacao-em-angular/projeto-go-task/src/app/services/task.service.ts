@@ -10,15 +10,7 @@ import { generateUniqueIdWithTimeStamp } from "../utils/generate-unique-id-with-
 })
 export class TaskService {
 	//To-do tasks
-	private todoTasks$ = new BehaviorSubject<ITask[]>([
-		{
-			id: "1234",
-			comments: [],
-			name: "jdasjdiosajdia",
-			description: "jdioasjdiakosjdioas",
-			status: TaskStatusEnum.TODO,
-		},
-	]);
+	private readonly todoTasks$ = new BehaviorSubject<ITask[]>([]);
 	readonly todoTasks = this.todoTasks$.asObservable();
 
 	//Doing task
