@@ -460,11 +460,177 @@ on the body.
 
 Let's take the user controller as example
 
-### Empty Routes
+```cs
+[Route("api/[controller]")]
+[ApiController]
+public class UserController : ControllerBase
+```
+The base route becomes `api/user`
 
-If we have two methods with the attribute [HttpGet], and none of them define a specific template (only having the controller
-base route), .NET will try to register both to the same path `GET api/user`, and when the request is received, the framework
-finds two "candidates" for the same URL, and throws an `AmbiguousMatchException`.
+### What is a Route Template?
+
+**Route template** is the textual mold that ASP.NET uses to compare the received URL with the registered endpoints.
+
+
+
+### 1. Empty Routes Conflict
+
+If we define methods like this:
+
+```cs
+[HttpGet]
+public IActionResult GetAll() { }
+
+[HttpGet]
+public IActionResult GetSomethingElse() { }
+```
+
+Neither method defines a route template. Both inherit the controller base route: `GET api/user`
+
+When a request hits `GET api/user`, the routing system finds two matching candidates and throws: `AmbiguousMatchException`
+
+This is because:
+• The route matches by HTTP Verb and by Route template. If both are identical -> ambiguity
+
+### 2. Parameter Name Does Not Matter
+
+ASP.NET Core routing does not care about parameter names, only about the route template structure. Example:
+
+```cs
+[HttpGet("{id}")]
+public IActionResult GetById(int id)
+
+[HttpGet("{name}")]
+public IActionResult GetByName(string name)
+```
+To the routing system, booth look like:
+
+`GET api/user/{something}`
+
+It only sees: "Ok, there is one segment after /user/"
+
+It does not analyze the parameter type (`int` vs `string`) during routing.
+
+Routing happens **before** model binding.
+
+#### What Actually Happens Is
+
+Request: `GET api/user/123`
+
+The routing pipeline:
+
+1. Router sees two candidates
+    . {id}
+    . {name}
+2. Both match the pattern `api/user/{segment}`
+3. Router cannot choose
+4. Exception thrown
+
+#### Important Concept
+
+Routing happens first.
+Model binding (converting `int`, `string`, etc) happens after a route is selected.
+If the router cannot select exactly one endpoint, it crashes.
+
+### 3. Multiple Route Attributes on the Same Method
+
+Example:
+
+```cs
+    [HttpPut("update-password")]
+    [Route("{id}")]
+    public IActionResult ChangePassword(int id)
+```
+
+#### What we might think happens is
+
+`PUT /update-password/{id}`
+
+#### What actually happens
+
+We created two separate routes:
+
+`PUT /update-password`
+`PUT /{id}`
+
+Because
+• [HttpPut("update-password)] is already a route attribute
+• [Route("{id}")] is another route attribute
+• They do not merge automatically
+
+So this methods responds to BOTH routes.
+
+#### Now, imagine we also have
+
+```cs
+[HttpPut("update-password2")]
+[Route("{id}")]
+public IActionResult ChangePassword2(int id)
+```
+
+We now created
+
+Method 1:
+`PUT /update-password`
+`PUT /{id}`
+
+Method 2:
+`PUT /update-password2`
+PUT /{id}
+
+Both respond to
+
+`PUT /{id}`
+
+Ambiguous route.
+
+### 4. Correct way to compose routes
+
+**Always compose the full route inside the HTTP Attribute:**
+
+```cs
+[HttpPut("{id}/update-password")]
+public IActionResult ChangePassword(int id)
+```
+Now, the final route is:
+
+`PUT api/user/{id}/update-password`
+
+No ambiguity.
+
+### 5. How to properly name different endpoints
+
+Option 1 - Use Different Route Templates
+```cs
+[HttpPut("{id}")]
+public IActionResult Update(int id)
+
+[HttpPut("{id}/change-password")]
+public IActionResult ChangePassword(int id)
+```
+These are different routes
+
+Option 2 - Use Route Constraints (Advanced)
+We can disambiguate by type using constraints: 
+```cs
+[HttpGet("{id:int}")]
+public IActionResult GetById(int id)
+
+[HttpGet("{name:alpha}")]
+public IActionResult GetByName(string name)
+```
+
+Now the router understands
+• First route only matches integers
+• Second route only matches alphabetic strings
+
+
+
+
+
+
+
+
 
 ### Parameters Conflict
 
