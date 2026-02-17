@@ -467,9 +467,42 @@ public class UserController : ControllerBase
 ```
 The base route becomes `api/user`
 
-### What is a Route Template?
+### Route Template
 
 **Route template** is the textual mold that ASP.NET uses to compare the received URL with the registered endpoints.
+
+It is not C# Code
+It is not the parameter name
+Is just a string with rules
+
+Route template examples would be:
+`api/user`
+`api/user/{id}`
+`api/user/{id}/update-password`
+`api/user/{name}`
+
+Each template is split into segments separated by `/`.
+
+Let's use the `api/user/{id}/update-password` as example
+
+#### How does router sees this?
+
+When a request like `GET api/user/123/update-password` arrives, conceptually, the router does
+
+1. Separate the URL into segments
+2. Compares each segment with the template
+3. {id} means:
+    "Accept any text here"
+That {id} is not an int, nor a string, nor anything that is typed. It is just a "variable piece of the URL"
+
+#### That's why this is valid:
+
+[HttpGet("{id}")]
+
+[HttpGet("{name}")]
+
+Because for the router, both are exactly the same template: `api/user/{something}`
+
 
 
 
@@ -624,103 +657,79 @@ Now the router understands
 • First route only matches integers
 • Second route only matches alphabetic strings
 
+### But how does the route "knows" the parameter type? 
 
+The route does NOT know the type by default, so when we write
 
+```
+[HttpGet("{id}")]
+public IActionResult GetById(int id)
+```
 
+What happens here is
 
+Routing chooses the endpoint
+Model binding tries converting "123" into int
 
+In other words routing does not look into `int`, and the model binding only happens afterwards
 
+#### So how that second option we gave to differentiate endpoints actually works? 
 
+When we write `[HttpGet("{id:int}")]`
 
-### Parameters Conflict
+We are saying to the router? "This {id} is only valid if the URL segment can be interpreted as an `int`"
 
-.NET only cares about the type and the structure, not with the name of the variable. So an example would be:
+Now the {id:int} is not just a placeholder, but a placeholder with rules
 
-`[HttpGet("{id}")]`
-`[HttpGet("{name}")]`
+#### Practical example
 
-To the router, both look like `api/user/{value}`. It does not matter if the parameter types (int id or string name) are
-different, since a URL is just a string of text, and both of them would follow the same exact pattern, one segment of
-text after /user/.
+```cs
+[HttpGet("{id:int}")]
+public IActionResult GetById(int id)
 
-Meaning that even if our C# method expects an int and the other expects a string, the ROuting Middleware matches the URL
-before the Model Binder tries to convert the value to a specific type.
+[HttpGet("{name}")]
+public IActionResult GetByName(string name)
+```
 
-1. The Router looks at `api/user/123`
-2. It sees [HttpGet("{id})"] and [HttpGet("{name})"]
-3. Both match the "one segment" pattern
-4. Crash
+● Request Number 1:
 
-### How to work around this conflict?
+GET api/user/123
 
-One of the ways would be using that `[Route("{id}")] (which would only work if only one route needs the ID)
+Routing:
+• {id: int} -> 123 is a number
+• {name} --> could also be accepted, but router chooses the more specific version. Therefore, GetById is executed.
 
-#### Significative Names
+● Request Number 2:
 
-##### No params
+GET api/user/caio
 
-The other way is to use significative names, for example. So, if we have two PUT routes, with no parameters
-and se use something like [HttpPut("change-password")] in one and [HttpPut("change-password2)] on the other, even though
-both of them are PUT, their route is different, for the route system, it is perfectly clear.
+Routing:
 
-##### Same params quantity
+{id:int} ->  "caio" is not an int
 
-When we write something like [HttpPut("change-password")] and [HttpPut("change-password")], but both have [Route("{id}")]
-attribute, it seems that the final route would have different names. But this is not what happens
+{name} ->  ✅
 
-. How does ASP.NET interprets it? 
+GetByName is executed.
 
-[HttpPut] is also a route attribute.
+#### So when does this happen? is before the model binding?
 
-And we have two route templates in the same method, e.g. "update-password" and "id"
+Yes, the router uses an internal constraints system to validate the template **before** choosing the endpoint.
 
-They don't automatically merge, the method responds to `PUT /update-password` `PUT /{id}`.
+If no route matches -> 404
+If more than one route matches -> Ambiguity
+If only one matches -> Continues the flow
 
-. In practice we have created
+### Mental Model
 
-Method 1
-PUT /update-password
-PUT /{id}
+Simplified pipeline is:
 
-Method 2
-PUT /update-password2
-PUT /{id}
-
-both respond to PUT /{id}
-
-
-As the course goes on, we might discover more workarounds.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
+1. Routing
+    . Analyzes the URL
+    . Analyses the HTTP verb
+    . Analyses the route template
+    . Applies constraints (`:int`, `:id`, etc)
+2. Endpoint Selection
+    . Needs to have only one
+3. Model binding
+    . Converts string -> int, string, etc
+4. Action Method
