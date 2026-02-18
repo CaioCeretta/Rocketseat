@@ -733,3 +733,100 @@ Simplified pipeline is:
 3. Model binding
     . Converts string -> int, string, etc
 4. Action Method
+
+## Modifying endpoints to meet REST and ASP.Net Core terms
+
+
+### GetById Request
+
+Our current method is saying that {id} comes from the route, but on the parameters we are saying it comes from the header,
+but get by id does not normally uses header for fetch data. So instead of
+
+1. Put the template directly inside HttpGet
+
+```cs
+[HttpGet]
+[Route("{id}")]
+// We use
+[HttpGet("{id:int}")]
+```
+By merging both of them, it makes it more clear and less ambiguous
+
+2. We use the `:id` (Route Constraint)
+
+This avoids conflicts with something as `[HttpGet("{name}")]
+
+And now router knows the endpoint only accepts numbers
+
+3. Remove [FromHeader]
+
+If the data comes from the URL: `GET api/user/5`, it comes from the route, so int id is already enough.
+
+Furthermore, with [ApiController], we don't even need [FromRoute], it already infers it. Meaning that 
+`public IActionResult GetById(int id)` is already enough
+
+Headers are for:
+. Authorization Tokens
+. Correlation Ids
+. Versioning
+. Technical metadata
+
+Not to identify resources.
+
+#### Best REST practices
+
+Fetch a specific resource
+GET api/user/5
+
+Fetch with a filter:
+GET api/user?nickname=caio
+
+Fetch by nickname with unique resource
+GET api/user/by-nickname/caio
+
+Example
+
+[HttpGet("by-nickname/{nickname}")]
+public IActionResult GetByNickname(string nickname)
+
+#### Final Recommended Version
+```cs
+[HttpGet("{id:int}")]
+[ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+public IActionResult GetById(int id)
+
+var response = new User
+{
+    Id = id,
+    name = "Caio"
+    age = 29
+}
+
+return Ok(response);
+```
+
+and we would call it with `GET /api/user/{id}`
+
+### User POST
+
+#### First, we need to do what `Created` do.
+
+According to the REST pattern, when we successfully create a resource, our API doesn't have to only inform that it "was
+created". It should inform to the client (the frontend or Postman) **where** this resource can be found
+
+This is made through `Location` header in the response.
+
+That's why on the return, we passed the nameof(GetById) on the first parameter, because in ASP.NET, `Created` is also
+used to automatically generate this URL for us.
+
+1. **The Problem**: If we hardcode the URL, such as `return CreatedAt("/api/users/1", response);`, and afterwards modify
+the Get route, our Post will have a broken link
+
+
+
+
+
+
+
+
