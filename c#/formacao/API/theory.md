@@ -810,6 +810,11 @@ and we would call it with `GET /api/user/{id}`
 
 ### User POST
 
+#### Difference between CreatedAction and Created
+
+`Created()` -> pass the url directly
+`CreatedAction()` -> ASP.NET automatically generates the URL based on an action
+
 #### First, we need to do what `Created` do.
 
 When we return: `return Created(...)`
@@ -942,9 +947,149 @@ This makes the code:
 . Correct according to REST
 . More professional
 
+## Change Password PUT
 
+```cs
+[HttpPut("update-password")]
+[Route("{id}")]
+[ProducesResponseType(StatusCodes.Status204NoContent)]
+public IActionResult ChangePassword(
+    [FromRoute] int id,
+    [FromBody] RequestChangePasswordJson request)
+{
+    return NoContent();
+}
+```
 
+### 1. What is the route doing? 
 
+HttpPut("update-password") -> is adding update-password to the base controller route
+
+### 2. Unnecessary attribute 
+
+One thing we can change is to put everything in one attribute with [HttpPut("update-password/{id})].
+clearer, simpler, and same result
+
+### 3. How does ASP.NET interprets {id}
+
+When writing `[HttpPut("update-password/{id}")]`
+
+We are declaring a route template
+
+This means:
+
+For this action to be executed, the url must contain a segment called id, a valid example would be `PUT /api/users/update-password/5`
+
+Now the router
+
+1. Sees it is PUT
+2. Sees it matches update-password/{id}
+3. Extracts the value 5
+4. Converts to int
+5. Injects it on the id parameter
+
+#### 4. X Unnecessary [FromRoute] and [FromBody]
+
+## Why attributes like `[HttpPut("{id}")]` prevents ambiguity?
+
+Imagine we had
+
+```cs
+[HttpPut("{id}")]
+public IActionResult UpdateUser(int id)
+
+[HttpPut("update-password/{id}")]
+public IActionResult ChangePassword(int id)
+```
+
+Here, `ASP.NET` creates **two different endpoints**
+
+1. PUT /api/users/{id}
+2. PUT /api/users/update-password/{id}
+
+They don't conflict because:
+1. First awaits only one segment after /user
+2. Second awaits two segments: update-password + id
+
+In case we had only: 
+
+```cs
+[HttpPut]
+[Route("{id}")]
+public IActionResult UpdateUser(int id)
+```
+
+This is also equivalent to 
+
+`[HttpPut("{id}")]`
+
+Meaning that it would create an endpoint to
+
+`PUT /api/users/5`
+
+Because
+
+• [HttpPut] defines the verb
+• [Route("{id}")] defines the template
+• The two together define the final endpoint.
+
+### What happens without the "{id}"? 
+
+If we do something as
+
+[HttpDelete]
+public IActionResult Delete(int id)
+
+We are not declaring any route
+So ASP.NET tries to discover where the id comes from
+
+Depending on the configuration (specially with [ApiController]), it can
+
+. Try to recover it from the query string -> ?id=1
+. Or generate an unexpected behavior
+. Or even cause ambiguity if there is other DELETE
+
+Problematic example would be
+
+```cs
+[HttpDelete]
+public IActionResult Delete(int id)
+
+[HttpDelete]
+public IActionResult DeleteAll()
+```
+
+We are explicitly saying that this action only responds to `DELETE /api/user/1`
+
+While the other could be
+
+[HttpDelete]
+public IActionResult DeleteAll()
+
+that only responds to /api/users
+
+#### We can even go further
+
+To avoid even more the ambiguity
+
+`[HttpDelete("{id:int}")]`
+
+Now we limit
+
+. Only matches if it is a number
+. Avoids conflicts if there is something as
+
+`[HttpDelete("active")]`
+
+Because without `:int`, it could have a conflict between /active and /1
+
+With `:int` the router knows which one to use
+
+So using `[HttpDelete("{id}")]`
+
+. Avoids ambiguity
+. Turns the route explicit
+. Correctly follows REST
 
 
 
