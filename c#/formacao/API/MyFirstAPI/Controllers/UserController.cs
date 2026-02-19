@@ -56,24 +56,22 @@ namespace MyFirstAPI.Controllers
 
 
             // return Created(string.Empty, response);
-            return Created(
-                nameof(GetById), // Which action generates the URL
-                new { id = response.Id }, // route values
-                response // body of the response
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = response.Id },
+                response
             );
-
 
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public IActionResult Update(int id, [FromBody] RequestUpdateUserProfileJson request)
+        public IActionResult Update(int id, RequestUpdateUserProfileJson request)
         {
             return NoContent();
         }
 
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public IActionResult Delete([FromRoute] int id)
         {
@@ -82,7 +80,6 @@ namespace MyFirstAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(List<User>), StatusCodes.Status200OK)]
-
         public IActionResult GetAll()
         {
             var response = new List<User>()
@@ -92,15 +89,14 @@ namespace MyFirstAPI.Controllers
 
            };
 
-            return Ok();
+            return Ok(response);
         }
 
 
 
-        [HttpPut("update-password")]
-        [Route("{id}")]
+        [HttpPut("update-password/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public IActionResult ChangePassword([FromRoute] int id, [FromBody] RequestChangePasswordJson request)
+        public IActionResult ChangePassword(int id, [FromBody] RequestChangePasswordJson request)
         {
             return NoContent();
         }
