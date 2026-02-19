@@ -812,16 +812,140 @@ and we would call it with `GET /api/user/{id}`
 
 #### First, we need to do what `Created` do.
 
-According to the REST pattern, when we successfully create a resource, our API doesn't have to only inform that it "was
-created". It should inform to the client (the frontend or Postman) **where** this resource can be found
+When we return: `return Created(...)`
 
-This is made through `Location` header in the response.
+ASP.NET automatically:
 
-That's why on the return, we passed the nameof(GetById) on the first parameter, because in ASP.NET, `Created` is also
-used to automatically generate this URL for us.
+    . Returns HTTP 201 (Created)
+    . Adds the `Location` Header
+    . Sends the object in the body of the response
 
-1. **The Problem**: If we hardcode the URL, such as `return CreatedAt("/api/users/1", response);`, and afterwards modify
-the Get route, our Post will have a broken link
+So for example it would be
+```
+HTTP/1.1 201 Created
+Location: https://localhost:5001/api/users/1
+Content-Type: application/json
+```
+
+```json
+    {
+        "id": 1,
+        "name": "Caio"
+    }
+```
+
+Which means that
+
+. The resource was created
+. Here it is
+. And here is the address to find it
+
+. This follows the REST pattern
+
+#### Why not to use hardcoded URL? 
+
+If we make:
+
+`return Created("/api/users/1", response);`
+
+We are manually fixing the URL
+
+The problem:
+
+If later on, we modify the route
+
+`[HttpGet("{id}")]` to `[HttpGet("details/{id}")]`
+
+Our post will still return 
+
+`/api/users/1`
+
+That is now wrong and it violates the low coupling principle.
+
+#### What dos `Created(nameof(GetById), ...) does?
+
+when we write
+```cs
+return Created(
+    nameof(GetById),
+    new { id = response.Id},
+    response
+)
+```
+
+ASP.NET uses
+
+The action name -> GetById
+The route values -> { id = 1 }
+
+And automatically generates the URL based on the configured routes.
+
+This works because ASP.NET uses the routing system to mount the URL dynamically
+
+If our action is
+```
+[HttpGet("{id}")]
+public IActionResult GetById(int id)
+```
+
+it will generate /api/users/1. If afterwards, we modify the route. Created will still work as expected.
+
+### What each parameter represents?
+
+```cs
+return Created(
+    nameof(GetById),  // Action name
+    new { id = response.Id }, // Necessary values to mount the URL
+    response // Body of the response
+);
+```
+
+Param1 -> actionName
+Which method should be called to generate the URL
+
+Param2 -> routeValues
+The parameters of that route should be (id, slug, etc)
+
+Param3 -> value
+The object that will be sent on the body
+
+### Which is the most common way to do?
+
+In practice, the method that is most used is
+
+```cs
+return CreatedAtAction(
+    nameof(GetById),
+    new { id = response.Id },
+    response
+);
+```
+
+This is more explicit and semantically clearer.
+
+Internally, it does the following
+
+. Resolves the action
+. Generates the URL
+. Sets the Location header
+. Returns 201
+
+### Summary
+
+So in summary, when using `Created(nameof(GetById), ...)`
+
+We are saying: "Create a resource. It can be accessed by the GetById action with this id.
+
+This makes the code:
+. Decoupled
+. Safe against route changes
+. Correct according to REST
+. More professional
+
+
+
+
+
 
 
 
