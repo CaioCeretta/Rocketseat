@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyFirstAPI.Communication.Requests;
 using MyFirstAPI.Communication.Responses;
+using MyFirstAPI.Entities;
 
 namespace MyFirstAPI.Controllers
 
@@ -11,8 +12,12 @@ namespace MyFirstAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            Author = "Regina";
-            return Ok(Author);
+            var laptop = new Laptop();
+
+            var model = laptop.GetModel();
+
+            return Ok(model);
+
         }
 
     }
