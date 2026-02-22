@@ -48,3 +48,10 @@ public void SetAuthor(string Author)
 • **Overwriting (Hiding)**: If the child class has an attribute with the **same name** as the parent, and we specifically
 want the parent's, then we use `base.Author`
 
+## Lesson 2 - Protected Access Modifier
+
+Start by creating an entities folder and three base classes inside of it. A `Device` class, that will be the base class,
+and two other classes: `Smartphone` and `Laptop` that inherits the Device class.
+
+In the DeviceController's GET function, we create a new instance of `Laptop`
+
