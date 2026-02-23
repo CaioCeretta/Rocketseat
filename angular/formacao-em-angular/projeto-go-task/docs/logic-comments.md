@@ -1172,7 +1172,7 @@ outside of this, is normal text
 
 ### Form Controls
 
-Essa é uma excelente pergunta conceitual. In case we are studying frameworks like Angular (Reactive Forms) or state management
+ In case we are studying frameworks like Angular (Reactive Forms) or state management
 libraries, terms like "Control" appear all the time
 
 The reason is that a form field is not just a text box, it is a "live object" that needs to manage behaviors other than
@@ -1450,15 +1450,3 @@ We can think of it like
 
 **Angular CDK** = behavior
 **Angular Material** = behavior + visual (material design)
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
