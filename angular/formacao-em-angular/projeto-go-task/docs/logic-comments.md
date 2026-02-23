@@ -654,127 +654,73 @@ the component. Which is incorrect, the only place it should be altered is throug
 
 ### Protecting shared state with RxJS (Behavior Subject)
 
-#### Problem
+### The Problem - Protection Illusion
 
-By exposing a `BehaviorSubject` through `asObservable()`, the components are not able to call `next()`, but they still
-receive mutable references of the internal state
+Using `asObservable()` prevents that a component call `.next()`, but **does not protect the data itself**. In JS, objects
+and arrays are passed by **reference**.
 
-This allows a `subscribe` to accidentally modify the global state
+· **Risk:** If the component receives an array from the Service, and executes a `.pop()` or modify an object property, it is
+altering the value **inside** the Service, affecting every other component that use this state.
 
-```ts
-   this._taskService.todoTasks.subscribe(list => {
-      list.pop() // mutates the real state
-   })
-```
-This tyoe of mutation
+· **Consequence:** Unpredictable state, bugs that are hard do track and break of the *reactive flow*.
 
-• Leaks to other subscribers
-• Break the reactive flow
-• Makes the state unpredictable
+## Reactive Flow
 
-### Key-Concept
+The **reactive flow** or reactive programming, is a programming paradigm focused on data flows (data streams) and in change
+propagation.
 
-`asObservable()` protects the API, not the memory.
+Instead of only "asking" the system if something has changed (imperative), we "subscribe" in order to be warned every time
+something happens (reactive)
 
-Arrays and objects in JS/TS are passed by reference. Which means that emiting an array does not mean to emit a copy.
+A decomposition of this concept would be
 
-### Architectural Principle Adopted
+### 1. Excel Sheet Analogy
 
-**Any subscribe must be automatically protected**
+The best way of understanding this, is thinking on Excel
 
-This implies:
+. If the cell C1 has the formula `=A1 + B1`
+. When we alter A1, the value of C1 updates *automatically*
+. We didn't have to call the function `calculateC1()`. The system reacted to the A1 change.
 
-• No subscribe can receive the real state reference
-• The state mutation only happens in the servbice
-• Components only react to changes
+**This is a reactive flow**
 
-### State vs View-Model
+### 2. The three pillars (The Reactive Tripod)
 
-**State**
+For a flow to exist, we need three elements working together
 
-• Source of truth
-• Lives in the service
-• Shared
-• Mutable only by specific methods
+**Producer (Observable)**: The source that emits the data (The stream). An example would be a button click, or an HTTP request.
+**Consumer (Observer)**: Who keeps on listening and react to the data. Our .subscriber() or the pipe
+**Operators (Pipe)**: Filters that transform the data "on its path": `map`, `filter`, `switchMap`
 
-**View Model**
-• Projection holds the state
-• Emited to the UI
-• Can be modified locally
-• Never affects the real state
+### 3. Imperative flow vs Reactive Flow
 
-The public `Observable` should emit view models, not the raw state.
+• **Imperative (Step by step)**: How things are supposed to be made.
+   . Get the value, verify if the value is bigger than 10, if it is, save it on the db.
+• **Reactive (Intention Declaration)**: We define what should happen when the data arrives
+   . Every time a value arrives, filter the ones above 10 and save them.
 
-### Shallow copy is not sufficient
+### 4. Why to use this in angular? 
 
-Copying only the array does not protect the state:
+In angular, the reactive flow (Often via RxJS) solves complex problems in an elegant way.
 
-• The array is new
-• But the internal objects continue the same
+1. **Asynchronism**: Deals with clicks, timers and APIs without "locking" the screen
+2. **Composition**: We can combine two flows (ex: only fetch data on the server if the user types more than 3 characters
+and stop typing for 500ms)
+3. **Decoupling**: The service does not need to know who is utilizing the data, it just "emits" them
 
-If the state contains a nested structure, like (task -> comments -> comment), every mutable layer must be recreated.
+### 5. The Lifecycle of a flow
 
-Golden Rule:
-**Everything that is mutable and is part of a shared state, must be recreated before being emitted**
+A reactive flow in RxJS, can emit three types of notifications
 
-### Service responsibility
+1. Next: A new data has arrived (can happen multiple times)
+2. Error: Something went wrong (flow stops)
+3. Complete: If we do not "close" or unsubscribe of a flow that never finishes (like an `Interval` or a `BehaviorSubject`),
+4. we can create a *Memory Leak*
 
-The service should
+### Visual Summary
 
-• Keep the state private
-• Emit only safe snapshots
-• Ensure that no consumer can mutate the global state
-
-The `subscribe` should never be a place of state change
-
-If there is the necessity of changing something
-• This indicates that a method in the service is missing.
-
-### Where should the copy live, how it is created, and why
-
-#### 1. Where should the copy originate?
-
-Inside the service, never in the subscribe
-
-`BehaviorSubject` stores the real state
-Public `Observable` emit safe snapshots (view models)
-
-**2. Default standard**
-
-**Private State**
-
-Inside the service
-`private readonly todoTask$ = new BehaviorSubject<ITask[]>([])
-
-**Public observable (View Model)**
-
-```ts
-readonly todoTasks = this.todoTask$.pipe(
-   map(tasks => 
-      tasks.map(task => ({
-         ...task,
-         comments: task.comments.map(comment => ({...comment}))
-      }))
-   )
-)
-```
-
-What is this doing?
-
-• Creates a new array
-• Creates a new task
-• Creates a new array of comments
-• Creates new comments
-
-Any mutation outside of the service, dies there.
-
-
-
-
-
-
-
-
+Imagine a river (Stream), The water is the data. We can put filters (operators) in the middle of the river to clean the
+water. At the end, there is someone with a bucket (Subscriber) receiving what is "left"
 
 ## Enums
 
@@ -1046,9 +992,6 @@ Example
    • The date format changes
    • The UI error behavior changes
 
-
-
-
 ### Quick Summary
 
    • SRP !== "small functions¨
@@ -1058,7 +1001,6 @@ Example
 
    In our specific case, the instructor's approach applies SRP in a more correct and scalable way 
 
-##
 
 ## What does "reason to change" actually mean?
 
