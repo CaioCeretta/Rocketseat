@@ -643,7 +643,7 @@ won't affect our source of truth.
 To simulate if our Observable is adherent to that goal. We will go through the flow
 
 1. We subscribe to the `todoTask`, that is an observable of our source of truth `todoTask$`, we are receiving the todoList
-everytime our behaviorSubject changes and `.next()` is called.
+every time our behaviorSubject changes and `.next()` is called.
 2. However, if we get take subscribe parameter, that is the list, and try to modify the any item properties, such as the
 name, in the ideal world, this should not affect our source of truth, only the copy
 3. Now, after modifying the name property, if we console.log the source of truth, we will see that it was modified from
@@ -652,9 +652,22 @@ the component. Which is incorrect, the only place it should be altered is throug
 
 ## Lesson 12 - Fixing immutability issue
 
+How would we return a copy of the todos list? How would we return a copy every time someone subscribes to it? So that
+when a component receives the list, it receives the most recent copy.
+
+First we need to make sure that we do not clone directly inside the `.subscribe`, because the subscribe receives the
+real reference. So in the subscribe parameter, it must already be the copy.
+
+
+
+
+
+
+
+
 ### Protecting shared state with RxJS (Behavior Subject)
 
-### The Problem - Protection Illusion
+#### The Problem - Protection Illusion
 
 Using `asObservable()` prevents that a component call `.next()`, but **does not protect the data itself**. In JS, objects
 and arrays are passed by **reference**.
@@ -663,6 +676,113 @@ and arrays are passed by **reference**.
 altering the value **inside** the Service, affecting every other component that use this state.
 
 · **Consequence:** Unpredictable state, bugs that are hard do track and break of the *reactive flow*.
+
+#### Architectural Principle: Output Immutability
+
+The golden rule is: The `subscribe` must be automatically protected
+
+**1. The State (Service):** Is the only source of truth. Only the service has permission to change it
+**2. The View-Model (Component):** It is a projection (copy) of the state. The component may even try to "stain" the data, but
+it should only alter a copy that will be discarded, keeping the original intact.
+
+#### Shallow Copy vs Deep Copy
+
+The problem here happens because, in JS, when we copy a object that contains other objects inside of it, we only create a
+new "shell". The content inside of it, remains the same.
+
+Imagine that our state is book shelf
+
+##### 1. Real State (In the Service)**
+
+Imagine a physical shelf.
+
+. The shelf is the task array
+. The book is the task
+. The pages are the comments inside the task
+
+##### 2. The Shallow Copy problem**
+
+If we simply make: `const newShelf = [...realShelf]`, we bought a new shelf, but got the same books from the first shelf
+and put on it.
+
+. We have two shelves (Different memory addresses for the Array)
+. *BUT*, if we open a book in the "new shelf" and tear a page (modify a `Comment`), the page of the book in the "Real Shelf"
+will also be teared.
+. *Why?* Because the book is the same physical object; it is just kept in two different places.
+
+```ts
+const copy = [...this._task$.value];
+
+// copy[0] is the new position in the array
+// but it points to the SAME object in memory as the original
+
+copy[0].comments[0].text = "Modified"
+// We just broke the global state
+```
+
+#### 3. The solution: Deep Copy
+
+To protect the state, we need a "print shop". We need do not want to only move the book shelf. We want to print a new book,
+with new pages, that ignore the original
+
+This is what nested `map` does
+
+```cs
+tasks.map(task => ({
+   ...task,
+   comments: task.comments.map(comment => ({
+      ...comment
+   }))
+}))
+```
+
+
+Now, if the component "tears" the comment page, it will be tearing its own copy. The original book remains intact.
+
+#### Default Implementation (The "How to")
+
+To ensure total safety, we use a **Deep Map** in the pipe of the public observable
+
+**1. The Private State (The "coffer")**
+
+```ts
+// store the real and mutable reference
+private readonly _task$ = new BehaviorSubject<ITask[]>({});
+```
+
+**2. Public Exposition (The "Protected Window")** 
+
+Here, we transform the raw data into a safe **View Model** before that it leaves the Service.
+
+```ts
+readonly task$ = this._task$.asObservable().pipe(
+   map(task => ({
+      ...task, // 1. New task reference
+      comments: task.comments.map(comment => ({
+         ...comment // 2. New reference for each cp,,emt
+      }))
+   }))
+)
+```
+
+**What does this ensure?**
+
+*Isolation*: Each `subscribe` receives a completely new objects structure
+*Traceability*: If the data needs to change, the developer is *forced* to create a method inside the service, (e.g updateTask())
+because modifying the value inside the component won't change anything.
+
+**Responsibility service checklist**
+
+. [] The `BehaviorSubject` is strictly private
+. [] The public observable emits only clones (snapshots)
+. [] Any modifying logic resides in the service public methods, never through direct manipulation inside the component.
+
+
+
+
+
+
+
 
 ## Reactive Flow
 
@@ -721,6 +841,82 @@ A reactive flow in RxJS, can emit three types of notifications
 
 Imagine a river (Stream), The water is the data. We can put filters (operators) in the middle of the river to clean the
 water. At the end, there is someone with a bucket (Subscriber) receiving what is "left"
+
+## 3 Ways to Clone Objects in Javascript
+
+Because objects in JavaScript are references values, we can't simply just copy using `=` or spreading it.
+
+### Objects are Reference Types
+
+Our first question might be, why can't i use `=`?
+
+```ts
+const obj = { one: 1, two: 2 };
+
+const obj2 = obj;
+
+console.log(
+  obj, // {one: 1, two: 2};
+  obj2, // {one: 1, two: 2};
+);
+```
+
+So far, both objects seems to output the same thing. So no problem, right? But let's see what happens if we edit the
+second object.
+
+```ts
+const obj2.three = 3;
+
+console.log(obj2);
+// {one: 1, two: 2, three: 3};
+
+console.log(obj);
+// {one: 1, two: 2, three: 3};
+```
+
+Even though we changed obj2, obj was also affected. That's because we Objects are reference types. So when we use the
+`=` assignment. It also copied the memory space it occupies. References don't hold values, but pointers to the value
+in memory.
+
+#### Spread Operator
+
+This clones the object. But as a shallow copy. It creates a new memory reference for the main object (or array), but
+what it does is
+
+1. The "Container" gains a new address, so when we make something as `const new = {...original}, JS reserves a new
+memory space for the `new` object. If we modify a simple property (like a string or number) in `new`, `original` will
+remain intact
+
+2. However, the danger lies in the nested objects. If inside this object, there is another object or array, spread operator
+*does not create a copy of this internal object*. It only copies the reference to it.
+
+A practical example would be
+
+```ts
+const original = {
+  name: "ABC Store",
+  address: { street: "Street 1", number: 10 }
+};
+
+// Cloning with spread
+const clone = { ...original };
+
+// 1. Changing a primitive value:
+clone.name = "Fast Print Shop"; 
+// original.name remains "ABC Store" (Different addresses)
+
+// 2. Changing a nested value:
+clone.address.street = "Central Avenue";
+// Original also changes.
+```
+
+This happens because it was only created a pointer for the `address` property. It is like we have two keys (original and clone)
+to the same wardrobe
+
+##### How to solve this issue?
+
+If we 
+
 
 ## Enums
 
