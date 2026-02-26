@@ -780,10 +780,6 @@ because modifying the value inside the component won't change anything.
 
 
 
-
-
-
-
 ## Reactive Flow
 
 The **reactive flow** or reactive programming, is a programming paradigm focused on data flows (data streams) and in change
@@ -878,7 +874,7 @@ Even though we changed obj2, obj was also affected. That's because we Objects ar
 `=` assignment. It also copied the memory space it occupies. References don't hold values, but pointers to the value
 in memory.
 
-#### Spread Operator
+### Spread Operator
 
 This clones the object. But as a shallow copy. It creates a new memory reference for the main object (or array), but
 what it does is
@@ -913,9 +909,113 @@ clone.address.street = "Central Avenue";
 This happens because it was only created a pointer for the `address` property. It is like we have two keys (original and clone)
 to the same wardrobe
 
-##### How to solve this issue?
+#### How to solve this issue?
 
-If we 
+```ts
+const original = {
+  name: "ABC Store",
+  address: { street: "Street 1", number: 10 }
+};
+
+// Workaround: Spread in all known levels
+const clone = {
+   ...original,
+   address: { ...original.address }
+}
+
+
+clone.address.street = "Central Avenue";
+console.log(original.address.street); // "Street 1" (Is now protected)
+
+```
+
+ In JS,when we define the same key two times in a literal object, like the address, the last definition always wins
+
+ We can think of this as layers
+
+##### Override Process
+
+When we define that clone object, `...original` is throwing every object's original properties to the new clone object.
+This includes the `address` property, that by that time, is just a reference to the original object
+
+When we define `address: {...}` afterwards, we declare that key again, which JS sees and says "Oops, i already have an
+address property, but the user wants me to place this property on top of it"
+
+So at the end, clone.address points to a new memory address, while original.address remains inside of it.
+
+
+### Object.assign()
+
+This methods was the default before ES6's spread. It copies the properties of one or more source objects to a destination
+object
+
+· Syntax: `Object.assign(destination, origin)
+. Behavior: Just as spread, it performs a shallow copy
+
+```ts
+const original = { name: "Store", tags: ["sale", "new"] };
+const clone = Object.assign({}, original);
+
+clone.tags.push("promo");
+console.log(original.tags); // ["sale", "new", "promo"] (Also affected the original)
+```
+
+• Crucial difference from spread: `Object.assign` fires setters in the destination object, while spread does not. Besides,
+spread creates a new object, while assign can modify an already existing object
+
+### JSON.parse(JSON.stringify(obj))
+
+This method was, for a long time, the only native way of making a Deep Copy in JS.
+
+• How it works? We transform an object into a JSON string and then, transform this string back into a new object. Since
+a string does not store memory references, the original link is completely broken.
+
+*Advantages*
+. Copies every levels, no matter its "deepness"
+. Solves the "pointer" problem
+
+#### Warnings (What it does not solve)
+
+This method serious side effects because the JSON format is limited:
+
+1. Loss of functions: If the object has a method, it will be removed
+2. Dates: `Date` objects become strings and do not cast back to Date objects.
+3. Undefined NaN : Undefined values are removed and NaN becomes null
+4. Circular References: If a object points to itself, the code breaks and throws an error
+
+```ts
+const original = {
+  date: new Date(),
+  callback: () => console.log("hi"),
+  name: "Test"
+};
+
+const clone = JSON.parse(JSON.stringify(original));
+
+console.log(typeof clone.date); // "string" (Lost the `Date` type)
+console.log(clone.callback); // undefined (The functions is lost)
+```
+
+### Modern Solution (structuredClone)
+
+In more recent versions, JS created a new API that solves all these problems: The `structuredClone()`
+
+If we want to create a deep copy nowadays, this is the official recommendation
+```ts
+const original = {
+   name: "ABC Store",
+   address: { street: "Street 1" },
+   date: new Date()
+}
+```
+
+const clone = structuredClone(original);
+
+clone.address.street = "New Street"
+
+console.log(original.address.street) // Street 1, protected
+console.log(clone.date instance of Date) // true (Maintains the type)
+
 
 
 ## Enums
@@ -934,7 +1034,7 @@ export enum TaskStatusEnum {
 TypeScript creates two things at the same time
 
 1. A type
-2. A run-tiime object
+2. A run-time object
 
 Which means that, in our case, TaskStatusEnum is simultaneously a type and a value
 
@@ -942,7 +1042,7 @@ This is different than type and interfaces that fades away during runtime
 
 ### 2. Enum is already a type
 
-When defining `status: TaskStatusEnum`, TypeScrpt already understands it like:
+When defining `status: TaskStatusEnum`, TypeScript already understands it like:
 
 "status can only be of one of the values defined in this enum"
 
@@ -951,7 +1051,7 @@ In practice, this means
 status = TaskStatusEnum.TODO // ok
 status = TaskStatusEnum.DOING // ok
 status = "to-do" // doesn't work
-status = "doing" // doesn´t work
+status = "doing" // does´nt work
 
 Meaning that an enum restricts the type exactly how we want.
 
@@ -965,7 +1065,7 @@ export type TaskStatus =
   | TaskStatusEnum.DOING
   | TaskStatusEnum.DONE;
   ```
-This union is daying
+This union is saying
 
 "TaskStatus is "to-do" | "doing" | "done"
 
