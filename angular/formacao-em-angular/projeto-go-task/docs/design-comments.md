@@ -201,3 +201,65 @@ internal content stable.
 We use a **Wrapper Div** whenever it is necessary to separate neighborhood spacing (page layout) from content spacing
 (component anatomy), ensuring that background colors and borders do not occupy the space intended for the interface's
 visual breakdown
+
+## Justify-Between on the parent, and ml-auto on the son. When to use each one of another? 
+
+### 1. `justify-between` (in the parent)
+
+`justify-content: space-between` is a "collective" instruction. It says to the container: "Get every available space and
+distribute it equally between the children"
+
+• Behavior: The first item sticks to the start and the last to the end, and the middle ones are centralized in the
+remaining space.
+• Scalability: If you add a third item, it will automatically be centered
+• Ideal Use: When we want to distribute the children uniformly
+
+### 2. `ml-auto` (in the child)
+
+`margin-left: auto` on a flex item is an individual instruction. It tells the browser: "Push this specific item as far
+as to the right as possible by consuming all available free space as its let margin"
+
+• Behavior: The item with `ml-auto` "eats" all the remaining space for itself
+• Scalability: If you have three items and put `ml-auto` on the second one, both the second and this items will be pushed
+to far right
+• Best for: Creating "split" layouts, like a navigation bar where the logo stays on the left and the login button is pushed
+to the right.
+
+### Which one should we use?
+
+• Use `justify-between` if your design requires elements to always be spread out to the edges, regardless of how many items
+are added
+• Use `ml-auto` if you want to "break" the flow and push a specific item (and everything following it) to the opposite
+side
+
+`ml-auto` is a lifesaver when we want most items to stay grouped on the left, but need just the last item to move to the
+right. justify-between cannot do this because it would force gaps between every single item
+
+### But can't i use nested flex boxes to do the exact same thing? 
+
+By wrapping our items into two separate containers (sub-flex a and sub-flex b), we treat those two containers as the only
+two children of the main parent
+
+Let's say we have 4 items, but want 3 on the left and 1 on the right
+
+1. The main parent: `display: flex; justify-content: space-between`
+2. Left wrapper (div): `display: flex; gap: 1rem`; (Contains items 1, 2, and 3) 
+3. right wrapper (div): (contains item 4)
+
+As a result the browser only sees two blocks. It puts one on the far left and one on the far right. The space in the middle
+is the only gap created by the parent
+
+#### Comparison: Nesting vs `ml-auto`
+
+While nesting would seem to work as we want to, there is a reason some developers might choose one over the other":
+
+*Nesting* is easy to manage gaps within the groups using `gap`, but this adds a extra "div soup" (more HTML tags) to the
+DOM.
+
+*ml-auto* keeps the HTML flat, no extra wrappers. But it is harder to manage if we want specific gaps between the other
+items
+
+
+
+
+
