@@ -658,6 +658,22 @@ when a component receives the list, it receives the most recent copy.
 First we need to make sure that we do not clone directly inside the `.subscribe`, because the subscribe receives the
 real reference. So in the subscribe parameter, it must already be the copy.
 
+So we will start by creating a deep clone using js's `structuredClone`, and we have to apply this deep clone on our
+source of truth (state). In order return the copy to everyone who subscribes to it, we will do the following on the subscribers
+
+We assign `observable$.asObservable().pipe()` to a variable. This .pipe acts like "industrial tubing" where data
+flows from start to finish, much like water through a tube. Inside this piping, we use RxJS operators to transform that
+flow. Those operators, will modify the original value before they arrive to our subscribe, and when it reaches the
+subscribe, it will already be modified by the operators and no longer will be the original value that is stored in our
+behavioralSubject state. Therefore, we won't be emitting to them, its current value, but a modified one.
+
+So what will happen is basically. We assign to that copy, the current Observable. We utilize `asObservable()` to ensure
+that no one outside can inject data in our original subject. Inside the `.pipe()`, we use the `map` operator to intercept
+the tasks array. For each emission, we create a deep copy using structuredClone. This way, whoever subscribes receives
+a new and safe list, avoiding external modifications that affect the internal state 
+
+
+
 
 
 
