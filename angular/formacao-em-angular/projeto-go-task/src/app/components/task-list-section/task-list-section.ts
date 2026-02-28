@@ -18,9 +18,9 @@ export class TaskListSection {
 		this._taskService.todoTasks.subscribe((todoList) => {
 			this.currentList = todoList;
 
-			todoList[0].name = "Nome alterado";
+			todoList[0].name = "Modified Name";
 
-			this._taskService.carregarListaAtualDeToDos();
+			this._taskService.loadCurrentTodosList();
 		});
 	}
 }

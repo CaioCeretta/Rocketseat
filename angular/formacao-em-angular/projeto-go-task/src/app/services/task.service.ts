@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, map } from "rxjs";
 import type { ITask } from "../interfaces/task.interface";
 import type { ITaskFormControls } from "../interfaces/task-form-controls.interface";
 import { TaskStatusEnum } from "../types/task-status";
@@ -11,7 +11,10 @@ import { generateUniqueIdWithTimeStamp } from "../utils/generate-unique-id-with-
 export class TaskService {
 	//To-do tasks
 	private readonly todoTasks$ = new BehaviorSubject<ITask[]>([]);
-	readonly todoTasks = this.todoTasks$.asObservable();
+
+	readonly todoTasks = this.todoTasks$.asObservable().pipe(
+		map(tasks => structuredClone(tasks))
+	);
 
 	//Doing task
 	private doingTasks$ = new BehaviorSubject<ITask[]>([]);
@@ -35,7 +38,7 @@ export class TaskService {
 		this.todoTasks$.next([...currentList, newTask]);
 	}
 
-	carregarListaAtualDeToDos() {
+	loadCurrentTodosList() {
 		console.log(this.todoTasks$.value);
 	}
 }
