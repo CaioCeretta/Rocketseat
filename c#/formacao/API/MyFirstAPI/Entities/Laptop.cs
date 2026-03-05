@@ -2,8 +2,12 @@ namespace MyFirstAPI.Entities;
 
 public class Laptop : Device
 {
+    public override string GetBrand()
+    {
+        return "Apple";
+    }
 
-  public string GetModel()
+    public string GetModel()
   {
     var connected = isConnected();
 
