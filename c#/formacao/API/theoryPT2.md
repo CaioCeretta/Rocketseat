@@ -93,7 +93,9 @@ of how the children must create this method. The abstract class will have someth
 How the function will be implemented, is up to the child.
 
 As soon as we create this signature on the parent, whichever class that inherits from this class, is going to be warned
-that it must implement this new method. So inside every child, we now have to
+that it must implement this new method. So inside every child, we now have to.
+
+PS: A non abstract class, also known as concrete class, can't have abstract methods or abstract functions.
 
 ```cs
 public override string GetBrand()
