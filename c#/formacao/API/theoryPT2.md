@@ -53,5 +53,14 @@ want the parent's, then we use `base.Author`
 Start by creating an entities folder and three base classes inside of it. A `Device` class, that will be the base class,
 and two other classes: `Smartphone` and `Laptop` that inherits the Device class.
 
-In the DeviceController's GET function, we create a new instance of `Laptop`
+In the DeviceController's GET function, we create a new instance of `Laptop`, and through this instance, define a model
+variable equal to the result of `laptop.GetModel()` method. This method will return a certain laptop model in case a
+variable inside the `Device` class is true. Which could be done due to inheritance. In case we change the access modifier
+from the isConnected variable visibility from public to private, its children, that have a condition based on that variable.
+Will stop working.
+
+If we change the access modifier from private to protected, every classes that are derived from it. The ones that inherit
+it. Can visualize it.
+
+## Lesson 3 - Understanding abstract
 
